@@ -1,0 +1,20 @@
+# Scientific ML Git Exclusions
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Large Artifacts & Data
+data/raw/
+data/processed/
+data/checkpoints/
+*.nc
+*.h5
+*.zarr
+*.tiff
+*.pt
+*.onnx
+scaler.pkl
+.DS_Store
