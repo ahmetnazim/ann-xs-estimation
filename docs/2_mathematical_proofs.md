@@ -1,13 +1,13 @@
 # Phase 2 Gate Deliverable: Mathematical Proofs and Algorithm Design for the Hard Manning–Continuity Layer
 
 > **Project:** ANN_XS_Estimation, Option A (ADL-014). **Phase:** 2, Mathematical Proofing & Algorithm Design. The code-generation lock is ON, and this document contains no executable code.
-> **Status:** Approved by the PI, 2026-10-08 (first gate version). Middle-prompt revisions (§7.7 M4 penalty schedule; §3.5 full Φ boundary analysis; pandoc render check) are pending and will follow as a separate commit.
+> **Status:** Approved by the PI, 2026-10-08 (first gate version, `ffe2e5e`). Middle-prompt revision (second commit): §7.7.1 M4 penalty schedule; §3.5 batch action, unit equivariance and boundary differentiability of Φ; §1.1.2 supplementary notation and three symbol de-collisions ($\beta_N$, $\varrho$, $\Psi$); pandoc render check; verification log and register updated.
 > **Decisions in force:**
 > - **P2-D1 (a):** hand derivations, each re-derived by a second, independent route in this session, plus limiting cases, dimensional checks and labelled hand-computed examples.
 > - **P2-D2 (a):** Markdown with GitHub math only.
 > - **P2-D3 (a):** full $\kappa$ is the primary M5; $\kappa\equiv1$ is an ablation.
 > - **P2-D4 (a):** $M$-member deep ensemble with heteroscedastic log-normal heads.
-> - **P2-D5:** the PI deferred to the agent's recommendation. **S3 adopted** (§6); **M4 and M6 formalized** (§7.7–§7.8). S1 and S4 stay Phase 3 proposals; their status is only recorded here.
+> - **P2-D5:** the PI deferred to the agent's recommendation and then confirmed it (2026-10-08). **S3 adopted** (§6); **M4 and M6 formalized** (§7.7–§7.8). S1 and S4 stay Phase 3 proposals; their status is only recorded here.
 > **Inputs:**
 > - `docs/0_point_zero.md` §3, §4, §7;
 > - `docs/1_literature_matrix.md` §4, §6;
@@ -75,6 +75,67 @@
 | $\omega_i$ | site-normalized observation weights | – | §7.0 |
 
 **1.1.1 Log convention.** Before taking the log, every dimensional quantity is divided by its SI unit, so $w=\ln(W/1\,\mathrm{m})$ and so on. Every residual in this document is a difference of logs of *like* quantities. It is therefore dimensionless and invariant to the choice of units (Proposition 8.1).
+
+**1.1.2 Supplementary symbols (by section).** Every symbol not in the table above. Unless a unit is given, the symbol is dimensionless.
+
+| Symbol | Meaning | SI unit | § |
+|---|---|---|---|
+| $x$ | lateral coordinate in §2; elsewhere the feature vector | m (§2); – | 2; 6–7 |
+| $y(x),\ h(x)$ | bed height above the thalweg; local depth | m | 2 |
+| $u,\ \tau,\ v,\ p$ | integration variables; $p=2/r-2$ | – | 2 |
+| $C_r$ | constant of Proposition 2.6 | – | 2 |
+| $F_\beta,\ F_r,\ k_r$ | partial derivatives of $F$ and of $k$ ($k_r$ at fixed $a$) | – | 2–3 |
+| $\ell_0,\ k_0,\ \ell_m$ | wide-channel start; $k$ there; $m$-th iterate | – | 3 |
+| $G,\ L,\ L_{loc}$ | Picard map; contraction constant ($\le2/5$); local rate | – | 3.3 |
+| $\tau_\ell,\ K_{\max},\ \tau_Q$ | solver tolerance (log units); iteration cap; quadrature tolerance | – | 3, P3-12 |
+| $N,\ \boldsymbol Z,\ \boldsymbol Z_i$ | batch size (written $B$ in PHASE_02); batch input matrix; its $i$-th row | – | 3.5 |
+| $\chi_L,\ \chi_T$ | factors by which numerical values of length and time scale under a change of units | – | 3.5 |
+| $\mathcal D_{nat}$ | natural (open) domain of $\Phi$ | – | 3.5 |
+| $u_{mach}$ | unit roundoff | – | 4 |
+| $\delta_0$ | $\delta$ at the wide-channel depth | – | 4 |
+| $\boldsymbol\theta,\ \boldsymbol\Sigma$ | in §5.1 only: input vector $(q,\nu,w,s,r)$ and its error covariance; elsewhere $\theta$ = network weights | – | 5.1 |
+| $S_f,\ S_0,\ S_{ws},\ S_{reach}$ | friction, bed, water-surface and reach slopes | – | 5.2 |
+| $n_{true},\ n_{eff},\ n'$ | true, effective and ablation-A1 roughness | $\mathrm{s\,m^{-1/3}}$ | 5.2, 7.10 |
+| $\kappa_t,\ \kappa_m$ | true and model conveyance corrections | – | 5.2 |
+| $\mathrm{Fr},\ \xi$ | Froude number; log slope noise | – | 5.2 |
+| $\mathcal X$ | information available to the model at a site ($x$ with $q,s$) | – | 6 |
+| $r_{obs},\ t_{obs},\ a_{obs},\ \nu_{obs}$ | observed shape quantities; back-calculated $\ln n$ (M6 label) | – | 6 |
+| $m$ | in Proposition 6.3 only: $\nu-\tfrac23k$; elsewhere iterate or ensemble index | – | 6.3 |
+| $\bar D$ | mean-value slope of $\rho$, $\in(1,5/3]$ | – | 6.4, 7.7.1 |
+| $\mathcal I_{full},\ \mathcal I_{blind}$ | information routing for the $n$-head | – | 6.5 |
+| $\mathcal B$ | attainable depth band | – | 6.5 |
+| $\mathcal J_{tr},\ I_j,\ \mathcal K$ | training sites; observations at site $j$; target set | – | 7.0 |
+| $e_{ik}$ | log residual | – | 7.0 |
+| $\theta$ | network weights | – | 7–8 |
+| $\mathbf Q,\ \epsilon_A$ | positive-definite weight matrix (Proposition 7.1; bold, not discharge); observed closure residual | – | 7.2 |
+| $\hat\ell^{orc},\ e^{orc}_\ell,\ \Delta_Q$ | oracle-Q depth, its error, discharge term | – | 7.3 |
+| $n_S,\ \nu_S$ | Strickler roughness and its log | $\mathrm{s\,m^{-1/3}}$; – | 7.5 |
+| $\lambda_p,\ \tau_p,\ \lambda_\Delta,\ \Delta_\theta,\ \pi_S,\ \varpi$ | Strickler prior weight and scale; ridge weight; logit residual; prior position; clip margin | – | 7.5 |
+| $R_M,\ R_A,\ \mathcal P$ | Manning and closure residuals; Manning penalty (calligraphic, distinct from the perimeter $P$) | – | 7.7 |
+| $\nu_{back}$ | $\ln n$ back-calculated from predicted geometry | – | 7.7 |
+| $\lambda_M,\ \lambda_A$ | penalty weights | – | 7.7 |
+| $\mathcal F,\ \theta_\lambda,\ \theta_{\mathcal F},\ \theta_{\mathcal P}$ | feasible set; penalized, constrained and least-violation minimizers | – | 7.7 |
+| $\mathsf e,\ \lambda_0,\ \gamma,\ \lambda_{\max},\ \mathsf e_{cap}$ | epoch index; schedule start, growth factor, cap; cap epoch | – | 7.7.1 |
+| $\varsigma,\ N_b$ | gradient-descent step size; steps per epoch | – | 7.7.1 |
+| $\Lambda_D,\ \Lambda_P,\ \Gamma_D,\ h_P$ | gradient-Lipschitz constants of $\mathcal L_{data}$ and $\mathcal P$; bound on $\lVert\nabla\mathcal L_{data}\rVert$; curvature floor of $\mathcal P$ | – | 7.7.1 |
+| $\Delta_{\mathcal L},\ \varepsilon_{\mathsf e},\ \mathbf P_T,\ \Xi_{\mathsf e}$ | data-loss gap; inner-optimization error; tangent projector; penalty-to-data gradient ratio | – | 7.7.1 |
+| $\hat g_\nu,\ \hat g_w,\ \hat g_t,\ \Pi$ | M6 regressors; projection onto the bounds | – | 7.8 |
+| $n_{emp},\ n_J$ | M3 roughness; Jarrett roughness | $\mathrm{s\,m^{-1/3}}$ | 7.9 |
+| $c_J,\ c_J',\ a_J,\ b_J,\ S_J,\ \bar r,\ \rho_J$ | Jarrett coefficient (source US units, mapped through $\mathcal U$; unit depends on $b_J$), its log-form constant, exponents, steep threshold, fixed shape, residual | – except $c_J$ | 7.9 |
+| $\mathbf J,\ \boldsymbol\Omega,\ C_\Phi$ | in §8: Jacobian of $(w,\ell,t)$; data-weight matrix; gradient constant | – | 8 |
+| $\ell_{NLL},\ \beta_N,\ \operatorname{sg}$ | per-point NLL; $\beta$-NLL exponent (renamed from $\beta$ to avoid the geometric $\beta$); stop-gradient | – | 8.5 |
+| $\varrho,\ \bar\varrho,\ z_\varrho$ | correlation of $(\ln W,\ln\bar d)$, its cap, pre-activation (renamed from $\rho$ to avoid the Manning residual) | – | 8.5, 9.1 |
+| $p^*,\ \mu^*,\ \sigma^*,\ \sigma_{ale},\ \sigma_{epi}$ | ensemble mixture and its moments | – | 9.2 |
+| $\Psi,\ Q_p,\ z_p$ | mixture CDF (renamed from $G$ to avoid the Picard map); mixture quantile (log space, not discharge); standard-normal quantile | – | 9.3 |
+| $\Phi_{\mathcal N},\ \varphi$ | standard-normal CDF and density | – | 9.3 |
+| $d_m,\ \tilde v,\ \tilde m_3$ | standardized member offsets and their moments | – | 9.3 |
+| $n^*,\ \bar\nu,\ \bar k$ | ensemble roughness; member means | $\mathrm{s\,m^{-1/3}}$; – | 9.3 |
+| $\mathcal T,\ \tilde\omega_i,\ L_i,\ U_i$ | evaluation set; its weights; interval bounds (log space) | – | 9.4 |
+| $\hat C_\alpha,\ \bar{\mathcal W}_\alpha,\ u_i,\ \mathcal Q_s,\ \mathcal A$ | coverage; mean log-width; PIT value; size quintile; folded-normal mean | – | 9.4 |
+| $\mathrm{RMSE}_k,\ B_k,\ \mathrm M^*,\ B,\ \alpha_b$ | log-RMSE; log bias; strongest comparator; bootstrap replicates; CI level | – | 9.5 |
+| $\Delta^{H1},\Delta^{H2},\Delta^{H3},\ L^{(\mathrm M)},\ \mathcal S,\ \mathcal T_{ID},\ \mathcal T_{OOD}$ | hypothesis statistics; skill loss; skill functional; ID and OOD sets | – | 9.5 |
+| $\pi^\nu_\partial,\ \vartheta,\ \pi_{lit},\ \mathcal N_{lit},\ \rho_S$ | boundary-clustering share; its threshold; plausibility share; literature range; Spearman correlation | – | 9.5 |
+| $F_S$ | slope-floor flag | – | 1.3 |
 
 ### 1.2 The unit map $\mathcal U$
 
@@ -393,13 +454,84 @@ Backward (iterates are treated as constants; no gradient through the loop)
 
 **(A3.1)** The second derivatives of $k$ are bounded on compact subsets of $\mathcal D$; this is plausible by the same domination as in Proposition 2.8, but not proven here. It implies that the gradient error from evaluating the implicit-function gradient at an unconverged root is $O(\tau_\ell)$. Phase 7 checks it by finite differences.
 
-### 3.5 Row-wise action
+### 3.5 Batch action, dimension preservation and boundary behavior
 
-**Proposition 3.4.** $\Phi$ acts row by row. Output row $i$ depends only on input row $i$, so $\Phi$ commutes with any permutation of the batch and is independent of batch size. It cannot pass information between sites or folds.
+For a batch of $N$ reaches, stack the inputs row by row:
 
-*Proof.* By definition, (3.1) involves only the quantities of one reach. ∎
+$$
+\boldsymbol\Phi_N:\ \mathbb R^{N\times5}\to\mathbb R^{N\times4},\qquad
+\boldsymbol Z=\begin{pmatrix}\boldsymbol Z_1\\ \vdots\\ \boldsymbol Z_N\end{pmatrix},\quad
+\boldsymbol Z_i=(z_{W,i},z_{r,i},z_{n,i},q_i,s_i)\ \longmapsto\ \begin{pmatrix}\Phi(\boldsymbol Z_1)\\ \vdots\\ \Phi(\boldsymbol Z_N)\end{pmatrix},
+$$
 
-The extended treatment (dimension preservation, and behavior at every boundary of the domain) is scheduled for the next iteration, in response to the middle prompt.
+with $\Phi(\boldsymbol Z_i)=(\ell_i,\ln d_{\max,i},\ln A_i,\ln V_i)$ as in §3.1. PHASE_02 writes the batch size as $B$; $N$ is used here because $B$ already denotes the bootstrap count and $B_k$ the log bias (§9.5).
+
+**Proposition 3.4 (row-wise action; no coupling between reaches).**
+- (a) $\boldsymbol\Phi_N(\boldsymbol Z)_i=\Phi(\boldsymbol Z_i)$. Hence $\boldsymbol\Phi_N(\Pi\boldsymbol Z)=\Pi\,\boldsymbol\Phi_N(\boldsymbol Z)$ for every permutation matrix $\Pi$, and $\boldsymbol\Phi_{\lvert\mathcal S\rvert}(\boldsymbol Z_{\mathcal S})=\boldsymbol\Phi_N(\boldsymbol Z)_{\mathcal S}$ for every row subset $\mathcal S$. The outputs do not depend on batch size, composition or order.
+- (b) The Jacobian is block-diagonal: $\partial\boldsymbol\Phi_N(\boldsymbol Z)_i/\partial\boldsymbol Z_j=\mathbf 0$ for $i\neq j$. For any loss $\sum_i\mathcal L_i(\boldsymbol\Phi_N(\boldsymbol Z)_i)$, therefore, $\partial\mathcal L_i/\partial\boldsymbol Z_j=0$ for $i\ne j$. Neither values nor gradients pass between reaches through $\Phi$. Information is shared across sites only through the network weights $\theta$, and fold-separated training confines that sharing to the training fold.
+- (c) **Solver caveat.** (a) and (b) hold exactly for the root $\ell^*$. For the computed iterate, they hold exactly if the stopping rule of §3.3 is applied **per row** (each row is frozen once it meets its own criterion) or a fixed iteration count is used. Under a batch-global rule ("iterate until every row has converged"), the iteration count of row $i$ depends on the other rows. That dependence is at most $\tau_\ell$ in every output coordinate.
+
+*Proof.*
+- (a) The transforms (§7.6) and (3.1)–(3.2) involve only the quantities of row $i$, and the root is unique (Proposition 3.1), so $\Phi(\boldsymbol Z_i)$ is a function of $\boldsymbol Z_i$ alone. A row-wise map commutes with permutations and row selections.
+- (b) *Route 1:* by (a), output $i$ does not depend on $\boldsymbol Z_j$. *Route 2 (implicit function theorem on the stacked system):* $\boldsymbol\rho_N(\ell_1,\dots,\ell_N;\boldsymbol Z)=\bigl(\rho(\ell_1;\boldsymbol Z_1),\dots,\rho(\ell_N;\boldsymbol Z_N)\bigr)$ has $\partial\boldsymbol\rho_N/\partial\boldsymbol\ell=\operatorname{diag}(D_1,\dots,D_N)$, which is invertible because $D_i>1$, and $\partial\boldsymbol\rho_N/\partial\boldsymbol Z$ is block-diagonal. The implicit Jacobian $-(\partial\boldsymbol\rho_N/\partial\boldsymbol\ell)^{-1}\partial\boldsymbol\rho_N/\partial\boldsymbol Z$ is therefore block-diagonal.
+- (c) With per-row freezing, the iterate sequence of row $i$ depends on $\boldsymbol Z_i$ only. Under a global rule, row $i$ stops at some $m\ge m_i$, where $m_i$ is its own stopping index. Proposition 3.2(4) gives $\ell_{m_i,i}\le\ell_{m,i}\le\ell^*_i$, and the stopping rule gives $\ell^*_i-\ell_{m_i,i}\le\tau_\ell$. The other outputs equal $\ell$ plus row-local terms. ∎
+
+*Scope.* The guarantee covers $\Phi$ only. A batch-coupled layer upstream, such as batch normalization in training mode, would couple the rows of $\mathbf z$. Excluding such layers, or using them only in inference mode, is an architecture decision (P3-17).
+
+**Proposition 3.5 (dimension preservation: equivariance under a change of units).** Change the length and time units so that the numerical values of lengths are multiplied by $\chi_L>0$ and those of times by $\chi_T>0$. Since $[n]=\mathrm{T\,L^{-1/3}}$ and $[Q]=\mathrm{L^3T^{-1}}$, the inputs shift by
+
+$$
+w\mapsto w+\ln\chi_L,\qquad \nu\mapsto\nu-\tfrac13\ln\chi_L+\ln\chi_T,\qquad q\mapsto q+3\ln\chi_L-\ln\chi_T,\qquad s\mapsto s,\qquad r\mapsto r .
+$$
+
+Then
+
+$$
+\ell^*\mapsto\ell^*+\ln\chi_L,\qquad \ln d_{\max}\mapsto\ln d_{\max}+\ln\chi_L,\qquad \ln A\mapsto\ln A+2\ln\chi_L,\qquad \ln V\mapsto\ln V+\ln\chi_L-\ln\chi_T,
+$$
+
+while $a,\beta,F,\kappa,\eta,k,t$ and $D$ are invariant. Each output therefore transforms exactly as the log of a quantity with its SI dimension ($\mathrm L$, $\mathrm L$, $\mathrm L^2$, $\mathrm{L\,T^{-1}}$), so $\Phi$ maps $\mathcal U$-scaled inputs to $\mathcal U$-scaled outputs. Proposition 1.3 is the special case $\chi_L=1/\lambda_L$, $\chi_T=1$.
+
+*Proof, route 1 (invariance of the residual).* Substitute the shifts and $\ell\mapsto\ell+\ln\chi_L$ into (3.1). Since $a=e^{\ell-w}$ is unchanged, so is $k$. The other terms change by
+
+$$
+\bigl(\tfrac53+1+\tfrac13-3\bigr)\ln\chi_L+\bigl(-1+1\bigr)\ln\chi_T=0 .
+$$
+
+The shifted $\ell^*$ is therefore a root of the shifted residual, and by uniqueness (Proposition 3.1) it is *the* root. The other outputs follow from their definitions in §3.1.
+
+*Route 2 (dimensional analysis of (3.2)).* By Proposition 1.1, the bracket in (3.2) has dimension $\mathrm m^{5/3}$ and $\kappa$ is dimensionless, so $\bar d$ is a length. $A=W\bar d$ and $V=Q_E/A$ follow. ∎
+
+*Bounds.* $\nu_{\min}$ and $\nu_{\max}$ shift with $\nu$, while $\Delta_n$ is invariant. The transform of §7.6 is therefore unit-consistent provided the bounds are expressed in the same unit system as $\nu$ (SI throughout; D8).
+
+**Proposition 3.6 (well defined and $C^1$ at every boundary of $\mathcal D$).** Let $\mathcal D_{nat}=\{W>0,\ r>0,\ \nu\in\mathbb R,\ Q_E>0,\ S>0\}$. This is an open set containing the closure of $\mathcal D$ in $(r,\nu,S)$. $\Phi$ is well defined and $C^1$ on $\mathcal D_{nat}$, with the partial derivatives of Proposition 3.3 and the uniform bounds
+
+$$
+\Bigl\lvert\frac{\partial\ell^*}{\partial q}\Bigr\rvert=\Bigl\lvert\frac{\partial\ell^*}{\partial\nu}\Bigr\rvert<1,\qquad
+\Bigl\lvert\frac{\partial\ell^*}{\partial s}\Bigr\rvert<\tfrac12,\qquad
+\Bigl\lvert\frac{\partial\ell^*}{\partial w}\Bigr\rvert<\tfrac53,\qquad
+\Bigl\lvert\frac{\partial\ell^*}{\partial r}\Bigr\rvert\le\frac{2(2r+1)}{3r(r+1)} .
+$$
+
+At each boundary named in PHASE_02:
+
+| Boundary | Status of $\Phi$ | Gradient |
+|---|---|---|
+| $S=S_{floor}$ | Interior point of $\mathcal D_{nat}$; $\rho$ is affine in $s$. The floor restricts the *data* domain; it is not a singularity of $\Phi$ | $\partial\ell^*/\partial s=-1/(2D)\in(-\tfrac12,-\tfrac3{10}]$. $s$ is data, so no parameter gradient passes through it. Depth finite by D9 |
+| $\nu\in\{\nu_{\min},\nu_{\max}\}$ | Interior point of $\mathcal D_{nat}$ ($\rho$ is affine in $\nu$, and every $\nu\in\mathbb R$ is admissible). Not attained in exact arithmetic (invariant 7). If $\sigma(z_n)$ rounds to 0 or 1, $\Phi$ is still defined | $\partial\ell^*/\partial\nu=1/D\in[\tfrac35,1)$ is finite. The transform factor $d\nu/dz_n\to0$, so the chain-rule gradient **vanishes**; it is never undefined (§7.6). Under a hard clip, $\Phi\circ\operatorname{clip}$ has one-sided derivatives $0$ and $1/D$ at the bound and is not differentiable there, which is a further reason for the logistic |
+| $r\in\{r_{\min},r_{\max}\}$ | Interior point of $\mathcal D_{nat}$, because $r_{\min}>0$ and $r_{\max}<\infty$. $F(\beta,\cdot)$ is $C^1$ on $(0,\infty)$ for every fixed $\beta>0$ | Bounded as above. Neither the quadrature seam at $r=1$ nor the change of asymptotic rate at $r=\tfrac12$ (Proposition 2.6) is a point of non-smoothness of $F$ at fixed $a>0$ |
+| $\kappa\to1$ ($a\to0$) | Not attained ($a=e^{\ell-w}>0$). $\Phi$ and its partials have finite limits: $\eta\to0$, $D\to\tfrac53$, $k\to0$, $k_r\to0$. The limit is the A1 map of §3.2 | Limits $\tfrac35$, $-\tfrac3{10}$, $-\tfrac35$ and $0$ (Proposition 3.3 at $\eta=0$) |
+| $\kappa\to W/(W+2d_{\max})$ | Not attained: Proposition 2.3 is strict, and the bound is approached only as $r\to\infty$ (Proposition 2.4c), which $r_{\max}<\infty$ excludes | – |
+| $\kappa\to0$ ($a\to\infty$; deep, narrow) | Not a bound of $\mathcal D$, listed for completeness. $\eta\to1$, $D\to1$ | Bounded; the implicit function theorem still applies because $D>1$ (§8.4) |
+
+*Proof.*
+- **Well defined.** Proposition 3.1 uses only $\eta<1$, which holds for every point of $\mathcal D_{nat}$.
+- **$C^1$.** $k(a,r)=-\ln F\bigl(2(r+1)a,r\bigr)$. $F$ is $C^1$ in $(\beta,r)$ on $(0,\infty)^2$: $F_\beta$ and $F_r$ are continuous by dominated convergence, with the dominating function of Proposition 2.8 on compact $r$-sets bounded away from 0. So $\rho$ is $C^1$ on $\mathbb R\times\mathcal D_{nat}$. Since $\partial\rho/\partial\ell=D>1$, the implicit function theorem gives $\ell^*\in C^1(\mathcal D_{nat})$ with the partials of Proposition 3.3. The other outputs are affine in $(\ell^*,w,q)$ plus $t(r)=\ln(1+1/r)$, which is $C^\infty$ on $r>0$.
+- **Bounds.** $1/D<1$, $\eta<1$ and the second bound of Proposition 2.8.
+- **Boundaries.** Each boundary is either an interior point of $\mathcal D_{nat}$ ($S_{floor}$, the $\nu$ bounds, the $r$ bounds), where differentiability is two-sided, or is not attained (the $\kappa$ limits).
+- **Limit $a\to0$.** $F\to1$ and $0\le F_\beta\le1/r$, so $\eta=\beta F_\beta/F\le\beta/r\to0$; $\lvert k_r\rvert\le2a(2r+1)/r^2\to0$ (Proposition 2.8). ∎
+
+*Numerical note (specification for Phase 5; not code).* As $a\to0$, $F-1=O(\beta^2)$, and computing $\ln F$ from $F$ loses relative accuracy through cancellation. Integrate $F-1$ directly, using the integrand $s/(\sqrt{1+s}+1)$ with $s=\beta^2u^{2r-2}$, and form $\ln F=\operatorname{log1p}(F-1)$. Do the same for $\eta$ (P3-12).
 
 ---
 
@@ -551,6 +683,8 @@ This is the analogue of the unidentifiable geometry parameter reported by [@Bind
 4. **Learner differences.** XGB vs NN. This **confounds** the contrast unless M6 is also run with the M5 architecture (register P3-10).
 5. **The Jensen gap of (b).**
 
+*Reporting consequence (S2; P3-15).* Channels 1–4 operate at every aspect ratio. Channel 5 is $O(a^2)$ for $r>\tfrac12$ and vanishes in the wide limit, and the $\kappa$-dependent part of channel 2 enters only through $\eta=O(a^2)$. The M5 vs M6 contrast is therefore reported stratified by $a$ (equivalently, by $\kappa$) and by ID/OOD, as a **secondary** contrast under the multiplicity rule fixed in P3-15. This is a reporting rule, not a new hypothesis. H1–H4 are unchanged.
+
 **Proposition 6.5 (expressivity: the hard constraint as a band).** Assume the $n$-head can represent any measurable function of $\mathcal X$, including $(q,s)$; call this information routing $\mathcal I_{full}$. Then, for given $\hat w(\cdot)$ and $\hat r(\cdot)$, the set of depth functions M5 can represent is exactly
 
 $$
@@ -589,7 +723,7 @@ The candidates are $\ln d_{\max}$, $r_{obs}$ and $t=\ln(d_{\max}/\bar d)$.
 
 ### 7.2 A-redundancy
 
-**Proposition 7.1.** Suppose the observed closure is exact ($A_{obs}=W_{obs}\bar d_{obs}$). Adding $w_A(\ln\hat A-\ln A_{obs})^2=w_A(e_W+e_{\bar d})^2$ changes the quadratic form on $(e_W,e_{\bar d})$ to $\begin{psmallmatrix}w_W+w_A&w_A\\w_A&w_{\bar d}+w_A\end{psmallmatrix}\succ0$. Then:
+**Proposition 7.1.** Suppose the observed closure is exact ($A_{obs}=W_{obs}\bar d_{obs}$). Adding $w_A(\ln\hat A-\ln A_{obs})^2=w_A(e_W+e_{\bar d})^2$ changes the quadratic form on $(e_W,e_{\bar d})$ to $\bigl(\begin{smallmatrix}w_W+w_A&w_A\\w_A&w_{\bar d}+w_A\end{smallmatrix}\bigr)\succ0$. Then:
 - (a) **the population minimizer is unchanged.** For any positive-definite $\mathbf Q$, $\mathbb E[\mathbf e^\top\mathbf Q\mathbf e\mid\mathcal X]$ is minimized at the conditional mean, given the bijective parameterization of Proposition 6.4.
 - (b) **In finite samples**, the extra term up-weights same-sign $(W,\bar d)$ errors, which are exactly the errors that $A$ measures.
 - (c) **Under the likelihood (§9)**, an $A$ term would double count. A Gaussian on $(\ln W,\ln\bar d,\ln A)$ is degenerate, with a singular covariance.
@@ -703,7 +837,70 @@ There are two alternatives:
 
 Phase 3 chooses the M4 variant (P3-09).
 
-*Conditioning.* The Gauss–Newton part of the Hessian of $\lambda_M\mathcal P$ is $\lambda_M\sum\omega\nabla R_M\nabla R_M^\top$. The condition number grows in proportion to $\lambda_M$, which is the standard ill-conditioning of penalty methods. The schedule $\lambda_M(e)$ will be analyzed in the next iteration (middle prompt, item 1). **M5 needs no $\lambda_M$.**
+*Conditioning.* The Gauss–Newton part of the Hessian of $\lambda_M\mathcal P$ is $\lambda_M\sum\omega\nabla R_M\nabla R_M^\top$. The condition number grows in proportion to $\lambda_M$, which is the standard ill-conditioning of penalty methods. The schedule is analyzed in §7.7.1. **M5 needs no $\lambda_M$.**
+
+#### 7.7.1 Penalty schedule (M4 only)
+
+The exponential schedule is
+
+$$
+\lambda_M(\mathsf e)=\lambda_0\gamma^{\mathsf e},\qquad \mathsf e=0,1,2,\dots\ \text{(epochs)},\qquad \lambda_0>0,\ \gamma>1 .
+$$
+
+The epoch index is written $\mathsf e$ to distinguish it from the residuals $e_{ik}$. During epoch $\mathsf e$ the objective is $\mathcal L_{\mathsf e}=\mathcal L_{data}+\lambda_M(\mathsf e)\,\mathcal P$. Any fixed $\lambda_A$, $\lambda_{wd}$ or prior terms are absorbed into $\mathcal L_{data}$. Under (A7.1), define the **data-loss gap** $\Delta_{\mathcal L}=\mathcal L_{data}(\theta_{\mathcal F})-\inf\mathcal L_{data}\ge0$. $\lambda_0$, $\gamma$ and $\lambda_{\max}$ stay symbolic (P3-09). Since $\sum_i\omega_i=1$, $\mathcal P$ is a weighted mean square.
+
+*Feasibility.* Under realizability, $\mathcal F\neq\varnothing$ for every M4 variant. Base M4 can take $\hat\ell=\ell^*(\hat w,\hat r,\hat\nu;q,s)$, and M4-S can take $\hat\ell=\ell^*(\hat w,\hat r,\nu_S;q,s)$, provided the $\ell$ head sees $(q,s)$. In that case $\min_{\mathcal F}\mathcal L_{data}$ for base M4 is exactly the M5 problem (Proposition 7.4). $\mathcal F=\varnothing$ only if the heads lack the capacity or inputs to do this.
+
+**Proposition 7.7 (asymptotic satisfaction: sufficient conditions).** Assume:
+- **(C1)** (A7.1): $\mathcal F\neq\varnothing$ and the minimizers exist;
+- **(C2)** at the end of epoch $\mathsf e$, $\theta_{\mathsf e}$ is an $\varepsilon_{\mathsf e}$-global minimizer of $\mathcal L_{\mathsf e}$, i.e. $\mathcal L_{\mathsf e}(\theta_{\mathsf e})\le\inf\mathcal L_{\mathsf e}+\varepsilon_{\mathsf e}$, with $\varepsilon_{\mathsf e}/\lambda_M(\mathsf e)\to0$.
+
+Then:
+- (i) $\mathcal P(\theta_{\mathsf e})\le(\Delta_{\mathcal L}+\varepsilon_{\mathsf e})/(\lambda_0\gamma^{\mathsf e})\to0$. The decay is geometric, at rate $\gamma^{-1}$ per epoch, when $\varepsilon_{\mathsf e}$ is bounded.
+- (ii) If also $\varepsilon_{\mathsf e}\to0$, every limit point of $(\theta_{\mathsf e})$ minimizes $\mathcal L_{data}$ over $\mathcal F$.
+- (iii) If $\mathcal F=\varnothing$ but $\theta_{\mathcal P}\in\arg\min\mathcal P$ exists, then $\mathcal P(\theta_{\mathsf e})-\mathcal P_{\min}\le\bigl(\mathcal L_{data}(\theta_{\mathcal P})-\inf\mathcal L_{data}+\varepsilon_{\mathsf e}\bigr)/\lambda_M(\mathsf e)$ with $\mathcal P_{\min}>0$. The schedule then drives M4 to the least-violating parameters, not to satisfaction of Manning.
+
+*Proof.* (i) $\mathcal L_{data}(\theta_{\mathsf e})+\lambda_{\mathsf e}\mathcal P(\theta_{\mathsf e})\le\inf\mathcal L_{\mathsf e}+\varepsilon_{\mathsf e}\le\mathcal L_{data}(\theta_{\mathcal F})+\varepsilon_{\mathsf e}$, because $\mathcal P(\theta_{\mathcal F})=0$. Subtract $\inf\mathcal L_{data}\le\mathcal L_{data}(\theta_{\mathsf e})$. (ii) As in Proposition 7.3(iii), using $\varepsilon_{\mathsf e}\to0$. (iii) The same inequality, with $\theta_{\mathcal P}$ in place of $\theta_{\mathcal F}$ and $\mathcal P(\theta_{\mathcal P})=\mathcal P_{\min}$. *Second route for (i):* Proposition 7.3(i) at $\lambda=\lambda_0\gamma^{\mathsf e}$ for exact minimizers, plus the additive slack $\varepsilon_{\mathsf e}/\lambda_{\mathsf e}$. ∎
+
+*Remarks.*
+- Satisfaction is on the **training sample only**. $\mathcal P$ is a training-set average, so at a test reach the Manning residual of M4 is controlled only by how well the heads generalize. M5 satisfies Manning at every point of $\mathcal D$, whether or not it was seen in training (Theorem 4.1).
+- (C2) is an assumption about the optimizer, not a property of the schedule. It is what fails in practice (Proposition 7.8).
+
+**Proposition 7.8 (failure mode of the uncapped schedule).** **(A7.2)** On the sublevel set visited by training: $\nabla\mathcal L_{data}$ and $\nabla\mathcal P$ are Lipschitz with constants $\Lambda_D,\Lambda_P>0$; $\lVert\nabla\mathcal L_{data}\rVert\le\Gamma_D$; and at feasible points the Gauss–Newton matrix $\mathbf H_P=2\sum_i\omega_i\nabla R_{M,i}\nabla R_{M,i}^\top$ has largest eigenvalue $\ge h_P>0$. Consider gradient descent with $N_b$ steps per epoch.
+- (a) **Conditioning.** $\nabla\mathcal L_{\mathsf e}$ is $(\Lambda_D+\lambda_0\gamma^{\mathsf e}\Lambda_P)$-Lipschitz. At a feasible point, the largest Hessian eigenvalue is $\ge\lambda_0\gamma^{\mathsf e}h_P-\Lambda_D$, while along directions tangent to $\mathcal F$ the curvature is that of $\mathcal L_{data}$, $\le\Lambda_D$. The ratio of the largest curvature to the largest tangential curvature is therefore at least $(\lambda_0\gamma^{\mathsf e}h_P-\Lambda_D)/\Lambda_D$, which grows like $\gamma^{\mathsf e}$.
+- (b) **Fixed step $\varsigma$: instability.** For $\mathsf e>\mathsf e_{div}=\log_\gamma\bigl((2/\varsigma+\Lambda_D)/(\lambda_0h_P)\bigr)$, the local quadratic model at a feasible point has a direction with curvature $>2/\varsigma$. Gradient descent then oscillates and diverges along that direction, so the penalty gradient **dominates** the update and destabilizes it.
+- (c) **Stable steps: freezing.** If instead $\varsigma_{\mathsf e}\le1/(\Lambda_D+\lambda_0\gamma^{\mathsf e}\Lambda_P)$ (the descent-lemma step, which guarantees monotone decrease within the epoch), let $\mathbf P_T(\theta)$ be the orthogonal projector onto the null space of the Jacobian of the stacked residuals $(R_{M,i})_i$ at $\theta$. Then the cumulative tangential path length from epoch $\mathsf e_0$ onward satisfies
+
+$$
+\sum_{\text{steps}}\lVert\mathbf P_T\,\Delta\theta\rVert\ \le\ N_b\,\Gamma_D\sum_{\mathsf e\ge\mathsf e_0}\varsigma_{\mathsf e}\ \le\ \frac{N_b\,\Gamma_D}{\lambda_0\Lambda_P}\cdot\frac{\gamma^{\,1-\mathsf e_0}}{\gamma-1}\ <\ \infty .
+$$
+
+  Tangential directions are the only ones in which $\mathcal L_{data}$ can still decrease without violating Manning. Their budget is finite and shrinks geometrically with the epoch at which the penalty takes over. If reaching $\theta_{\mathcal F}$ needs more tangential path length than this, training **freezes** at a nearly feasible but data-suboptimal point. (C2) then fails, and with it Proposition 7.7(ii).
+
+*Proof.*
+- (a) The Lipschitz constant of a sum is at most the sum of the constants. At a feasible point $R_M=0$, so $\nabla^2\mathcal P=\mathbf H_P$ exactly (the residual-curvature term vanishes), and Weyl's inequality (standard result) gives $\lambda_{\max}(\nabla^2\mathcal L_{\mathsf e})\ge\lambda_{\mathsf e}h_P-\Lambda_D$. $\mathbf H_P$ vanishes on the null space of the residual Jacobian.
+- (b) On $f(\theta)=\tfrac12\theta^\top\mathbf H\theta$, gradient descent multiplies the component along an eigenvector with eigenvalue $\mu$ by $1-\varsigma\mu$ per step, and $\lvert1-\varsigma\mu\rvert>1$ iff $\mu>2/\varsigma$ (standard result). Solve $\lambda_0\gamma^{\mathsf e}h_P-\Lambda_D>2/\varsigma$ for $\mathsf e$.
+- (c) Each step is $\Delta\theta=-\varsigma_{\mathsf e}\nabla\mathcal L_{data}-\varsigma_{\mathsf e}\lambda_{\mathsf e}\nabla\mathcal P$. Since $\nabla\mathcal P=2\sum_i\omega_iR_{M,i}\nabla R_{M,i}$ lies in the row space of the residual Jacobian, $\mathbf P_T\nabla\mathcal P=0$ exactly at the current point. Hence $\lVert\mathbf P_T\Delta\theta\rVert\le\varsigma_{\mathsf e}\Gamma_D$. Sum over steps, using $\varsigma_{\mathsf e}\le1/(\lambda_0\gamma^{\mathsf e}\Lambda_P)$ and $\sum_{\mathsf e\ge\mathsf e_0}\gamma^{-\mathsf e}=\gamma^{1-\mathsf e_0}/(\gamma-1)$. ∎
+
+The tangent space changes along the path, so (c) bounds a path length, not a distance.
+
+**(A7.3)** Adaptive optimizers such as Adam normalize each coordinate, which removes the step-size divergence of (b) but not the dominance. Where both gradients are present and $\lambda_{\mathsf e}\lVert\nabla\mathcal P\rVert\gg\lVert\nabla\mathcal L_{data}\rVert$, the normalized update follows the penalty. This is **not proven here**. Phase 4 logs $\Xi_{\mathsf e}=\lambda_M(\mathsf e)\lVert\nabla\mathcal P\rVert/\lVert\nabla\mathcal L_{data}\rVert$ per epoch as a diagnostic (P3-09).
+
+**Proposition 7.9 (capped schedule: what it gains and what it gives up).** Let $\lambda_M(\mathsf e)=\min(\lambda_0\gamma^{\mathsf e},\lambda_{\max})$ with $\lambda_{\max}\ge\lambda_0$. For $\mathsf e\ge\mathsf e_{cap}=\lceil\log_\gamma(\lambda_{\max}/\lambda_0)\rceil$ the objective is fixed at $\mathcal L_{cap}=\mathcal L_{data}+\lambda_{\max}\mathcal P$. Under (A7.2):
+- (a) **Gains.** $\nabla\mathcal L_{cap}$ is $(\Lambda_D+\lambda_{\max}\Lambda_P)$-Lipschitz, so one constant step $\varsigma\le1/(\Lambda_D+\lambda_{\max}\Lambda_P)$ is admissible in every epoch, and the curvature ratio of 7.8(a) stays bounded. Since $\sum\varsigma=\infty$, the tangential budget of 7.8(c) is unlimited, and gradient descent satisfies $\min_{k<T}\lVert\nabla\mathcal L_{cap}(\theta_k)\rVert^2\le2\bigl(\mathcal L_{cap}(\theta_0)-\inf\mathcal L_{cap}\bigr)/(\varsigma T)$ (standard nonconvex result).
+- (b) **What the cap gives up.** M4 now solves a fixed penalty problem, not the constrained one. Even at a global minimizer (A7.1):
+  - $\mathcal P\le\Delta_{\mathcal L}/\lambda_{\max}$ (Proposition 7.3(i)), so the weighted RMS Manning residual on the training set is $\le(\Delta_{\mathcal L}/\lambda_{\max})^{1/2}$ in $\ln Q$;
+  - M4's depth head then deviates from the Manning-consistent depth of its own $(\hat w,\hat r,\hat\nu)$ by $\lvert\hat\ell-\ell^*\rvert=\lvert R_M\rvert/\bar D\le\lvert R_M\rvert$, with $\bar D\in(1,\tfrac53]$;
+  - $\mathcal L_{data}(\theta_{\lambda_{\max}})\le\mathcal L_{data}(\theta_{\mathcal F})$: capped M4 trades Manning consistency for data fit, by an amount set by $\lambda_{\max}$.
+
+  Gradient descent guarantees stationarity, not global optimality, so the bounds in (b) assume (A7.1)-type optimization.
+- (c) **How to read it.** $\lambda_{\max}$ fixes M4's operating point between M2-like behavior (small $\lambda$) and the constrained problem ($\lambda\to\infty$). Its value is set in Phase 3 (P3-09).
+
+*Proof.* (a) As in 7.8(a) with $\lambda$ fixed, plus the descent lemma (standard result). (b) Proposition 7.3(i) at $\lambda=\lambda_{\max}$, and $\sum\omega_i=1$ for the RMS. The depth statement follows from the mean value theorem: $R_M(\hat\ell)=\rho(\hat\ell)-\rho(\ell^*)=\bar D(\hat\ell-\ell^*)$. ∎
+
+**M5 needs no schedule.** $\mathcal L_{phys}\equiv0$ (§7.4, Theorem 4.1): Manning holds exactly on every row in $\mathcal D$, at training and test reaches alike. There is no $\lambda_M$, no schedule and no consistency–fit trade-off. M5 pays instead through the band restriction (Proposition 6.5).
+
+*M4-S.* The analysis applies verbatim with $\nu=\nu_S$ fixed. Then $\mathcal P$ binds at every training site, unlike base M4 under $\mathcal I_{full}$ (Proposition 7.4).
 
 ### 7.8 M6 (two-stage, back-calculated $n$)
 
@@ -732,8 +929,10 @@ which is zero only if condition extraction makes $\mathbb E[\ln(Q_{obs}/Q_E)\mid
 ### 7.9 M3 (physics-only, empirical $n$)
 
 $$
-n_{emp}=\begin{cases}n_S(D_{50})=c_SD_{50}^{1/6}, & S<S_J,\\[1mm] n_J=c_J\,S^{a_J}R^{b_J}, & S\ge S_J\ \ \text{[@Jarrett_1984_HighGradientStreams]}.\end{cases}
+n_{emp}=\begin{cases}n_S(D_{50})=c_SD_{50}^{1/6}, & S<S_J,\\[1mm] n_J=c_J\,S^{a_J}R^{b_J}, & S\ge S_J .\end{cases}
 $$
+
+The steep-reach branch follows [@Jarrett_1984_HighGradientStreams].
 
 Jarrett's coefficients are in source (US) units. They must be mapped through $\mathcal U$, with $R_{ft}=R_m/\lambda_L$, and are confirmed from the full text in Phase 3. The models trained in M3 are the $W$ regressor, $\mathcal L^{M3}=\sum\omega e_W^2$, and optionally a $t$ regressor; otherwise $r=\bar r$ is fixed (P3-08). **No $n$ is learned.**
 
@@ -833,11 +1032,11 @@ $$
 *Proof.* Direct differentiation. $d\sigma/dz_\sigma=\operatorname{sigmoid}(z_\sigma)\in(0,1)$, and $\sigma\ge\sigma_{\min}$. ∎
 
 **Mean–variance interplay.** The factor $1/\sigma^2$ in the mean gradient down-weights points with inflated $\sigma$. A model can therefore "explain away" hard points, such as slope-floored reaches, through the variance, and early shrinkage of $\sigma$ on easy points amplifies their mean gradients [@Seitzer_2022_BetaNLL]. Mitigations, with the choice and values deferred to Phase 3:
-1. **$\beta$-NLL:** multiply each point's loss by $\operatorname{sg}(\sigma^{2\beta})$, $\beta\in[0,1]$. The mean gradient becomes $-e\,\sigma^{2\beta-2}$, bounded by $\lvert e\rvert\sigma_{\min}^{2\beta-2}$ [@Seitzer_2022_BetaNLL]. This is no longer a proper likelihood, so calibration is checked empirically (§9.4).
+1. **$\beta$-NLL:** multiply each point's loss by $\operatorname{sg}(\sigma^{2\beta_N})$, $\beta_N\in[0,1]$ (written $\beta$ in the source; renamed here to avoid the geometric $\beta$). The mean gradient becomes $-e\,\sigma^{2\beta_N-2}$, bounded by $\lvert e\rvert\sigma_{\min}^{2\beta_N-2}$ [@Seitzer_2022_BetaNLL]. This is no longer a proper likelihood, so calibration is checked empirically (§9.4).
 2. **The $\sigma$ floor.**
 3. **A warm start:** fit the means with $\mathcal L_{data}$ first, then the variance heads.
 
-*Bivariate option.* $\det\boldsymbol\Sigma=\sigma_W^2\sigma_{\bar d}^2(1-\rho^2)\ge\sigma_{\min}^4(1-\bar\rho^2)>0$ for $\rho=\bar\rho\tanh z_\rho$ with $\bar\rho<1$. The bounds above carry over with a factor of $(1-\bar\rho^2)^{-1}$.
+*Bivariate option.* $\det\boldsymbol\Sigma=\sigma_W^2\sigma_{\bar d}^2(1-\varrho^2)\ge\sigma_{\min}^4(1-\bar\varrho^2)>0$ for $\varrho=\bar\varrho\tanh z_\varrho$ with $\bar\varrho<1$. The bounds above carry over with a factor of $(1-\bar\varrho^2)^{-1}$. (The correlation is written $\varrho$ to keep it distinct from the Manning residual $\rho$.)
 
 ---
 
@@ -848,7 +1047,7 @@ $$
 Each member $m$ has:
 - **Means** from $\Phi$, so they are physics-exact: $\mu_{m}=(\hat w,\hat\ell,\hat t)$.
 - **Scales** $\sigma_{k,m}=\sigma_{\min}+\operatorname{softplus}(z_{\sigma,k})$ for $k\in\{W,\bar d,t\}$.
-- **Optionally**, a correlation $\rho_m$ for $(\ln W,\ln\bar d)$.
+- **Optionally**, a correlation $\varrho_m$ for $(\ln W,\ln\bar d)$.
 
 The likelihood is $\ln y_k\mid\mathcal X\sim\mathcal N(\mu_{k,m},\sigma_{k,m}^2)$ [@Nix_1994_MeanVarianceNN], with
 
@@ -864,7 +1063,7 @@ $$
 The price: individual samples from the predictive distribution are not Manning-consistent. That is appropriate, because the interval describes the *observation*, and the observation includes specification error.
 
 **Derived targets.**
-- $\ln A$: $\mu_A=\mu_W+\mu_{\bar d}$ (exact) and $\sigma_A^2=\sigma_W^2+\sigma_{\bar d}^2+2\rho\sigma_W\sigma_{\bar d}$. Without the correlation head $\rho\equiv0$, and the coverage of $A$ tests that assumption.
+- $\ln A$: $\mu_A=\mu_W+\mu_{\bar d}$ (exact) and $\sigma_A^2=\sigma_W^2+\sigma_{\bar d}^2+2\varrho\sigma_W\sigma_{\bar d}$. Without the correlation head $\varrho\equiv0$, and the coverage of $A$ tests that assumption.
 - $\ln d_{\max}$: $\mu_{\bar d}+\mu_t$.
 - $\ln V$: $\mu_V=q_E-\mu_A$ and $\sigma_V=\sigma_A$. $Q_E$ is a fixed input, so the interval excludes the $Q_{obs}$ mismatch.
 
@@ -882,14 +1081,14 @@ This decomposition is exact for the mixture by the law of total variance (standa
 
 ### 9.3 Intervals and point prediction
 
-**Exact mixture quantiles (primary).** $Q_p$ solves $G(x)\equiv\tfrac1M\sum_m\Phi_{\mathcal N}\bigl((x-\mu_m)/\sigma_m\bigr)=p$. $G$ is continuous and strictly increasing, so the root is unique, and it lies in the bracket $[\min_m(\mu_m+z_p\sigma_m),\ \max_m(\mu_m+z_p\sigma_m)]$. The interval is $[Q_{\alpha/2},Q_{1-\alpha/2}]$ in log space, giving multiplicative bounds $[e^{Q_{\alpha/2}},e^{Q_{1-\alpha/2}}]$.
+**Exact mixture quantiles (primary).** $Q_p$ solves $\Psi(x)\equiv\tfrac1M\sum_m\Phi_{\mathcal N}\bigl((x-\mu_m)/\sigma_m\bigr)=p$. $\Psi$ is continuous and strictly increasing, so the root is unique, and it lies in the bracket $[\min_m(\mu_m+z_p\sigma_m),\ \max_m(\mu_m+z_p\sigma_m)]$. The interval is $[Q_{\alpha/2},Q_{1-\alpha/2}]$ in log space, giving multiplicative bounds $[e^{Q_{\alpha/2}},e^{Q_{1-\alpha/2}}]$.
 
 **Gaussian approximation (secondary).** $\mu^*\pm z_{1-\alpha/2}\sigma^*$.
 
 **Proposition 9.1 (error of the moment-matched Gaussian).** Assume equal scales $\sigma_m=\bar\sigma$, and let $d_m=(\mu_m-\mu^*)/\bar\sigma$, $\tilde v=\tfrac1M\sum d_m^2$ and $\tilde m_3=\tfrac1M\sum d_m^3$. Then
 
 $$
-G(x)-\Phi_{\mathcal N}\Bigl(\frac{x-\mu^*}{\sigma^*}\Bigr)=-\tfrac16(z^2-1)\varphi(z)\,\tilde m_3+O(\tilde v^2+\textstyle\frac1M\sum d_m^4),\qquad z=\frac{x-\mu^*}{\bar\sigma}.
+\Psi(x)-\Phi_{\mathcal N}\Bigl(\frac{x-\mu^*}{\sigma^*}\Bigr)=-\tfrac16(z^2-1)\varphi(z)\,\tilde m_3+O(\tilde v^2+\textstyle\frac1M\sum d_m^4),\qquad z=\frac{x-\mu^*}{\bar\sigma}.
 $$
 
 The approximation therefore agrees with the mixture to **second order** in the spread of the member means.
@@ -919,8 +1118,8 @@ The evaluation set $\mathcal T$ has site-normalized weights $\tilde\omega_i$ tha
 - **Coverage:** $\hat C_\alpha(\mathcal T)=\sum_i\tilde\omega_i\,\mathbb 1\{L_i\le\ln y_i\le U_i\}$.
 - **Mean log-width:** $\bar{\mathcal W}_\alpha(\mathcal T)=\sum_i\tilde\omega_i(U_i-L_i)$, a multiplicative factor of $e^{\bar{\mathcal W}_\alpha}$.
 - **Strata:** fold $f$, region $g$, and drainage-area quintile $\mathcal Q_s$, $s=1,\dots,5$. Phase 3 fixes the source of the cutpoints.
-- **PIT:** $u_i=G_i(\ln y_i)$, which is uniform under calibration.
-- **CRPS in log space, closed form for the Gaussian mixture** [@Gneiting_2007_ScoringRules]. Using $\mathrm{CRPS}(G,x)=\mathbb E\lvert X-x\rvert-\tfrac12\mathbb E\lvert X-X'\rvert$ and the folded-normal mean $\mathcal A(\mu,s^2)=\mathbb E\lvert Y\rvert=2s\,\varphi(\mu/s)+\mu\bigl(2\Phi_{\mathcal N}(\mu/s)-1\bigr)$ for $Y\sim\mathcal N(\mu,s^2)$:
+- **PIT:** $u_i=\Psi_i(\ln y_i)$, which is uniform under calibration.
+- **CRPS in log space, closed form for the Gaussian mixture** [@Gneiting_2007_ScoringRules]. Using $\mathrm{CRPS}(\Psi,x)=\mathbb E\lvert X-x\rvert-\tfrac12\mathbb E\lvert X-X'\rvert$ and the folded-normal mean $\mathcal A(\mu,s^2)=\mathbb E\lvert Y\rvert=2s\,\varphi(\mu/s)+\mu\bigl(2\Phi_{\mathcal N}(\mu/s)-1\bigr)$ for $Y\sim\mathcal N(\mu,s^2)$:
 
 $$
 \mathrm{CRPS}(p^*,x)=\frac1M\sum_m\mathcal A(x-\mu_m,\sigma_m^2)-\frac1{2M^2}\sum_{m,m'}\mathcal A(\mu_m-\mu_{m'},\sigma_m^2+\sigma_{m'}^2).
@@ -988,6 +1187,14 @@ Methods:
 | Theorem 8.2 / Corollary 8.3 | composition of the bounds; NUM E8 | ✔ |
 | Proposition 8.5 NLL | direct differentiation | ✔ |
 | Propositions 9.1–9.2; CRPS | Taylor (D2: CDF expansion vs the moment-matched Gaussian); law of total variance; CRPS checked at $M=1$ against the known single-Gaussian form | ✔ |
+| Proposition 3.4 row-wise action *(revised)* | D2 (definition; implicit function theorem on the stacked system gives a block-diagonal Jacobian); solver caveat from Proposition 3.2(4) | ✔ |
+| Proposition 3.5 unit equivariance *(new)* | D2 (residual invariance: exponent sums $\tfrac53+1+\tfrac13-3=0$ and $-1+1=0$; dimensional analysis of (3.2) via Proposition 1.1), NUM E11 | ✔ |
+| Proposition 3.6 boundary differentiability *(new)* | case analysis by boundary; LC ($\eta\to0$ reproduces §3.2; $\eta\to1$ gives $D\to1$) | ✔ (relies on the domination argument of Proposition 2.8) |
+| Proposition 7.7 asymptotic satisfaction *(new)* | D2 (penalty inequality; Proposition 7.3(i) at $\lambda_0\gamma^{\mathsf e}$) | ✔ (under C1–C2) |
+| Proposition 7.8 failure mode *(new)* | Weyl's inequality and quadratic gradient descent (standard); projector argument for (c); NUM E12 | ✔ (under A7.2) |
+| Proposition 7.9 capped schedule *(new)* | descent lemma (standard); Proposition 7.3(i); mean value theorem for the depth statement; NUM E12 | ✔ (under A7.1–A7.2) |
+| Render check *(new)* | pandoc 3.11, `-f gfm` and `-f markdown`, MathML output. One `psmallmatrix` block (§7.2) failed and was replaced by `smallmatrix`. A citation inside math (§7.9) was moved out. Re-run after the revision: see the commit message | ✔ |
+| Symbol de-collisions *(new)* | $\beta\to\beta_N$ (β-NLL), $\rho\to\varrho$ (correlation), $G\to\Psi$ (mixture CDF); every symbol is listed in §1.1 or §1.1.2 | ✔ |
 
 ### 10.2 Hand-computed examples (labelled; about 5–6 significant figures; last digit rounded)
 
@@ -1019,6 +1226,15 @@ Methods:
 - **E8 (Jacobian, prov.).** With $\Delta_r=\ln20=2.9957$ and $r_{\min}=0.5$, $\lVert\mathbf J\rVert_F^2<1+2.7778+0.4947+0.9971+0.2493=5.5189$, so $\lVert\mathbf J\rVert_F<2.349$.
 - **E9 (shape noise).** At $r=10$: $r(r+1)=110$, and $\sigma_t=0.05$ gives $\sigma_{\ln r}\approx0.55$. At $r=1$: 0.10.
 - **E10 ($t$ range, prov.).** $[\ln1.1,\ln3]=[0.09531,1.09861]$.
+- **E11 (unit equivariance, Proposition 3.5).** The wide-channel depth of E1, evaluated in ft-based units ($\chi_L=1/0.3048$, $\chi_T=1$):
+  - $W=65.6168$ ft and $Q_E=353.1467$ ft³/s;
+  - $n_{ft}=0.035\times0.3048^{1/3}=0.035\times0.672984=0.0235544$ (consistent with $k_{US}=1/0.672984=1.48592$, E5);
+  - $Q_En/(W S^{1/2})=8.31817/2.07499=4.00878$, so $\bar d=4.00878^{3/5}=2.30042$ ft;
+  - $2.30042\times0.3048=0.701169$ m, which reproduces E1's $\bar d_{\kappa=1}=0.70117$ m. $\kappa$ is unchanged because $a$ is dimensionless.
+- **E12 (schedule; illustrative values only, not proposals).** With $\lambda_0=1$, $\gamma=1.1$ and $\lambda_{\max}=10^3$:
+  - $\mathsf e_{cap}=\lceil\ln10^3/\ln1.1\rceil=\lceil6.90776/0.0953102\rceil=\lceil72.476\rceil=73$;
+  - the geometric factor in Proposition 7.8(c) is $\gamma/(\gamma-1)=11$ for $\mathsf e_0=0$;
+  - at $\mathsf e=100$, the uncapped weight is $1.1^{100}=13{,}781$, i.e. $13.8\times\lambda_{\max}$.
 
 ### 10.3 Assumptions register
 
@@ -1028,6 +1244,9 @@ Methods:
 - **A5.2** Local Manning with $S_f$, $\kappa_t$ and $Q_{obs}$.
 - **A7.1** Existence of minimizers (penalty method).
 - **Realizability / $\mathcal I_{full}$** for Propositions 6.4, 6.5 and 7.4.
+- **A7.2** Lipschitz gradients, a bounded data gradient and a positive curvature floor $h_P$ on the visited sublevel set (Propositions 7.8–7.9).
+- **A7.3** Penalty dominance under adaptive optimizers (not proven; Phase 4 diagnostic $\Xi_{\mathsf e}$).
+- **C2** Approximate global inner minimization (Proposition 7.7). This is an optimizer assumption, and Proposition 7.8 shows how it fails.
 
 **Limits of P2-D1 (a).** There was no computer-algebra system. Both derivations of each result were produced by the same agent in the same session, so they are **not independent in the strong sense**. The independent checks are the Phase 7 Pytest suite (closed forms, finite-difference gradients, the commutation test of Proposition 1.3) and PI review.
 
@@ -1045,15 +1264,15 @@ Methods:
 | P3-06 | Loss weights | $w_W,w_{\bar d},w_t,w_A,\lambda_{wd}$ | §7.4 | proposed $w_A=0$ |
 | P3-07 | Strickler: coefficient and DOI-verified source; prior weights; clip margin | $c_S,\lambda_p,\lambda_\Delta,\varpi$ | §7.5 | – |
 | P3-08 | M3: Jarrett coefficients (from the full text, unit-mapped), steep threshold, $r$ treatment | $c_J,a_J,b_J,S_J,\bar r$ | §7.9 | check $b_J<5/3$ |
-| P3-09 | M4 variant (base / M4⁺ / M4-S), weights and schedule | $\lambda_M,\lambda_A,\lambda_0,\gamma,\lambda_{\max}$ | §7.7 | schedule analysis pending (middle prompt) |
+| P3-09 | M4 variant (base / M4⁺ / M4-S), weights, schedule (uncapped vs capped), optimizer | $\lambda_M,\lambda_A,\lambda_0,\gamma,\lambda_{\max}$ | §7.7, §7.7.1 | Schedule analysis done (Propositions 7.7–7.9); the capped schedule is recommended. **Decide the variant together with P3-11:** under $\mathcal I_{blind}$, base M4 gives the clean soft-vs-hard contrast. Under $\mathcal I_{full}$, base M4 is degenerate (Proposition 7.4); M4-S is informative but also changes the $n$ source (empirical vs learned). Log $\Xi_{\mathsf e}$ (A7.3) |
 | P3-10 | M6: label discharge (M6-E headline vs M6-obs), learner (XGB and/or NN), policy for labels outside the bounds | – | §7.8, Proposition 6.4 | learner confound |
 | P3-11 | Information routing for the $n$-head | $\mathcal I_{full}$ / $\mathcal I_{blind}$ | Propositions 6.5 and 7.4 | determines what "hard" means |
-| P3-12 | Solver and quadrature | $\tau_\ell,K_{\max}$, rule, $\tau_Q$ | §3.3, Proposition 2.5 | – |
-| P3-13 | UQ settings | $M,\sigma_{\min}$, correlation head, $\bar\rho$, $\beta$-NLL and $\beta$, warm start, $\alpha$, coverage targets | §8.5, §9 | $M=10$ proposed only |
+| P3-12 | Solver and quadrature | $\tau_\ell,K_{\max}$, rule, $\tau_Q$ | §3.3, §3.5, Proposition 2.5 | per-row stopping (Proposition 3.4c); $\operatorname{log1p}$ evaluation of $\ln F$ as $a\to0$ (Proposition 3.6 note) |
+| P3-13 | UQ settings | $M,\sigma_{\min}$, correlation head, $\bar\varrho$, $\beta$-NLL and $\beta_N$, warm start, $\alpha$, coverage targets | §8.5, §9 | $M=10$ proposed only |
 | P3-14 | Point predictor for raw-space metrics | – | §9.3 | median vs mean |
-| P3-15 | H1–H3: selection rule for $\mathrm M^*$, $B$, $\alpha_b$, stratification, $\mathcal S$, quintile cutpoints, ID/OOD sets, folds and seeds | – | §9.5 | – |
+| P3-15 | H1–H3: selection rule for $\mathrm M^*$, $B$, $\alpha_b$, stratification, $\mathcal S$, quintile cutpoints, ID/OOD sets, folds and seeds. **Secondary contrasts (S2):** M5 vs M6 and M4 vs M5 are designated secondary and reported stratified by $a$ (or $\kappa$) and by ID/OOD. Each needs either a multiplicity rule (for example, Holm across the secondary family) or an explicit "descriptive only" label | – | §6.4, §9.5 | ADL-040; P2-D5 confirmed by the PI, 2026-10-08 |
 | P3-16 | H4: $\mathcal N_{lit}$, $\vartheta$, expected signs, adoption of S1 | – | §9.5 | – |
-| P3-17 | Network architecture and optimizer | – | – | – |
+| P3-17 | Network architecture and optimizer | – | §3.5 | no batch-coupled layers in training mode upstream of $\Phi$, or document them (scope of Proposition 3.4) |
 | P3-18 | Conformal calibration | – | §9.4 | not adopted (P2-D4 (a)) |
 | P3-19 | Carry-overs: McKay et al. 2012 author list; NHDPlusV2.1 and Zarrabi code licences | – | – | ADL-028 |
 
