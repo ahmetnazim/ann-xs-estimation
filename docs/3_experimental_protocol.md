@@ -825,3 +825,83 @@ Cited keys (existing): @Canova_2016_HYDROSWOT, @Zarrabi_2025_ChannelGeometryCONU
 | Gupta_2009_KGEDecomposition | Gupta, H. V., Kling, H., Yilmaz, K. K., & Martinez, G. F. (2009). Decomposition of the mean squared error and NSE performance criteria: Implications for improving hydrological modelling. *Journal of Hydrology*, 377(1–2), 80–91 | doi:10.1016/j.jhydrol.2009.08.003 (Crossref) |
 
 Not added: Holm (1979), Valavi et al. (2018), Ferguson (2010); verified this session but not cited.
+
+## 10. Phase 5 amendments (append-only; P5-D10)
+
+Appended at the Phase 5 gate (2026-10-08). Sections 1–9 are unchanged from `a98feff`. Each item cites the ADL row that records it in `.agents/.research_state.md`.
+
+### 10.1 Frozen artefacts (§1.2 item 3, §3.3) [ADL-069, ADL-075]
+
+| Artefact | SHA-256 |
+|---|---|
+| `data/processed/site_table.parquet` (4,879 sites; 13,289 rows: primary 4,205, sa2 4,205, sa3 4,879) | `8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470` |
+| `data/processed/splits/fold_assignment.parquet` (126,854 rows; 26 blocks) | `1bf628c83fd658c179243499af5d533738fefaeb15b63a71c476530c40dc872c` |
+| `data/processed/splits/srnd_assignment.parquet` (38,693 rows) | `b3c07ba313f5e3b834d85dbeb7ec1c9b17c31e7f5b2db0f1ef775a52013808a1` |
+| `dvc.lock` | `b9835a193895217b4f04f8c0076c34517887912fac7522ce987767e20b3fba6d` |
+
+The artefacts were written under `params_sha256` `03dc55ea51b8feebe3aceb57ea50ac6d5db8735f0dff552bb2c3b80a549c3241`. The current `params.yaml` (`5d9e972a6c516632747958dfa23172ed291a3aba71775322e9a8988ab2af8de0`) only adds the `transforms` group (§10.9), which no stage reads.
+
+### 10.2 Erratum to §1.5 (`dvc.yaml` listing) [ADL-058; commit `82580d7`]
+
+In the `acquire` stage, entries containing `${item}` must be quoted YAML strings: `outs: ["data/raw/${item}"]`. Parameters are tracked per unit: `params: ["acquire.${item}"]`.
+
+### 10.3 Acquisition manifest clarifications (§1.1, §1.2) [ADL-058, ADL-061, ADL-074]
+
+- **NHDPlusV2.1.** Per-VPU `.7z` archives from the EPA S3 bucket (21 VPUs). Their multipart ETag is not an md5, so the SHA-256 at acquisition is the integrity anchor.
+  - Catchment polygons are added for the aridity zonal mean (P5-D3).
+  - GageLoc comes from the national archive.
+- **StreamCat.** The bulk files have been withdrawn, so the data come from the StreamCat API: 21 regional `Ws` queries with the approved 20-metric list, and row counts checked against `countOnly`. A re-acquisition can differ byte-wise, so the DVC cache is the reproducibility anchor.
+- **HYDROSWOT.** No publisher checksum; the SHA-256 at acquisition is the anchor.
+- **d50, hyg, zarrabi_product.** These servers send no ETag or Last-Modified header; the anchor is the publisher md5 plus SHA-256.
+- **usgs_attrs.** Five ScienceBase child items (the M1 columns).
+- **ehydro (T5) and ehydro_author.** Not acquired at the Phase 5 gate. `ind_prepare` / S-IND passes under an explicit PI waiver (P5-D8) and is carried into Phase 6 [ADL-078].
+
+### 10.4 Delivered field names and scale factors (§2.1, §2.3 ⚠️ items) [ADL-061, ADL-063]
+
+- HYDROSWOT delivers `xsec_area_va` (§2.3 lists `xsecond_area_va`). Likewise `q2_xsec_area_X_mean_vel_va` and `q4_xsec_area_D_stream_width`.
+- NHDPlusV2.1 field-name case differs across tables and VPUs, so fields are matched case-insensitively. The VAA carries `TerminalPa` (10-character DBF truncation).
+- `Q_E` is read as `EROM_MA0001.Q0001E` (≡ `QE_MA`, §2.1) and `Q_C` as `Q0001C`.
+- The D50 field is `D50[mm]`, multiplied by 1e-3 to give metres.
+- Global-AI v3.1 is a uint16 raster with **no declared nodata**. The values 0 and 65535 are excluded, and the scale is 1e-4.
+
+### 10.5 QC rule interpretations (§2.4) [ADL-064]
+
+- **R2:** invalid physiography polygons are repaired with `make_valid`. A point with no single division is dropped.
+- **R3:** a measurement is dropped whole if any of its rows has `q_meas_chan_nu ≥ 2`; channel 0 is kept.
+- **R7:** all three discharge pairs must agree within `q_tol`.
+- **R10:** `data_aging_cd = W` counts as not approved (flag only).
+- **R11:** among duplicates, the lowest `row_id` is kept.
+
+### 10.6 Count deviation (§2.4, §4.8) [ADL-064, ADL-065, ADL-075]
+
+- `hydroswot_init` has 39,927 rows at 5,141 sites, against ≈ 38 k rows at ≈ 4.6 k sites expected in §2.4.
+- Linked sites: 4,889 (4,569 GageLoc, 320 snapped; `F_DA` 261).
+- Site-table union U: 4,879 sites in 4,851 groups (22 pairs, 3 triples).
+- Primary analysis frame: 3,988 sites, inside the §4.8 range of 2.6–4.6 k. SA3 has 4,620 and SA6 4,205.
+- The Phase 6 timing pilot uses these counts.
+
+### 10.7 Aridity zonal mean (amends P5-D4; §2.3) [ADL-066]
+
+Pixel centres are used (`all_touched=False`). A catchment with no pixel centre inside falls back to its touched pixels and is flagged `F_AI_touched` (368 COMIDs, 370 sites).
+
+### 10.8 Fold table (amends §3.3 columns) [ADL-068]
+
+- One row per (family, repeat, outer_fold, site_no), with the added columns `is_test` and `lro_division`.
+- On test rows, `inner_fold` = −1 and every `es_member_m` = False.
+- Inner folds are grouped 3-fold, with the DA quintiles recomputed inside each outer training set.
+- ES is a seeded 10 % of training groups per member, from `SeedSequence([seed, family_idx, repeat, outer_fold, m])`.
+- S-RND is a separate table (P5-D7).
+
+### 10.9 Feature transforms (amends the P5-D5 placement; §3.4, §4.2) [ADL-072]
+
+- The per-feature transforms live in a separate `params.yaml` group `transforms`, so the frozen artefacts keep their hashes.
+- `log`: DA, S, Q_E, popden, precip, runoff, elev, perm, D50, AI.
+- `identity`: stream order, z_min, clay, sand, tmean, BFI, wetness index, land-cover sums.
+- `log_offset`: `damdensws`, with c = 0.5 × the smallest positive training value.
+- `passthrough`: F_S.
+
+### 10.10 Scaler artefact (§3.4, L5) [ADL-076]
+
+- No global scaler exists. Each fit saves one `NormStats` JSON (`float.hex`, no pickle), fitted on the rows of its training part only.
+- The JSON records the analysis, the fold block, the part and index, and the SHA-256 of the site and fold tables.
+- Saving fails if this provenance is missing or names a non-training part.
