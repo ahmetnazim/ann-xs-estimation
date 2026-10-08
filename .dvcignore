@@ -1,0 +1,14 @@
+# .dvcignore -- transcribed from docs/3_experimental_protocol.md section 1.5 (Phase 3 gate).
+# OS and editor files
+.DS_Store
+**/Icon?
+**/.~lock.*
+**/*.swp
+**/*~
+# temporary and sync artefacts
+**/*.tmp
+**/.gdrive*
+# notebooks and scratch
+**/.ipynb_checkpoints/
+scratch/
+**/scratch/

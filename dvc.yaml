@@ -1,0 +1,57 @@
+# DVC pipeline skeleton -- transcribed from docs/3_experimental_protocol.md section 1.5 (Phase 3 gate).
+# Not executable yet: `dvc init`, params.yaml and the src/data modules are created in Phases 4-5 (ADL-009, ADL-043).
+# Outputs are tracked in dvc.lock; `dvc add` is not used for project data (ADL-043 amends ADL-009).
+stages:
+  acquire:
+    foreach: [hydroswot, nhdplusv21, streamcat, usgs_attrs, d50, aridity,
+              physiography, ehydro, ehydro_author, zarrabi_product, hyg]
+    do:
+      cmd: python -m src.data.acquire --unit ${item}
+      deps: [src/data/acquire.py]
+      params: [acquire]
+      outs: [data/raw/${item}]
+  validate_raw:
+    cmd: python -m src.data.validate_raw
+    deps: [src/data/validate_raw.py, src/data/schemas.py, data/raw/hydroswot, data/raw/nhdplusv21,
+           data/raw/streamcat, data/raw/usgs_attrs, data/raw/d50, data/raw/aridity, data/raw/physiography]
+    metrics: [{reports/validate_raw.json: {cache: false}}]
+  unit_map:
+    cmd: python -m src.data.unit_map
+    deps: [src/data/unit_map.py, reports/validate_raw.json, data/raw/hydroswot, data/raw/nhdplusv21]
+    params: [domain.s_floor]
+    outs: [data/processed/unit_mapped]
+  qc:
+    cmd: python -m src.data.qc
+    deps: [src/data/qc.py, data/processed/unit_mapped, data/raw/physiography]
+    params: [qc]
+    outs: [data/processed/qc/hydroswot_init.parquet]
+    metrics: [{reports/qc_counts.json: {cache: false}}]
+  link:
+    cmd: python -m src.data.link
+    deps: [src/data/link.py, data/processed/qc/hydroswot_init.parquet, data/processed/unit_mapped]
+    params: [link]
+    outs: [data/processed/link/site_comid.parquet]
+    metrics: [{reports/link_counts.json: {cache: false}}]
+  condition_extract:
+    cmd: python -m src.data.condition_extract
+    deps: [src/data/condition_extract.py, data/processed/qc/hydroswot_init.parquet, data/processed/link/site_comid.parquet]
+    params: [condition]
+    outs: [data/processed/site_core.parquet]
+  features:
+    cmd: python -m src.data.features
+    deps: [src/data/features.py, data/processed/site_core.parquet, data/processed/unit_mapped, data/raw/streamcat,
+           data/raw/usgs_attrs, data/raw/d50, data/raw/aridity, data/raw/physiography]
+    outs: [data/processed/site_table.parquet]
+    metrics: [{reports/feature_missing.json: {cache: false}}]
+  split:
+    cmd: python -m src.data.split
+    deps: [src/data/split.py, data/processed/site_table.parquet]
+    params: [seeds, splits]
+    outs: [data/processed/splits/fold_assignment.parquet]
+    metrics: [{reports/split_summary.json: {cache: false}}]
+  ind_prepare:
+    cmd: python -m src.data.ind_prepare
+    deps: [src/data/ind_prepare.py, data/raw/ehydro, data/raw/ehydro_author, data/raw/zarrabi_product,
+           data/processed/site_table.parquet]
+    params: [splits.ind_dedupe_m]
+    outs: [data/processed/ind/ehydro_ind.parquet]
