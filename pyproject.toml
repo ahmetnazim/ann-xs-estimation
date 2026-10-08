@@ -1,0 +1,145 @@
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ann-xs-estimation"
+version = "0.1.0"
+description = "Hard Manning + continuity hybrid for reach-scale channel cross-section geometry (HYDROSWOT -> NHDPlusV2.1, CONUS)."
+requires-python = "==3.12.*"
+authors = [{ name = "Ahmet Nazim Sahin" }]
+# No `license` field and no LICENSE file: licence deferred to Phase 11 (P4-D9 (a)); no remote (ADL-019).
+classifiers = [
+    "Private :: Do Not Upload",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Hydrology",
+]
+# Exact pins resolved by `uv lock` on 2026-10-08 (uv 0.12.1, CPython 3.12.13); never edited by hand.
+# Later additions: `uv add`, a chore(ops) commit and an ADL row (P4-D5 (a)).
+dependencies = [
+    # numerics and tables
+    "numpy==2.5.3",
+    "scipy==1.18.1",
+    "pandas==3.0.6",
+    "pyarrow==25.0.1",
+    # configuration (src/config.py; P4-D4 (a))
+    "pydantic==2.14.0",
+    "pydantic-settings==2.15.0",
+    "pyyaml==6.0.3",
+    # learning (CPU float64; ADL-018, O-8)
+    "torch==2.14.1",
+    "scikit-learn==1.9.1",
+    "xgboost==3.4.1",
+    # geospatial (EPSG:5070 / EPSG:4269; protocol 1.2)
+    "geopandas==1.2.0",
+    "shapely==2.2.0",
+    "pyproj==3.8.0",
+    "pyogrio==0.13.0",
+    "rasterio==1.5.2",
+    # dataframe schemas (protocol 2.3; P4-D6 (a))
+    "pandera==0.34.1",
+    # spatial statistics (protocol 3.6; P4-D7 (a))
+    "esda==2.10.0",
+    "libpysal==4.15.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff==0.16.10",
+    "mypy==2.4.0",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "hypothesis==6.168.5",
+    "mpmath==1.4.1",          # high-precision reference for the Phase 7 E1-E5 quadrature checks
+    "pandas-stubs==3.0.5.260914",
+    "types-PyYAML==6.0.12.20260906",
+]
+ops = [
+    "dvc==3.67.1",            # installed only; `dvc init` is Phase 5 (ADL-009, ADL-043)
+]
+
+# ---------------------------------------------------------------- uv
+[tool.uv]
+required-version = ">=0.12.1"
+# Lock only for the platforms we run on: the local M4 Max and Linux/WSL (Phase 8 Docker/CI).
+environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'linux'",
+]
+
+# macOS arm64 wheels on PyPI are CPU(+MPS) builds; on Linux use the CPU-only index so no CUDA
+# runtime is pulled in. PEP 440: `torch==2.14.1` also matches the local version `2.14.1+cpu`.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+# ---------------------------------------------------------------- build (P4-D3 (a))
+[tool.hatch.build.targets.wheel]
+packages = ["src"]   # `src` is the import root: matches dvc.yaml `python -m src.data.*`
+
+[tool.hatch.build.targets.sdist]
+# Whitelist: git-excluded agent state and literature can never be packaged (Constraint D).
+only-include = ["src", "tests", "pyproject.toml", "params.yaml", "dvc.yaml"]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = [".agents", "literature", "data", "docs"]
+# Cache location: RUFF_CACHE_DIR (scripts/dev_env.sh, outside Drive; P4-D2 (a)).
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "C4", "NPY", "PT", "RUF", "D", "ANN"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "ANN"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+files = ["src"]
+# Cache location: MYPY_CACHE_DIR (scripts/dev_env.sh, outside Drive; P4-D2 (a)).
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+[[tool.mypy.overrides]]
+# Untyped geospatial / spatial-statistics libraries only (no py.typed); add others by ADL.
+module = ["geopandas.*", "shapely.*", "pyogrio.*", "rasterio.*", "esda.*", "libpysal.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+# no:cacheprovider -> no .pytest_cache written into the Drive-synced tree (P4-D2 (a)).
+addopts = "-ra --strict-markers --strict-config --import-mode=importlib -p no:cacheprovider"
+markers = [
+    "unit: fast configuration and schema tests (Phase 4+)",
+    "physics: physical-invariant and E1-E5 reference tests (Phase 7)",
+    "slow: long-running tests",
+]
+xfail_strict = true
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+# Data file location: COVERAGE_FILE (scripts/dev_env.sh, outside Drive).
