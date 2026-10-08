@@ -18,3 +18,9 @@ data/checkpoints/
 *.onnx
 scaler.pkl
 .DS_Store
+
+# Notebook and tabular/geospatial intermediates (Phase 0 audit, ADL-009)
+.ipynb_checkpoints/
+*.parquet
+*.gpkg
+*.gdb/
