@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | S-SDLC phase | 3 (Experimental Protocol & Data Provenance) |
-| Status | **Approved by the PI (2026-10-08)**: draft approved; O-1 to O-13 resolved as recommended, with O-2 (b) and O-5 (c) (§6). Subject to the PHASE_03 middle-prompt refinement and the gate review |
+| Status | **Approved by the PI (2026-10-08)**: draft approved; O-1 to O-13 resolved as recommended, with O-2 (b) and O-5 (c) (§6). **Middle-prompt revision (2026-10-08):** §1.5 DVC specification (stage-based acquisition, `params.yaml`, `dvc.yaml`, `.dvcignore`), §3.6 dependence audit (diagnostic only, per P3-D4), §4.3 formal metric definitions, L3/L8 and §5 updated. Subject to the gate review |
 | Date | 2026-10-08 |
 | Code-generation lock | 🔒 ON. No project code, installs or data downloads. Every command block below is a **non-executed specification** for Phase 5 (P3-D1 (a)). Evidence comes from dataset metadata (DataCite, Crossref, ScienceBase, Zenodo, figshare, GitHub APIs) and read-only text extraction of PDFs |
 | Inputs | `0_point_zero.md` §3, §4, §6, §7; `0a_open_data_questions.md`; `1_literature_matrix.md` §4, §6; `2_mathematical_proofs.md` §1.2, §1.3, §7, §9.5, §10.3, §11 (frozen); design note `option_a_research_design.md` §5–§8 (leads only) |
@@ -89,23 +89,132 @@ PoC/Scripts/                      # git repo (on Google Drive)
 ~/dvc_store/ANN_XS_Estimation/remote   # DVC local remote (outside Drive)
 ```
 
-**Two Phase 5 issues the skeleton must resolve:**
+**Reconciliation with `.gitignore` and ADL-009.**
 
-1. **Pointer files vs `.gitignore`.** `data/raw/` is git-ignored (ADL-009, ADL-028), so `dvc add data/raw/x` would create a `.dvc` pointer inside an ignored directory, and Git would not see it. **Recommendation:** acquire through `dvc.yaml` stages, whose outputs are recorded in the tracked `dvc.lock`; no `.dvc` pointer files are needed. The alternative is to change `.gitignore` to `data/raw/*` plus `!data/raw/*.dvc`.
-2. **Google Drive and links (P3-D2 follow-up).** The repo itself lives in a Drive-synced folder. Whether Drive for desktop uploads symlink targets is **unverified**. Before any real data, Phase 5 runs a dummy-file test: a symlinked 1 MB file is created and Drive's behaviour is observed. If Drive follows links, the fallback is to move the git working tree out of Drive (Drive is also a poor host for `.git`), or to make `data/` a single excluded link. The link type (`symlink` vs `hardlink`/`reflink`) is fixed in Phase 5.
+1. **Facts.** `.gitignore` excludes `data/raw/`, `data/processed/` and `data/checkpoints/` as **directory** patterns, plus `*.parquet`, `*.gpkg` and `*.gdb/` anywhere. Git cannot re-include a file whose parent directory is excluded, so a `!data/raw/*.dvc` exception would have no effect.
+2. **Consequence.** A per-source `dvc add data/raw/<source>` writes `data/raw/<source>.dvc` *inside* an ignored directory, so the pointer would never be committed and lineage would break silently.
+3. **Adopted rule (P3-D1 (a), middle-prompt item 2 adjusted).**
+   - Every source is acquired by a `dvc.yaml` stage (`acquire@<unit>`).
+   - Its outputs are recorded in **`dvc.lock` at the repo root**, which is tracked.
+   - `dvc add` and `dvc import-url` are **not used** for project data.
+   - `dvc.lock` takes over the role ADL-009 gave to `.dvc` pointer files (proposed ADL-048).
+   - `.gitignore` needs **no change**. The `.gitignore` files DVC writes inside output parents are themselves ignored, which is harmless.
+4. **Author-supplied files without a URL** (the eHydro table, O-5 (c)) are dropped by the PI into `~/dvc_store/ANN_XS_Estimation/inbox/` (outside the repo and Drive). Stage `acquire@ehydro_author` copies the file into `data/raw/ehydro_author/` only if its SHA-256 matches the value pinned in `params.yaml`. Lineage is therefore the pinned hash plus the `dvc.lock` output hash.
+5. **Phase 7 checks.**
+   - `git check-ignore -v dvc.yaml dvc.lock params.yaml .dvcignore .dvc/config` reports nothing.
+   - `git check-ignore data/raw/hydroswot/SWOT_ADCP_Dataset.txt` reports the file as ignored.
+   - `dvc status -c` is clean after `dvc push`.
+6. **Google Drive and links (P3-D2 follow-up, O-13).** Before any real data, a symlinked 1 MB dummy file is created and Drive's behaviour observed. If Drive follows links, the working tree moves out of Drive. `cache.type` is confirmed by this test.
 
-**Command sequence (Phase 5 only; NOT executed in Phase 3):**
+**Command sequence (Phase 5 only; NOT executed in Phase 3).** Machine-specific paths go to `.dvc/config.local` (`--local`), so the shared `.dvc/config` stays portable. This has the same effect as the prompt's `dvc config cache.dir` / `dvc remote add -d`, without committing a home-directory path.
 
 ```bash
-dvc init
+# --- Phase 5 only; specification, not executed ---
+dvc init                                                     # at the git root PoC/Scripts
 dvc config --local cache.dir ~/dvc_store/ANN_XS_Estimation/cache
-dvc config --local cache.type symlink        # final link type decided in Phase 5
+dvc config --local cache.type symlink                        # confirmed by the O-13 Drive test
 dvc remote add --local -d localstore ~/dvc_store/ANN_XS_Estimation/remote
-dvc repro                                     # runs the DAG below
-dvc push
+git add .dvc/config .dvc/.gitignore .dvcignore dvc.yaml params.yaml   # after the phase is >= 4 (G2 hook)
+dvc dag                                                      # visual check against the Mermaid DAG below
+dvc repro                                                    # runs acquire -> ... -> split
+git add dvc.lock reports/
+dvc push && dvc status -c
 ```
 
-**`.dvcignore` (proposed):** `.DS_Store`, `**/.~lock.*`, `**/*.tmp`, `**/Icon?`, `**/.gdrive*`.
+**`params.yaml` (keys and values fixed by this protocol; non-executed specification).**
+
+```yaml
+seeds:   {global: 20261008, sid_repeats: [20261008, 20261009, 20261010]}
+acquire: {<unit>: {urls: [...], md5: [...] or null, sha256_pinned: null}}   # filled from section 1.1 in Phase 5
+qc:      {q_tol: 0.05, epsA_tol: 0.05, W_max_m: 5000, dbar_max_m: 50, dmax_max_m: 70, V_max_ms: 6}
+link:    {snap_max_m: 500, da_ratio_max: 1.25}
+condition: {qsel_ratio_flag: 2.0, tie_break: latest_date}
+domain:  {n_bounds: [0.005, 0.6], n_lit: [0.012, 0.33], r_bounds: [0.5, 10], s_floor: 1.0e-5}
+splits:  {sid_k: 5, sid_r: 3, inner_k: 3, es_frac: 0.10, lro_min_groups: 50,
+          tail_deciles: [1, 10], tail_order_min: 7, ind_dedupe_m: 1000}
+audit:   {knn_k: 8, idw_band_km: 100, permutations: 999, lisa_alpha: 0.01,
+          dist_classes_km: [10, 25, 50, 100, 250, 500], vgm_bins: 20, vgm_max_km: 500,
+          rho_cap_km: 250, moran_material: 0.10, nested_psi: 0.5, nested_share_material: 0.20}
+```
+
+**`dvc.yaml` stages (non-executed specification; syntax checked with `dvc dag` in Phase 5).** The module paths under `src/` are placeholders that Phase 4 designs.
+
+```yaml
+stages:
+  acquire:
+    foreach: [hydroswot, nhdplusv21, streamcat, usgs_attrs, d50, aridity,
+              physiography, ehydro, ehydro_author, zarrabi_product, hyg]
+    do:
+      cmd: python -m src.data.acquire --unit ${item}
+      deps: [src/data/acquire.py]
+      params: [acquire]
+      outs: [data/raw/${item}]
+  validate_raw:
+    cmd: python -m src.data.validate_raw
+    deps: [src/data/validate_raw.py, src/data/schemas.py, data/raw/hydroswot, data/raw/nhdplusv21,
+           data/raw/streamcat, data/raw/usgs_attrs, data/raw/d50, data/raw/aridity, data/raw/physiography]
+    metrics: [{reports/validate_raw.json: {cache: false}}]
+  unit_map:
+    cmd: python -m src.data.unit_map
+    deps: [src/data/unit_map.py, reports/validate_raw.json, data/raw/hydroswot, data/raw/nhdplusv21]
+    params: [domain.s_floor]
+    outs: [data/processed/unit_mapped]
+  qc:
+    cmd: python -m src.data.qc
+    deps: [src/data/qc.py, data/processed/unit_mapped, data/raw/physiography]
+    params: [qc]
+    outs: [data/processed/qc/hydroswot_init.parquet]
+    metrics: [{reports/qc_counts.json: {cache: false}}]
+  link:
+    cmd: python -m src.data.link
+    deps: [src/data/link.py, data/processed/qc/hydroswot_init.parquet, data/processed/unit_mapped]
+    params: [link]
+    outs: [data/processed/link/site_comid.parquet]
+    metrics: [{reports/link_counts.json: {cache: false}}]
+  condition_extract:
+    cmd: python -m src.data.condition_extract
+    deps: [src/data/condition_extract.py, data/processed/qc/hydroswot_init.parquet, data/processed/link/site_comid.parquet]
+    params: [condition]
+    outs: [data/processed/site_core.parquet]
+  features:
+    cmd: python -m src.data.features
+    deps: [src/data/features.py, data/processed/site_core.parquet, data/processed/unit_mapped, data/raw/streamcat,
+           data/raw/usgs_attrs, data/raw/d50, data/raw/aridity, data/raw/physiography]
+    outs: [data/processed/site_table.parquet]
+    metrics: [{reports/feature_missing.json: {cache: false}}]
+  split:
+    cmd: python -m src.data.split
+    deps: [src/data/split.py, data/processed/site_table.parquet]
+    params: [seeds, splits]
+    outs: [data/processed/splits/fold_assignment.parquet]
+    metrics: [{reports/split_summary.json: {cache: false}}]
+  ind_prepare:
+    cmd: python -m src.data.ind_prepare
+    deps: [src/data/ind_prepare.py, data/raw/ehydro, data/raw/ehydro_author, data/raw/zarrabi_product,
+           data/processed/site_table.parquet]
+    params: [splits.ind_dedupe_m]
+    outs: [data/processed/ind/ehydro_ind.parquet]
+```
+
+`reports/*.json` are small metrics files committed to Git (`cache: false`), so QC and link counts are reviewable in diffs. The groups step (§3.1) runs inside `split`.
+
+**`.dvcignore` (proposed).**
+
+```text
+# OS and editor files
+.DS_Store
+**/Icon?
+**/.~lock.*
+**/*.swp
+**/*~
+# temporary and sync artefacts
+**/*.tmp
+**/.gdrive*
+# notebooks and scratch
+**/.ipynb_checkpoints/
+scratch/
+**/scratch/
+```
 
 **Stage DAG.**
 
@@ -327,23 +436,84 @@ The table is generated once by the `split` stage. Its SHA-256 is recorded in `dv
 |---|---|---|---|---|
 | L1 | Same site in train and test | Multiple measurements per site | One row per site; grouped folds | Assert: no `group_id` in both train and test in any fold (Phase 7 test) |
 | L2 | Co-located sites (same COMID, renamed gages) | Different `site_no` on one reach | Connected-component groups (§3.1) | Assert: no COMID in both train and test |
-| L3 | Spatial and network autocorrelation (neighbouring reaches) | Upstream/downstream gages on the same level path | **Accepted risk** (no S-BLK, P3-D4). S-LRO and S-TAIL are the strong tests | Near-neighbour stratification: each S-ID test site is labelled "has a training site within 10 km of path length on the same `LevelPathI`" yes/no, and every S-ID metric is reported for both strata. Audit §3.6 |
+| L3 | Spatial and network dependence (neighbouring and nested reaches) | Nearby gages; upstream/downstream gages whose catchments contain one another | **Accepted risk** (no S-BLK, P3-D4). S-LRO and S-TAIL are the strong tests | Audit §3.6: Moran's I, LISA, residual variogram (range $\rho^*$), nested-basin check. Every S-ID metric is also reported on the **far** stratum (no training site within $\rho^*$) and the **not-nested** stratum. Label rule §3.6.7 |
 | L4 | Target leakage through predictors | Measured discharge, `drain_area_va`, `chan_mat_cd`, HYDROSWOT velocity | Banned list in the feature schema; schema test rejects them | `VE_MA` excluded from M2/M5 inputs (redundant; used only in $A_J$) |
 | L5 | Preprocessing leakage | Scalers, cutpoints, outlier thresholds | Split-then-scale (§3.4); QC is row-wise (§2.4) | Strata cutpoints use covariates only (DA), never targets |
 | L6 | Selection leakage | Hyperparameters, early stopping, $\mathrm M^*$, thresholds | Nested inner grouped CV; $\mathrm M^*$ fixed on S-ID OOF **before** S-LRO, S-TAIL or S-IND are scored; H thresholds fixed in this protocol | Selecting $\mathrm M^*$ on S-ID favours the comparator, which is conservative for H1–H3 (§9.5) |
 | L7 | Target-construction dependence | Mean-flow row chosen by closeness to $Q_E$, which is also an input | Within-site selection only (no cross-site information) | $F_{Qsel}$ flag; SA4; oracle-Q diagnostic decomposes the discharge mismatch (§7.3) |
-| L8 | Independent-set overlap | eHydro locations on or next to HYDROSWOT training reaches; Zarrabi product trained at HYDROSWOT sites | Drop eHydro locations whose member COMIDs include a training COMID or lie within 1 km (EPSG:5070) of a training site. Zarrabi product compared **only** on S-IND | Report the number dropped. eHydro is large-river only (size-tail confound); report its DA distribution |
+| L8 | Independent-set overlap | eHydro locations on or next to HYDROSWOT training reaches; Zarrabi product trained at HYDROSWOT sites | Drop eHydro locations whose member COMIDs include a training COMID or lie within 1 km (EPSG:5070) of a training site. Zarrabi product compared **only** on S-IND | Report the number dropped, and (descriptively) the number of retained locations within $\rho^*$ of a training site or nested with one (§3.6.5). eHydro is large-river only (size-tail confound); report its DA distribution and AOA status (§3.6.6) |
 | L9 | Temporal mismatch | HYDROSWOT dates vs EROM 1971–2000 vs StreamCat/NLCD years | Not a forecasting problem; predictors are time-invariant | Documented, not controlled. Report the distribution of `q_meas_dt` |
 | **L10** | Modelled-covariate circularity | Abeshu D50 is an XGBoost product trained on observed D50 at 1,691 flowlines with catchment predictors that overlap ours | Ablation A4 (without D50 and AI) | H4 (b) $\rho_S(\hat n,D_{50})$ may partly reflect shared predictors; reported as a caveat |
 | **L11** | Gage-adjusted discharge | `QE_MA` (`Q0001E`) is adjusted with gage data, so at gauged HYDROSWOT sites $Q_E$ is more accurate than at ungauged reaches | SA1: rerun M5 and $\mathrm M^*$ with `QC_MA` (`Q0001C`, no gage adjustment) | All headline errors are optimistic for ungauged use. M5 is more exposed because $Q_E$ enters Φ directly. SA1 quantifies the gap |
 
-### 3.6 Spatial autocorrelation audit (diagnostic only; it cannot change the splits)
+### 3.6 Spatial and network dependence audit (diagnostic only; P3-D4: it cannot change the splits)
 
-1. **Residuals:** S-ID OOF log residuals $e_{\bar d}$, $e_W$, $e_t$ of M2-XGB and of M5, averaged over the three repeats per site.
-2. **Euclidean semivariogram** in EPSG:5070: 20 distance bins up to 500 km (equal pair counts), Matheron estimator. Fit spherical and exponential models; report the range, the nugget/sill ratio and the AIC-preferred model.
-3. **Moran's I** [@Moran_1950_Autocorrelation] with $k=8$ nearest-neighbour row-standardized weights; 999-permutation p-value.
-4. **Network view:** residual correlation for site pairs on the same `LevelPathI`, as a function of path-length separation (bins 0–10, 10–50, 50–200, > 200 km).
-5. **Interpretation rule (pre-registered):** if the variogram range exceeds the median nearest-neighbour distance between test and training sites, S-ID results are labelled "optimistic under spatial dependence", and the near-neighbour-stratified metrics (L3) are given equal prominence. **No split is changed** whatever the result; a change would need an ADL row and would be reported as a deviation.
+**Purpose.** Dependence between training and test locations inflates the apparent skill of random or site-grouped CV [@Roberts_2017_BlockCV; @Ploton_2020_SpatialValidation]. P3-D4 excludes spatial-block splits, so the audit does not size blocks. It **quantifies** how optimistic S-ID may be, sets a **reporting label** (§3.6.7) and defines the far/not-nested strata used in L3. All audit settings are in `params.yaml` → `audit`.
+
+#### 3.6.1 Inputs
+
+- (a) Site-level targets $\ln W$, $\ln\bar d$ and $t$ (dependence in the response itself).
+- (b) S-ID OOF log residuals of **M-null** and **M2-XGB**, averaged over the three repeats per site. These are the primary audit models; they are computed before any NN is trained, so the label is fixed before M5 results exist.
+- (c) M5 residuals, reported once available. Comparing (b) and (c) shows whether the physics layer changes the residual spatial structure; this is descriptive.
+- Coordinates: EPSG:5070. $N$ = number of post-QC sites.
+
+#### 3.6.2 Global Moran's I [@Moran_1950_Autocorrelation]
+
+$$
+I=\frac{N}{S_0}\,\frac{\sum_{i}\sum_{j}w_{ij}(z_i-\bar z)(z_j-\bar z)}{\sum_i(z_i-\bar z)^2},\qquad S_0=\sum_{i,j}w_{ij},\qquad \mathbb E[I]=-\frac1{N-1}.
+$$
+
+- **Weights $\mathbf W_1$ (primary):** $k=8$ nearest neighbours, binary, row-standardized ($w_{ii}=0$).
+- **Weights $\mathbf W_2$ (sensitivity):** inverse distance $1/d_{ij}$ for $d_{ij}\le100$ km, row-standardized. Sites with no neighbour within 100 km get a zero row and are reported as isolates.
+- **Correlogram:** $I$ computed with binary distance-band weights for the classes (0, 10], (10, 25], (25, 50], (50, 100], (100, 250] and (250, 500] km.
+- **Inference:** 999 random permutations of $z$ over sites. One-sided pseudo-p $=(1+\#\{I^*\ge I\})/1000$ for positive dependence. Report $I$, $\mathbb E[I]$, the permutation z-score and the pseudo-p.
+
+#### 3.6.3 Local Moran's I (LISA) [@Anselin_1995_LISA]
+
+- $I_i=\dfrac{(z_i-\bar z)}{m_2}\sum_j w_{ij}(z_j-\bar z)$, with $m_2=\sum_i(z_i-\bar z)^2/N$ and weights $\mathbf W_1$.
+- 999 conditional permutations per site (site $i$ held fixed); significance at pseudo-p < 0.01.
+- With about 4 k local tests, about 40 false positives are expected at this level, so LISA maps are **descriptive only** and enter no decision.
+- Report counts of High–High, Low–Low, High–Low and Low–High sites by F&J division, and whether the clusters align with the S-LRO divisions.
+
+#### 3.6.4 Residual semivariogram [@Matheron_1963_Geostatistics]
+
+- **Estimator:** $\hat\gamma(h_k)=\frac1{2N_k}\sum_{(i,j)\in\mathcal P_k}(e_i-e_j)^2$, with 20 lag classes of equal pair count up to 500 km.
+- **Models:** spherical, exponential and pure nugget, each fitted by least squares weighted by the pair counts $N_k$.
+- **Selection:** lowest weighted SSE. If the pure-nugget model is within 5 % of the best weighted SSE, the residuals are taken as spatially unstructured and $\hat\rho:=0$.
+- **Practical range $\hat\rho$:** the distance at which the fitted model reaches 95 % of its sill. Report $\hat\rho$ and the nugget/sill ratio.
+- **Use of the range (replaces the S-BLK block size):** the **dependence radius** is $\rho^*=\min(\hat\rho_{\bar d}^{\,M2\text{-}XGB},\,250\ \text{km})$. It defines:
+  1. the **far** stratum of S-ID test sites: no training site in that fold within $\rho^*$ (Euclidean, EPSG:5070);
+  2. the descriptive eHydro proximity count (L8).
+
+  No split, buffer or fold is modified.
+
+#### 3.6.5 Nested-basin check (NHDPlusV2.1 topology)
+
+- **Fields:** VAA `HydroSeq`, `UpHydroSeq`, `DnHydroSeq`, `LevelPathI`, the terminal-path identifier (⚠️ exact field name verified at acquisition), `PathLength` (km), `ArbolateSu` and `TotDASqKm`; `PlusFlow.FromComID` → `ToComID`.
+- **Nested pair:** training site $i$ and test site $j$ are nested if one's COMID is reachable from the other's by upstream navigation of the PlusFlow graph (divergences included) within the same terminal path. One catchment then contains the other.
+- **Strength:** $\psi=\mathrm{DA}_{\text{small}}/\mathrm{DA}_{\text{large}}$. **Strongly nested** if $\psi\ge0.5$. Also report $\lvert\Delta\texttt{PathLength}\rvert$ and whether the pair shares `LevelPathI` (mainstem).
+- **Outputs per fold and family:** the share of test sites with at least one strongly nested training site, and every metric stratified as {strongly nested, weakly nested, not nested}.
+- **S-LRO is checked too:** rivers cross division boundaries, so a held-out division can contain sites nested with training sites upstream or downstream in another division. Their count is reported.
+
+#### 3.6.6 Area of applicability [@Meyer_2021_AreaOfApplicability]
+
+- **Dissimilarity index DI:** for each test site, the distance in standardized, importance-weighted predictor space to the nearest training site, divided by the mean pairwise distance of the training set. Importance weights are M2-XGB permutation importances from the same outer training set.
+- **AOA threshold:** the upper whisker (75th percentile + 1.5 IQR) of the training sites' cross-validated DI.
+- **Reporting:** metrics inside vs outside the AOA for S-LRO, S-TAIL and S-IND. Descriptive only.
+
+#### 3.6.7 Pre-registered reporting rule (replaces the "S-ID vs S-BLK reference" choice, which P3-D4 removed)
+
+**S-ID remains the in-distribution reference in every case.** Two conditions are evaluated once, on M2-XGB $\bar d$ residuals, before any NN result is examined:
+
+- **D (material spatial dependence):** (global Moran's I with $\mathbf W_1$ has pseudo-p < 0.01 **and** $I\ge0.10$) **or** $\hat\rho>\tilde d_{NN}$. Here $\tilde d_{NN}$ is the median distance from S-ID test sites to their nearest training site.
+- **N (material nesting):** at least 20 % of S-ID test sites have a strongly nested training site.
+
+| Audit result | Consequence (reporting only; H1–H4 decisions unchanged) |
+|---|---|
+| Neither D nor N | S-ID reported as is; strata in the supplement |
+| D or N | Every S-ID headline number (H2 included) is labelled "optimistic under spatial/network dependence". The far and not-nested strata are reported alongside it, with their own paired-bootstrap CIs. The H2 decision is still taken on full S-ID $\mathcal Q_1$, as pre-registered. If a stratum CI has the opposite sign to the full-set CI, this is stated in the results summary |
+
+The thresholds 0.10 and 20 % are new numbers fixed here (proposed ADL-049).
 
 ---
 
@@ -385,21 +555,54 @@ The table is generated once by the `split` stage. Its SHA-256 is recorded in `dv
 | Point predictor (P3-14) | Mixture median approximated by $\exp(\mu^*)$ with $\mu^*$ the ensemble mean of member means, everywhere (raw-space metrics included). The raw-space mean is not used |
 | XGB grid | `max_depth` {4, 6, 8} × `eta` {0.03, 0.1} × `min_child_weight` {1, 5}; subsample 0.8; colsample 0.8; ≤ 2000 rounds, early stopping 100 |
 
-### 4.3 Metrics matrix
+### 4.3 Metrics: definitions and matrix
 
-Primary metrics are site-weighted (§9.5 definitions). Every cell is reported overall, by drainage-area quintile $\mathcal Q_1$–$\mathcal Q_5$ (cutpoints from post-QC `TotDASqKm`), by stream order and by division.
+#### 4.3.1 Formal definitions
+
+For an evaluation set with sites $j=1,\dots,J$ (one row per site, so site weighting is uniform; S-RND rows are weighted $1/\lvert I_j\rvert$ as in §9.5), with observation $o_j>0$, prediction $p_j>0$, log error $e_j=\ln p_j-\ln o_j$ and point prediction $p_j=\exp(\mu_j^*)$ (P3-14):
+
+| Tier | Metric | Definition | Notes |
+|---|---|---|---|
+| **Primary** | log-RMSE | $\mathrm{RMSE}_{\log}=\bigl[\tfrac1J\sum_je_j^2\bigr]^{1/2}$ | For $W,\bar d,A,d_{\max}$. §9.5 statistic |
+| **Primary** | log bias | $B_{\log}=\tfrac1J\sum_je_j$; multiplicative bias $e^{B}-1$ | Same targets. §9.5 statistic |
+| Primary (shape) | $\mathrm{RMSE}_t$, $B_t$, $\rho_S(\hat r,r_{obs})$ | errors in $t=\ln(d_{\max}/\bar d)$ units | H4 (c) |
+| Secondary | $R^2_{\log}\equiv\mathrm{NSE}_{\log}$ | $1-\sum_je_j^2\big/\sum_j(\ln o_j-\overline{\ln o})^2$ | |
+| Secondary | $R^2_{raw}\equiv\mathrm{NSE}_{raw}$ | $1-\sum_j(p_j-o_j)^2\big/\sum_j(o_j-\bar o)^2$ | **Equivalence:** both are exactly the Nash–Sutcliffe efficiency [@Nash_1970_RiverFlowForecasting], with the evaluation-set mean as the benchmark. They can be negative. On OOD sets the benchmark is the test-set mean, which the model never sees |
+| Secondary (comparability only) | $r^2$ | squared Pearson correlation of $(p_j,o_j)$, raw space | What Zarrabi et al. report as "R²" (`Performance_metrics` in their `utils.py`, commit `a30f1f5`). It ignores bias and scale, so it is **never used for ranking** |
+| Secondary | $\mathrm{RMSE}_{raw}$ | $\bigl[\tfrac1J\sum_j(p_j-o_j)^2\bigr]^{1/2}$ | m, m², … |
+| Secondary | MdAPE | $100\cdot\mathrm{median}_j\lvert p_j/o_j-1\rvert$ | |
+| Secondary | APB % | $100\sum_j\lvert p_j-o_j\rvert\big/\sum_jo_j$ | Zarrabi's `abs_pbias` (verified in code). It is a normalized **absolute** error, not a signed bias, and is dominated by large rivers |
+| Descriptive only | KGE | $1-\sqrt{(r-1)^2+(\alpha-1)^2+(\beta-1)^2}$, with $\alpha=\sigma_p/\sigma_o$ and $\beta=\mu_p/\mu_o$, raw space [@Gupta_2009_KGEDecomposition] | Reported because Zarrabi report it. Kept out of every decision: it was designed for hydrograph time series; across sites $\alpha$ penalizes the shrinkage that squared-loss estimators correctly apply; $\beta$ is dominated by large rivers; and in log space $\beta$ is undefined, because $\ln o$ can be ≤ 0 |
+
+#### 4.3.2 Physical-consistency ("mass-balance") analogues
+
+| Quantity | Definition | Applies to | Report |
+|---|---|---|---|
+| Observed closure $\epsilon_A$ | $\ln A_{obs}-\ln W_{obs}-\ln\bar d_{obs}$ | data (QC R8) | distribution; share removed |
+| Predicted closure residual $\hat\epsilon_A$ | $\ln\hat A-\ln\hat W-\ln\hat{\bar d}$ | models with an independent $A$ head: **M2-MLP, M2-XGB**. Identically 0 for M0, M1, M3, M4, M5 and M6 ($A=W\bar d$ by construction) | median $\lvert\hat\epsilon_A\rvert$; share with $\lvert\hat\epsilon_A\rvert>\ln1.05$ |
+| Shape-invariant violation | share with $\hat d_{\max}\le\hat{\bar d}$ (invariant 4) | M2 (independent heads); 0 by construction where $r$ is a head | share |
+| Manning residual, M4 | $\hat R_M=\tfrac53\hat\ell+\tfrac23k(e^{\hat\ell-\hat w},\hat r)+\hat w+\tfrac12s-\hat\nu-q_E$ (§7.7), on test sites | M4 | RMS and distribution in $\ln Q$ units. Test-site residuals are not controlled by training (§7.7.1 remark) |
+| Manning consistency, models without $n$ | back-calculated $\hat\nu_{back}$ from $(\hat W,\hat{\bar d},\hat r,Q_E,S)$ (Proposition 6.2), with $\hat r$ from $\hat d_{\max}/\hat{\bar d}$ (M2) or $\bar r$ (M0, M1); residual $\operatorname{dist}(\hat\nu_{back},[\nu_{\min},\nu_{\max}])$ (Proposition 7.4) | M0, M1, M2 | share with a positive residual: predictions that **no admissible $n$** reconciles with Manning at $Q_E$ |
+| Manning, hard models | 0 up to $\tau_\ell$ | M3, M5, M6 (stage 3) | max solver residual |
+| Continuity | $\hat V:=Q_E/\hat A$ for every model, so continuity holds by construction at evaluation and **no continuity residual exists** for any model | all | – |
+| Implied-$V$ skill (diagnostic) | $\mathrm{RMSE}_{\log}$ and $B_{\log}$ of $\hat V$ vs $V_{obs}$ | all models producing $A$ | **$Q$ caveat:** $\ln\hat V-\ln V_{obs}=(q_E-q_{obs})-(\ln\hat A-\ln A_{obs})$ (§7.3), so the discharge mismatch enters directly. Also report the oracle $\hat V^{orc}=Q_{obs}/\hat A$ and the share of $V$-error variance from $q_E-q_{obs}$. Never a headline result |
+
+#### 4.3.3 Matrix
+
+Every cell is reported overall, by drainage-area quintile $\mathcal Q_1$–$\mathcal Q_5$ (cutpoints from post-QC `TotDASqKm`), by stream order and by division. S-ID cells are also reported on the far and not-nested strata (§3.6).
 
 | Target ↓ / Split → | S-ID | S-LRO | S-TAIL-DA | S-TAIL-SO | S-IND (eHydro) | S-RND |
 |---|---|---|---|---|---|---|
-| $\bar d$ | P: RMSE$_{\log}$, $B$; S: MdAPE, $R^2_{\log}$, $R^2_{raw}$, RMSE$_{raw}$, APB % | P (H1) | P (H3) | S | P (H1 corroboration) | S only |
-| $W$ | P / S as above | P | P | S | P | S only |
+| $\bar d$ | P: RMSE$_{\log}$, $B_{\log}$. S: NSE$_{\log}$, NSE$_{raw}$, $r^2$, RMSE$_{raw}$, MdAPE, APB %. D: KGE | P (H1) | P (H3) | S | P (H1 corroboration) | S only |
+| $W$ | P / S / D as above | P | P | S | P | S only |
 | $A$ | P (H1, k = A) | P | P | S | P (A = W·d̄) | S only |
-| $d_{\max}$, $t$ | P: RMSE, $B$; $\rho_S(\hat r,r_{obs})$ | S | S | S | – (not observed) | – |
-| $V$ (diagnostic) | $\hat V=Q_E/\hat A$ vs measured: RMSE$_{\log}$, $B$; oracle-Q decomposition (§7.3) | S | S | S | – | – |
-| Consistency | Closure residual $\ln\hat A-\hat w-\hat\ell$ (M2, M1 n/a) and Manning residual $R_M$ (M0–M2, M4); identically 0 for M5 up to $\tau_\ell$ | S | S | S | – | – |
+| $d_{\max}$ | P: RMSE$_{\log}$, $B_{\log}$ | S | S | S | – (not observed) | – |
+| $t$ (shape) | P: RMSE$_t$, $B_t$, $\rho_S(\hat r,r_{obs})$ | S | S | S | – | – |
+| $V$ (diagnostic) | implied-$V$ skill and oracle decomposition (§4.3.2) | S | S | S | – | – |
+| Consistency | §4.3.2 table | S | S | S | – | – |
 | UQ | Coverage $\hat C_{0.10}$, $\bar{\mathcal W}_{0.10}$, CRPS, PIT | descriptive | descriptive | descriptive | descriptive | – |
 
-P = primary, S = secondary. APB %, $R^2_{raw}$ and RMSE$_{raw}$ follow Zarrabi's metrics for comparability.
+P = primary, S = secondary, D = descriptive only.
 
 ### 4.4 Pre-registered hypothesis procedures (P3-15, P3-16)
 
@@ -477,7 +680,7 @@ SA1 `QC_MA` instead of `QE_MA` (L11) · SA2 `meas_q_va` as $Q_{obs}$ · SA3 incl
 | P3-02 | $r$ bounds | [0.5, 10] retained; $F_{tout}$ share reported | §2.2 | ✅ (O-9) |
 | P3-03 | Slope floor | $10^{-5}$ confirmed by the user guide (A1.1); −9998 excluded; $F_S$ flag and feature | §2.2, §2.4 | ✅ |
 | P3-04 | $Q_E\le0$ / missing | Excluded (R13) | §2.4 | ✅ |
-| P3-05 | Field names, units, $\epsilon_A$, $d_{\max}>\bar d$, $t_{obs}$ share | HYDROSWOT fields from `FieldDefinitions.txt`; EROM `Q0001E`/`V0001E` (≡ `QE_MA`/`VE_MA` ⚠️ Phase 5 assertion); R6, R8, R9; $F_{tout}$ | §2.1, §2.3, §2.4 | ✅ (D50/AI scale factors confirmed at acquisition) |
+| P3-05 | Field names, units, $\epsilon_A$, $d_{\max}>\bar d$, $t_{obs}$ share | HYDROSWOT fields from `FieldDefinitions.txt`; EROM `Q0001E`/`V0001E` (≡ `QE_MA`/`VE_MA` ⚠️ Phase 5 assertion); R6, R8, R9; $F_{tout}$ | §2.1, §2.3, §2.4, §4.3.2 | ✅ (D50/AI scale factors confirmed at acquisition). $\epsilon_A$ is also a consistency metric for models with an independent $A$ head (§4.3.2) |
 | P3-06 | Loss weights | $w_W=w_{\bar d}=w_t=1$, $w_A=0$; $\lambda_{wd}$ by inner CV | §4.2 | ✅ |
 | P3-07 | Strickler | $c_S=0.047$ (Strickler 1923, ⚠️ no DOI); $\tau_p=0.5$, $\lambda_p=2$, $\lambda_\Delta=2.865$, $\varpi=0.01$ | §4.1 | ✅ (O-3; ⚠️ source) |
 | P3-08 | Jarrett, $S_J$, $\bar r$ | $c_J'=0.3225$ (SI), $a_J=0.38$, $b_J=-0.16$, $S_J=0.002$; $\bar r$ from the training-fold median of $t_{obs}$ | §4.1 | ✅ |
@@ -487,11 +690,12 @@ SA1 `QC_MA` instead of `QE_MA` (L11) · SA2 `meas_q_va` as $Q_{obs}$ · SA3 incl
 | P3-12 | Solver and quadrature | $\tau_\ell=10^{-10}$, $K_{\max}=40$, per-row stopping, tanh-sinh, $\tau_Q=10^{-8}$, log1p | §4.2 | ✅ |
 | P3-13 | UQ | $M=10$, $\sigma_{\min}=0.01$, no correlation head, β-NLL $\beta_N=0.5$, warm start, $\alpha=0.10$, band [0.85, 0.95] | §4.2, §4.6 | ✅ |
 | P3-14 | Point predictor | $\exp(\mu^*)$ (median) everywhere | §4.2 | ✅ |
-| P3-15 | H1–H3 settings; S2 | $\mathrm M^*$ rule, $B=10^4$, $\alpha_b=0.05$, division-stratified, $\mathcal S=-\mathrm{RMSE}_{\log}$, quintile source, splits and seeds; S2 Bonferroni | §3.2, §4.4, §4.5 | ✅ (O-7) |
+| P3-15 | H1–H3 settings; S2 | $\mathrm M^*$ rule, $B=10^4$, $\alpha_b=0.05$, division-stratified, $\mathcal S=-\mathrm{RMSE}_{\log}$, quintile source, splits and seeds; S2 Bonferroni | §3.2, §4.3.1, §4.4, §4.5 | ✅ (O-7). Metric definitions fixed in §4.3.1; S-ID dependence label and far/not-nested strata per §3.6.7 (reporting only; H2 decided on full S-ID) |
 | P3-16 | H4 | $\mathcal N_{lit}$, $\vartheta=0.05$, positive expected signs, S1 diagnostic only | §4.4, §4.6 | ✅ |
 | P3-17 | Architecture | MLP 3 × 128, SiLU, LayerNorm (no batch coupling), AdamW | §4.2 | ✅ |
 | P3-18 | Conformal | Not adopted | §4.6 | ✅ |
 | P3-19 | Carry-overs | See below | – | ✅ (NHDPlus terms per O-6) |
+| (middle prompt) | Dependence audit; DVC specification; metric definitions | §3.6 replaces S-BLK block sizing with a diagnostic audit and a pre-registered label rule (thresholds: ADL-049); §1.5 records acquisition as DVC stages tracked in `dvc.lock` (ADL-048); §4.3.1–4.3.2 define every metric and physical-consistency analogue | §1.5, §3.6, §4.3 | ✅ (pending gate) |
 
 **Carry-overs.**
 
@@ -533,7 +737,10 @@ SA1 `QC_MA` instead of `QE_MA` (L11) · SA2 `meas_q_va` as $Q_{obs}$ · SA3 incl
 | ADL-044 | eHydro is the sole independent set; acquisition by author request plus USACE re-derivation (O-5 (c)) |
 | ADL-045 | Citation correction: StreamCat = Hill et al. (2016); Wieczorek et al. (2018) is the USGS catchment-attribute release, adopted for M1 only (O-2 (b)) |
 | ADL-046 | Protocol decisions O-1 to O-13 (§6) |
-| ADL-047 | Phase 3 gate record (after approval and commit) |
+| ADL-047 | PHASE_03 middle prompt run with item 1 adapted to P3-D4 (no S-BLK; dependence audit diagnostic only, §3.6) and item 2 adapted to P3-D1/P3-D2 (stage-based DVC acquisition, machine paths in `--local` config, §1.5); metric definitions §4.3.1 |
+| ADL-048 | `dvc.lock` replaces per-source `.dvc` pointer files for raw data (amends ADL-009): `.gitignore` excludes `data/raw/` as a directory, so a `!data/raw/*.dvc` exception cannot take effect; acquisition stages record source checksums in `dvc.lock` (§1.5) |
+| ADL-049 | Dependence-audit thresholds pre-registered: Moran's I ≥ 0.10 with pseudo-p < 0.01, or variogram range > median nearest-training-neighbour distance; ≥ 20 % strongly nested ($\psi\ge0.5$) test sites; $\rho^*$ capped at 250 km. Reporting consequence only (§3.6.7) |
+| ADL-050 | Phase 3 gate record (after approval and commit) |
 
 ## 8. Decision record (PI, 2026-10-08)
 
@@ -551,7 +758,7 @@ SA1 `QC_MA` instead of `QE_MA` (L11) · SA2 `meas_q_va` as $Q_{obs}$ · SA3 incl
 
 ## 9. References
 
-Cited keys (existing): @Canova_2016_HYDROSWOT, @Zarrabi_2025_ChannelGeometryCONUS, @Zarrabi_2024_GeometryDataset, @Bieger_2015_RegionalCurves, @Heldmyer_2022_NWMChannelParameterization, @Enzminger_2024_HyGDataset, @Jarrett_1984_HighGradientStreams, @Seitzer_2022_BetaNLL.
+Cited keys (existing): @Canova_2016_HYDROSWOT, @Zarrabi_2025_ChannelGeometryCONUS, @Zarrabi_2024_GeometryDataset, @Bieger_2015_RegionalCurves, @Heldmyer_2022_NWMChannelParameterization, @Enzminger_2024_HyGDataset, @Jarrett_1984_HighGradientStreams, @Seitzer_2022_BetaNLL; added in the middle-prompt revision: @Roberts_2017_BlockCV, @Ploton_2020_SpatialValidation, @Meyer_2021_AreaOfApplicability.
 
 **New entries (to add identically to `master.bib` and `docs/references.bib` after approval):**
 
@@ -573,5 +780,14 @@ Cited keys (existing): @Canova_2016_HYDROSWOT, @Zarrabi_2025_ChannelGeometryCONU
 | Zarrabi_2024_Code | Zarrabi, R., et al. *Bankfull-and-mean-flow-channel-geometry-for-CONUS* [Software], commit a30f1f5. MIT | ⚠️ No DOI. https://github.com/Reizrb/Bankfull-and-mean-flow-channel-geometry-for-CONUS |
 | Wieczorek_2018_NHDPlusAttributes | Wieczorek, M. E., Jackson, S. E., Schwarz, G. E., Sekellick, A. J., & Staub, L. E. (2018). *Select attributes for NHDPlus Version 2.1 reach catchments and modified network routed upstream watersheds for the conterminous United States* (ver. 6.0, August 2026) [Data release]. U.S. Geological Survey | doi:10.5066/F7765D7V (citation from the parent ScienceBase item; ⚠️ the DataCite record and doi.org resolution point to a child item) |
 | Strickler_1923_Geschwindigkeitsformel | Strickler, A. (1923). *Beiträge zur Frage der Geschwindigkeitsformel und der Rauhigkeitszahlen für Ströme, Kanäle und geschlossene Leitungen*. Mitteilungen des Eidgenössischen Amtes für Wasserwirtschaft, Bern | ⚠️ No DOI; bibliographic details from secondary sources; not verified from the original |
+
+**New entries from the middle-prompt revision:**
+
+| Key | Reference | Identifier (verified 2026-10-08) |
+|---|---|---|
+| Anselin_1995_LISA | Anselin, L. (1995). Local indicators of spatial association—LISA. *Geographical Analysis*, 27(2), 93–115 | doi:10.1111/j.1538-4632.1995.tb00338.x (Crossref) |
+| Matheron_1963_Geostatistics | Matheron, G. (1963). Principles of geostatistics. *Economic Geology*, 58(8), 1246–1266 | doi:10.2113/gsecongeo.58.8.1246 (Crossref) |
+| Nash_1970_RiverFlowForecasting | Nash, J. E., & Sutcliffe, J. V. (1970). River flow forecasting through conceptual models part I — A discussion of principles. *Journal of Hydrology*, 10(3), 282–290 | doi:10.1016/0022-1694(70)90255-6 (Crossref) |
+| Gupta_2009_KGEDecomposition | Gupta, H. V., Kling, H., Yilmaz, K. K., & Martinez, G. F. (2009). Decomposition of the mean squared error and NSE performance criteria: Implications for improving hydrological modelling. *Journal of Hydrology*, 377(1–2), 80–91 | doi:10.1016/j.jhydrol.2009.08.003 (Crossref) |
 
 Not added: Holm (1979), Valavi et al. (2018), Ferguson (2010); verified this session but not cited.
