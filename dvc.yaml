@@ -8,7 +8,7 @@ stages:
     do:
       cmd: python -m src.data.acquire --unit ${item}
       deps: [src/data/acquire.py]
-      params: [acquire]
+      params: ["acquire.${item}"]
       outs: ["data/raw/${item}"]
   validate_raw:
     cmd: python -m src.data.validate_raw

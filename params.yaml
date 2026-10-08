@@ -11,18 +11,195 @@ seeds:                                          # 1.5; 3.2; 4.4
   global: 20261008                              # 1.5; S-IND and S-RND seed (3.2)
   sid_repeats: [20261008, 20261009, 20261010]   # 3.2: S-ID, R = 3 repeats
 
-acquire:                                        # 1.1 manifest; 1.5. Filled in Phase 5 (ADL-043)
-  hydroswot:       {urls: [], md5: null, sha256_pinned: null}
-  nhdplusv21:      {urls: [], md5: null, sha256_pinned: null}
-  streamcat:       {urls: [], md5: null, sha256_pinned: null}
-  usgs_attrs:      {urls: [], md5: null, sha256_pinned: null}
-  d50:             {urls: [], md5: null, sha256_pinned: null}
-  aridity:         {urls: [], md5: null, sha256_pinned: null}
-  physiography:    {urls: [], md5: null, sha256_pinned: null}
-  ehydro:          {urls: [], md5: null, sha256_pinned: null}
-  ehydro_author:   {urls: [], md5: null, sha256_pinned: null}   # 1.5 item 4: inbox file, SHA-256 pinned
-  zarrabi_product: {urls: [], md5: null, sha256_pinned: null}
-  hyg:             {urls: [], md5: null, sha256_pinned: null}
+acquire:                                        # 1.1 manifest; 1.5; filled in Phase 5 (ADL-058)
+  hydroswot:                                    # T1
+    urls:
+      - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=SWOT_ADCP_Dataset.txt
+      - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=FieldDefinitions.txt
+      - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=CodeDefinitions.txt
+      - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=EquationDefinitions.txt
+      - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=USGS_HYDRoSWOT_metadata.xml
+      - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=ReadMe.txt
+    md5: null
+    sha256_pinned: null
+  nhdplusv21:                                   # T4; per-VPU component .7z (P5-D3) + national GageLoc
+    urls:
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusNE/NHDPlusV21_NE_01_NHDPlusAttributes_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusNE/NHDPlusV21_NE_01_EROMExtension_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusNE/NHDPlusV21_NE_01_NHDSnapshot_04.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusNE/NHDPlusV21_NE_01_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMA/NHDPlusV21_MA_02_NHDPlusAttributes_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMA/NHDPlusV21_MA_02_EROMExtension_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMA/NHDPlusV21_MA_02_NHDSnapshot_04.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMA/NHDPlusV21_MA_02_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03N/NHDPlusV21_SA_03N_NHDPlusAttributes_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03N/NHDPlusV21_SA_03N_EROMExtension_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03N/NHDPlusV21_SA_03N_NHDSnapshot_04.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03N/NHDPlusV21_SA_03N_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03S/NHDPlusV21_SA_03S_NHDPlusAttributes_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03S/NHDPlusV21_SA_03S_EROMExtension_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03S/NHDPlusV21_SA_03S_NHDSnapshot_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03S/NHDPlusV21_SA_03S_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03W/NHDPlusV21_SA_03W_NHDPlusAttributes_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03W/NHDPlusV21_SA_03W_EROMExtension_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03W/NHDPlusV21_SA_03W_NHDSnapshot_04.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSA/NHDPlus03W/NHDPlusV21_SA_03W_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGL/NHDPlusV21_GL_04_NHDPlusAttributes_14.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGL/NHDPlusV21_GL_04_EROMExtension_11.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGL/NHDPlusV21_GL_04_NHDSnapshot_08.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGL/NHDPlusV21_GL_04_NHDPlusCatchment_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus05/NHDPlusV21_MS_05_NHDPlusAttributes_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus05/NHDPlusV21_MS_05_EROMExtension_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus05/NHDPlusV21_MS_05_NHDSnapshot_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus05/NHDPlusV21_MS_05_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus06/NHDPlusV21_MS_06_NHDPlusAttributes_10.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus06/NHDPlusV21_MS_06_EROMExtension_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus06/NHDPlusV21_MS_06_NHDSnapshot_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus06/NHDPlusV21_MS_06_NHDPlusCatchment_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus07/NHDPlusV21_MS_07_NHDPlusAttributes_10.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus07/NHDPlusV21_MS_07_EROMExtension_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus07/NHDPlusV21_MS_07_NHDSnapshot_08.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus07/NHDPlusV21_MS_07_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus08/NHDPlusV21_MS_08_NHDPlusAttributes_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus08/NHDPlusV21_MS_08_EROMExtension_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus08/NHDPlusV21_MS_08_NHDSnapshot_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus08/NHDPlusV21_MS_08_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSR/NHDPlusV21_SR_09_NHDPlusAttributes_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSR/NHDPlusV21_SR_09_EROMExtension_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSR/NHDPlusV21_SR_09_NHDSnapshot_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusSR/NHDPlusV21_SR_09_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10U/NHDPlusV21_MS_10U_NHDPlusAttributes_10.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10U/NHDPlusV21_MS_10U_EROMExtension_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10U/NHDPlusV21_MS_10U_NHDSnapshot_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10U/NHDPlusV21_MS_10U_NHDPlusCatchment_02.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10L/NHDPlusV21_MS_10L_NHDPlusAttributes_12.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10L/NHDPlusV21_MS_10L_EROMExtension_08.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10L/NHDPlusV21_MS_10L_NHDSnapshot_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus10L/NHDPlusV21_MS_10L_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus11/NHDPlusV21_MS_11_NHDPlusAttributes_08.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus11/NHDPlusV21_MS_11_EROMExtension_04.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus11/NHDPlusV21_MS_11_NHDSnapshot_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusMS/NHDPlus11/NHDPlusV21_MS_11_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusTX/NHDPlusV21_TX_12_NHDPlusAttributes_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusTX/NHDPlusV21_TX_12_EROMExtension_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusTX/NHDPlusV21_TX_12_NHDSnapshot_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusTX/NHDPlusV21_TX_12_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusRG/NHDPlusV21_RG_13_NHDPlusAttributes_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusRG/NHDPlusV21_RG_13_EROMExtension_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusRG/NHDPlusV21_RG_13_NHDSnapshot_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusRG/NHDPlusV21_RG_13_NHDPlusCatchment_02.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus14/NHDPlusV21_CO_14_NHDPlusAttributes_10.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus14/NHDPlusV21_CO_14_EROMExtension_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus14/NHDPlusV21_CO_14_NHDSnapshot_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus14/NHDPlusV21_CO_14_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus15/NHDPlusV21_CO_15_NHDPlusAttributes_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus15/NHDPlusV21_CO_15_EROMExtension_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus15/NHDPlusV21_CO_15_NHDSnapshot_04.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCO/NHDPlus15/NHDPlusV21_CO_15_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGB/NHDPlusV21_GB_16_NHDPlusAttributes_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGB/NHDPlusV21_GB_16_EROMExtension_04.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGB/NHDPlusV21_GB_16_NHDSnapshot_06.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusGB/NHDPlusV21_GB_16_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusPN/NHDPlusV21_PN_17_NHDPlusAttributes_10.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusPN/NHDPlusV21_PN_17_EROMExtension_09.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusPN/NHDPlusV21_PN_17_NHDSnapshot_08.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusPN/NHDPlusV21_PN_17_NHDPlusCatchment_02.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCA/NHDPlusV21_CA_18_NHDPlusAttributes_08.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCA/NHDPlusV21_CA_18_EROMExtension_07.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCA/NHDPlusV21_CA_18_NHDSnapshot_05.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NHDPlusCA/NHDPlusV21_CA_18_NHDPlusCatchment_01.7z
+      - https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/NationalData/NHDPlusV21_NationalData_GageLoc_05.7z
+    md5: null
+    sha256_pinned: null
+  streamcat:                                    # T3; EPA StreamCat API, one Ws query per region (bulk files withdrawn)
+    urls:
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region01
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region02
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region03N
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region03S
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region03W
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region04
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region05
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region06
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region07
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region08
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region09
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region10L
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region10U
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region11
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region12
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region13
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region14
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region15
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region16
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region17
+      - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region18
+    md5: null
+    sha256_pinned: null
+  usgs_attrs:                                   # T3; Wieczorek et al. catchment attributes (Zarrabi M1 columns)
+    urls:
+      - https://www.sciencebase.gov/catalog/file/get/5d66b3b6e4b0c4f70cefb11d?name=NLCD16_CAT_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/5d66b3b6e4b0c4f70cefb11d?name=NHDV2_NLCD2016s_Revised.xml
+      - https://www.sciencebase.gov/catalog/file/get/5728f746e4b0b13d3918aa1e?name=POPDENS10_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/5728f746e4b0b13d3918aa1e?name=NHDV2_PDENS10_CONUS.xml
+      - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_AMJ_2012_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_JAS_2012_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_JFM_2012_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_OND_2011_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/58c301f2e4b0f37a93ed915a?name=NID_2010_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/58c301f2e4b0f37a93ed915a?name=NHDV2_NID_CONUS.xml
+      - https://www.sciencebase.gov/catalog/file/get/5728dd46e4b0b13d3918a9a7?name=STATSGO_TEXT_CAT_CONUS.zip
+      - https://www.sciencebase.gov/catalog/file/get/5728dd46e4b0b13d3918a9a7?name=NHDV2_STATSGO_TEXT_CONUS.xml
+    md5:
+      - fe9814f44230960812a81915d7fd0486   # NLCD16_CAT_CONUS.zip
+      - 33513bc0dddd416a7e35bd80955a91ba   # NHDV2_NLCD2016s_Revised.xml
+      - aaf4540bd1735ceea346c77fee04815c   # POPDENS10_CONUS.zip
+      - 61204422b7813618ba0f012d68c7ac81   # NHDV2_PDENS10_CONUS.xml
+      - 14f74e7f2ee25e4b11eb503fb60174be   # EVI_AMJ_2012_CONUS.zip
+      - fefab1f59fcea8580ddc9170cfc9718e   # EVI_JAS_2012_CONUS.zip
+      - 7b08a7d70c7d96b70595a6f14e4e60c2   # EVI_JFM_2012_CONUS.zip
+      - 95550473e8c0092758fa2fd7333d380c   # EVI_OND_2011_CONUS.zip
+      - 63a728d483172815d9578b4076ea5110   # NID_2010_CONUS.zip
+      - 6d3c062718b8decf46d2764fd1e68af3   # NHDV2_NID_CONUS.xml
+      - 06979350d1b2292fe65d853fcb58e803   # STATSGO_TEXT_CAT_CONUS.zip
+      - 68309fa1c25707477b975fbada9b7de2   # NHDV2_STATSGO_TEXT_CONUS.xml
+    sha256_pinned: null
+  d50:                                          # T2; .dbf only
+    urls:
+      - https://zenodo.org/api/records/4921987/files/NHDPlus_MediumResolution_D50.dbf/content
+    md5:
+      - 3617b250addbab3cd81bad15cd93c262   # NHDPlus_MediumResolution_D50.dbf
+    sha256_pinned: null
+  aridity:                                      # T2; Global-AI_ET0 v3.1 annual + readme
+    urls:
+      - https://ndownloader.figshare.com/files/56300327
+      - https://ndownloader.figshare.com/files/56300216
+    md5:
+      - ef3f6f53a082fb07365954b468cca55f   # 56300327
+      - ad026eba14bd5f50c6be2abc603ed74f   # 56300216
+    sha256_pinned: null
+  physiography:                                 # T1
+    urls:
+      - https://www.sciencebase.gov/catalog/file/get/631405bbd34e36012efa304e?name=physio_shp.zip
+      - https://www.sciencebase.gov/catalog/file/get/631405bbd34e36012efa304e?name=physio.xml
+    md5:
+      - ba126a4526fb75ab5e13100e692613df   # physio_shp.zip
+      - 1868489eb8f734eddbef4a4a954401cb   # physio.xml
+    sha256_pinned: null
+  ehydro: {urls: [], md5: null, sha256_pinned: null}   # T5: pending (eHydro decisions)
+  ehydro_author: {urls: [], md5: null, sha256_pinned: null}   # 1.5 item 4: inbox file, SHA-256 pinned
+  zarrabi_product:                              # T1
+    urls:
+      - https://zenodo.org/api/records/13883263/files/Bankfull_Meanflow_CONUS.txt/content
+    md5:
+      - d7c22261bfdc4515ed8a6a627c034d5e   # Bankfull_Meanflow_CONUS.txt
+    sha256_pinned: null
+  hyg:                                          # T1
+    urls:
+      - https://zenodo.org/api/records/7868764/files/HyG_20230426.csv/content
+    md5:
+      - 1847a0ef304e3403cfa091e5065d119b   # HyG_20230426.csv
+    sha256_pinned: null
 
 qc:                                             # 1.5; 2.2; 2.4
   q_tol: 0.05                                   # 2.4 R7: discharge pairs within +/-5 %

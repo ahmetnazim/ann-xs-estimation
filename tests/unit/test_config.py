@@ -31,10 +31,125 @@ pytestmark = pytest.mark.unit
 
 _UNIT = {"urls": [], "md5": None, "sha256_pinned": None}
 
+# ----------------------------------------------------------------------------- acquire (ADL-058)
+# Transcribed from the publisher APIs on 2026-10-08 (Batch B URL/HEAD pilot). md5 = publisher
+# checksum (ScienceBase, Zenodo, figshare); None where the publisher gives none.
+_SB = "https://www.sciencebase.gov/catalog/file/get/{}?name={}"
+_ZENODO = "https://zenodo.org/api/records/{}/files/{}/content"
+_NHD = "https://dmap-data-commons-ow.s3.amazonaws.com/NHDPlusV21/Data/"
+_NHD_COMPONENTS = ("NHDPlusAttributes", "EROMExtension", "NHDSnapshot", "NHDPlusCatchment")
+# (directory, drainage area, VPU, versions of the four components above): Lower-48 VPUs.
+_NHD_VPUS: list[tuple[str, str, str, tuple[int, int, int, int]]] = [
+    ("NHDPlusNE/", "NE", "01", (9, 6, 4, 1)),
+    ("NHDPlusMA/", "MA", "02", (9, 6, 4, 1)),
+    ("NHDPlusSA/NHDPlus03N/", "SA", "03N", (7, 5, 4, 1)),
+    ("NHDPlusSA/NHDPlus03S/", "SA", "03S", (7, 5, 6, 1)),
+    ("NHDPlusSA/NHDPlus03W/", "SA", "03W", (7, 5, 4, 1)),
+    ("NHDPlusGL/", "GL", "04", (14, 11, 8, 5)),
+    ("NHDPlusMS/NHDPlus05/", "MS", "05", (9, 6, 6, 1)),
+    ("NHDPlusMS/NHDPlus06/", "MS", "06", (10, 7, 9, 5)),
+    ("NHDPlusMS/NHDPlus07/", "MS", "07", (10, 7, 8, 1)),
+    ("NHDPlusMS/NHDPlus08/", "MS", "08", (9, 6, 7, 1)),
+    ("NHDPlusSR/", "SR", "09", (7, 5, 7, 1)),
+    ("NHDPlusMS/NHDPlus10U/", "MS", "10U", (10, 7, 7, 2)),
+    ("NHDPlusMS/NHDPlus10L/", "MS", "10L", (12, 8, 6, 1)),
+    ("NHDPlusMS/NHDPlus11/", "MS", "11", (8, 4, 6, 1)),
+    ("NHDPlusTX/", "TX", "12", (9, 6, 5, 1)),
+    ("NHDPlusRG/", "RG", "13", (7, 5, 5, 2)),
+    ("NHDPlusCO/NHDPlus14/", "CO", "14", (10, 5, 7, 1)),
+    ("NHDPlusCO/NHDPlus15/", "CO", "15", (9, 7, 4, 1)),
+    ("NHDPlusGB/", "GB", "16", (6, 4, 6, 1)),
+    ("NHDPlusPN/", "PN", "17", (10, 9, 8, 2)),
+    ("NHDPlusCA/", "CA", "18", (8, 7, 5, 1)),
+]
+_NHD_URLS = [
+    f"{_NHD}{directory}NHDPlusV21_{da}_{vpu}_{component}_{version:02d}.7z"
+    for directory, da, vpu, versions in _NHD_VPUS
+    for component, version in zip(_NHD_COMPONENTS, versions, strict=True)
+] + [f"{_NHD}NationalData/NHDPlusV21_NationalData_GageLoc_05.7z"]
+_STREAMCAT_METRICS = (
+    "damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,"
+    "pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,"
+    "runoff,bfi,elev,perm,wetindex"
+)
+_STREAMCAT_REGIONS = [vpu for _, _, vpu, _ in _NHD_VPUS]
+_STREAMCAT_REGIONS.sort()  # the API order: 01 ... 10L, 10U ... 18
+_HYDROSWOT_FILES = [
+    "SWOT_ADCP_Dataset.txt",
+    "FieldDefinitions.txt",
+    "CodeDefinitions.txt",
+    "EquationDefinitions.txt",
+    "USGS_HYDRoSWOT_metadata.xml",
+    "ReadMe.txt",
+]
+# (ScienceBase item, file, publisher md5)
+_USGS_ATTRS = [
+    ("5d66b3b6e4b0c4f70cefb11d", "NLCD16_CAT_CONUS.zip", "fe9814f44230960812a81915d7fd0486"),
+    ("5d66b3b6e4b0c4f70cefb11d", "NHDV2_NLCD2016s_Revised.xml", "33513bc0dddd416a7e35bd80955a91ba"),
+    ("5728f746e4b0b13d3918aa1e", "POPDENS10_CONUS.zip", "aaf4540bd1735ceea346c77fee04815c"),
+    ("5728f746e4b0b13d3918aa1e", "NHDV2_PDENS10_CONUS.xml", "61204422b7813618ba0f012d68c7ac81"),
+    ("59ce9877e4b05fe04cc05e95", "EVI_AMJ_2012_CONUS.zip", "14f74e7f2ee25e4b11eb503fb60174be"),
+    ("59ce9877e4b05fe04cc05e95", "EVI_JAS_2012_CONUS.zip", "fefab1f59fcea8580ddc9170cfc9718e"),
+    ("59ce9877e4b05fe04cc05e95", "EVI_JFM_2012_CONUS.zip", "7b08a7d70c7d96b70595a6f14e4e60c2"),
+    ("59ce9877e4b05fe04cc05e95", "EVI_OND_2011_CONUS.zip", "95550473e8c0092758fa2fd7333d380c"),
+    ("58c301f2e4b0f37a93ed915a", "NID_2010_CONUS.zip", "63a728d483172815d9578b4076ea5110"),
+    ("58c301f2e4b0f37a93ed915a", "NHDV2_NID_CONUS.xml", "6d3c062718b8decf46d2764fd1e68af3"),
+    ("5728dd46e4b0b13d3918a9a7", "STATSGO_TEXT_CAT_CONUS.zip", "06979350d1b2292fe65d853fcb58e803"),
+    (
+        "5728dd46e4b0b13d3918a9a7",
+        "NHDV2_STATSGO_TEXT_CONUS.xml",
+        "68309fa1c25707477b975fbada9b7de2",
+    ),
+]
+_PHYSIO = "631405bbd34e36012efa304e"
+_FIGSHARE = "https://ndownloader.figshare.com/files/{}"
+
+
+def _acq(urls: list[str], md5: list[str] | None = None) -> dict[str, Any]:
+    return {"urls": urls, "md5": md5, "sha256_pinned": None}
+
+
+EXPECTED_ACQUIRE: dict[str, dict[str, Any]] = {  # 1.1, 1.5; ADL-055 (P5-D2, D3), ADL-058
+    "hydroswot": _acq([_SB.format("57435ae5e4b07e28b660af55", f) for f in _HYDROSWOT_FILES]),
+    "nhdplusv21": _acq(_NHD_URLS),
+    "streamcat": _acq(
+        [
+            "https://api.epa.gov/StreamCat/streams/metrics"
+            f"?name={_STREAMCAT_METRICS}&aoi=ws&region=Region{region}"
+            for region in _STREAMCAT_REGIONS
+        ]
+    ),
+    "usgs_attrs": _acq(
+        [_SB.format(item, name) for item, name, _ in _USGS_ATTRS],
+        [md5 for _, _, md5 in _USGS_ATTRS],
+    ),
+    "d50": _acq(
+        [_ZENODO.format(4921987, "NHDPlus_MediumResolution_D50.dbf")],
+        ["3617b250addbab3cd81bad15cd93c262"],
+    ),
+    "aridity": _acq(
+        [_FIGSHARE.format(56300327), _FIGSHARE.format(56300216)],
+        ["ef3f6f53a082fb07365954b468cca55f", "ad026eba14bd5f50c6be2abc603ed74f"],
+    ),
+    "physiography": _acq(
+        [_SB.format(_PHYSIO, "physio_shp.zip"), _SB.format(_PHYSIO, "physio.xml")],
+        ["ba126a4526fb75ab5e13100e692613df", "1868489eb8f734eddbef4a4a954401cb"],
+    ),
+    "ehydro": _UNIT,  # T5: pending the eHydro rules (P5-D8)
+    "ehydro_author": _UNIT,  # 1.5 item 4: inbox file; SHA-256 pinned on arrival
+    "zarrabi_product": _acq(
+        [_ZENODO.format(13883263, "Bankfull_Meanflow_CONUS.txt")],
+        ["d7c22261bfdc4515ed8a6a627c034d5e"],
+    ),
+    "hyg": _acq(
+        [_ZENODO.format(7868764, "HyG_20230426.csv")], ["1847a0ef304e3403cfa091e5065d119b"]
+    ),
+}
+
 # Transcribed from docs/3_experimental_protocol.md (a98feff); section numbers in comments.
 EXPECTED: dict[str, dict[str, Any]] = {
     "seeds": {"global": 20261008, "sid_repeats": [20261008, 20261009, 20261010]},  # 1.5, 3.2
-    "acquire": dict.fromkeys(ACQUIRE_UNITS, _UNIT),  # 1.5 (filled in Phase 5)
+    "acquire": EXPECTED_ACQUIRE,  # 1.1, 1.5 (filled in Phase 5, ADL-058)
     "qc": {  # 1.5, 2.2, 2.4
         "q_tol": 0.05,
         "epsA_tol": 0.05,
@@ -202,12 +317,28 @@ def test_top_level_keys_match_expected_order(raw_params):
 
 
 def test_dvc_yaml_params_resolve_in_params_yaml(raw_params, dvc_stages):
-    referenced = [
-        key for stage in dvc_stages.values() for key in stage.get("do", stage).get("params", [])
-    ]
+    referenced = []
+    for stage in dvc_stages.values():
+        keys = stage.get("do", stage).get("params", [])
+        items = stage.get("foreach", [None])
+        # foreach stages may template a key per item, e.g. "acquire.${item}" (ADL-058)
+        referenced += [key.replace("${item}", str(item)) for key in keys for item in items]
     assert referenced, "dvc.yaml declares no params"
+    assert not any("${" in key for key in referenced)
     for dotted in referenced:
         _get(raw_params, dotted)  # KeyError if a referenced key is missing
+
+
+def test_acquire_stage_params_are_per_unit(dvc_stages):
+    # A change to one unit must invalidate only that acquire@<unit> stage (ADL-058).
+    assert dvc_stages["acquire"]["do"]["params"] == ["acquire.${item}"]
+
+
+def test_acquire_md5_lists_align_with_urls(settings):
+    for name in ACQUIRE_UNITS:
+        spec = getattr(settings.protocol.acquire, name)
+        assert spec.md5 is None or len(spec.md5) == len(spec.urls), name
+        assert len(set(spec.urls)) == len(spec.urls), name
 
 
 def test_acquire_units_match_dvc_foreach(raw_params, dvc_stages, settings):
