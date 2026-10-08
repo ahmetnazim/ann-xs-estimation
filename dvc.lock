@@ -90,3 +90,130 @@ stages:
       md5: 7c52a21c5e86ae0055173d046687f67a.dir
       size: 87491489
       nfiles: 8
+  acquire@usgs_attrs:
+    cmd: python -m src.data.acquire --unit usgs_attrs
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.usgs_attrs:
+          urls:
+          - https://www.sciencebase.gov/catalog/file/get/5d66b3b6e4b0c4f70cefb11d?name=NLCD16_CAT_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/5d66b3b6e4b0c4f70cefb11d?name=NHDV2_NLCD2016s_Revised.xml
+          - https://www.sciencebase.gov/catalog/file/get/5728f746e4b0b13d3918aa1e?name=POPDENS10_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/5728f746e4b0b13d3918aa1e?name=NHDV2_PDENS10_CONUS.xml
+          - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_AMJ_2012_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_JAS_2012_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_JFM_2012_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/59ce9877e4b05fe04cc05e95?name=EVI_OND_2011_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/58c301f2e4b0f37a93ed915a?name=NID_2010_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/58c301f2e4b0f37a93ed915a?name=NHDV2_NID_CONUS.xml
+          - https://www.sciencebase.gov/catalog/file/get/5728dd46e4b0b13d3918a9a7?name=STATSGO_TEXT_CAT_CONUS.zip
+          - https://www.sciencebase.gov/catalog/file/get/5728dd46e4b0b13d3918a9a7?name=NHDV2_STATSGO_TEXT_CONUS.xml
+          md5:
+          - fe9814f44230960812a81915d7fd0486
+          - 33513bc0dddd416a7e35bd80955a91ba
+          - aaf4540bd1735ceea346c77fee04815c
+          - 61204422b7813618ba0f012d68c7ac81
+          - 14f74e7f2ee25e4b11eb503fb60174be
+          - fefab1f59fcea8580ddc9170cfc9718e
+          - 7b08a7d70c7d96b70595a6f14e4e60c2
+          - 95550473e8c0092758fa2fd7333d380c
+          - 63a728d483172815d9578b4076ea5110
+          - 6d3c062718b8decf46d2764fd1e68af3
+          - 06979350d1b2292fe65d853fcb58e803
+          - 68309fa1c25707477b975fbada9b7de2
+          sha256_pinned:
+    outs:
+    - path: data/raw/usgs_attrs
+      hash: md5
+      md5: 93723e8eabb1d18549c93115ca799503.dir
+      size: 1241839782
+      nfiles: 22
+  acquire@aridity:
+    cmd: python -m src.data.acquire --unit aridity
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.aridity:
+          urls:
+          - https://ndownloader.figshare.com/files/56300327
+          - https://ndownloader.figshare.com/files/56300216
+          md5:
+          - ef3f6f53a082fb07365954b468cca55f
+          - ad026eba14bd5f50c6be2abc603ed74f
+          sha256_pinned:
+    outs:
+    - path: data/raw/aridity
+      hash: md5
+      md5: b83a2de5f5e62fdbc2d6f188ee34c5d9.dir
+      size: 1338728667
+      nfiles: 22
+  acquire@streamcat:
+    cmd: python -m src.data.acquire --unit streamcat
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.streamcat:
+          urls:
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region01
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region02
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region03N
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region03S
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region03W
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region04
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region05
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region06
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region07
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region08
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region09
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region10L
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region10U
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region11
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region12
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region13
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region14
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region15
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region16
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region17
+          - https://api.epa.gov/StreamCat/streams/metrics?name=damdens,popden2010,clay,sand,pcturbop2016,pcturblo2016,pcturbmd2016,pcturbhi2016,pctdecid2016,pctconif2016,pctmxfst2016,pcthay2016,pctcrop2016,precip8110,tmean8110,runoff,bfi,elev,perm,wetindex&aoi=ws&region=Region18
+          md5:
+          sha256_pinned:
+    outs:
+    - path: data/raw/streamcat
+      hash: md5
+      md5: ee534c1e5f111bd7836fff91a5243a3d.dir
+      size: 1205249636
+      nfiles: 23
+  acquire@d50:
+    cmd: python -m src.data.acquire --unit d50
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.d50:
+          urls:
+          - https://zenodo.org/api/records/4921987/files/NHDPlus_MediumResolution_D50.dbf/content
+          md5:
+          - 3617b250addbab3cd81bad15cd93c262
+          sha256_pinned:
+    outs:
+    - path: data/raw/d50
+      hash: md5
+      md5: f730dc7004430439fe5056c15e9c689e.dir
+      size: 244913139
+      nfiles: 3
