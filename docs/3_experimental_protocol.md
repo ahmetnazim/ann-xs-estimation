@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | S-SDLC phase | 3 (Experimental Protocol & Data Provenance) |
-| Status | **Approved by the PI (2026-10-08)**: draft approved; O-1 to O-13 resolved as recommended, with O-2 (b) and O-5 (c) (§6). **Middle-prompt revision (2026-10-08):** §1.5 DVC specification (stage-based acquisition, `params.yaml`, `dvc.yaml`, `.dvcignore`), §3.6 dependence audit (diagnostic only, per P3-D4), §4.3 formal metric definitions, L3/L8 and §5 updated. Subject to the gate review |
+| Status | **Approved by the PI (2026-10-08)**: draft approved; O-1 to O-13 resolved as recommended, with O-2 (b) and O-5 (c) (§6). **Middle-prompt revision (2026-10-08):** §1.5 DVC specification (stage-based acquisition, `params.yaml`, `dvc.yaml`, `.dvcignore`), §3.6 dependence audit (diagnostic only, per P3-D4), §4.3 formal metric definitions, L3/L8 and §5 updated. **Gate-review fix (2026-10-08):** raw-unit schemas added to §2.3 (gate item 3); §1.5 DAG aligned with the `dvc.yaml` specification; final ADL mapping in §7 |
 | Date | 2026-10-08 |
 | Code-generation lock | 🔒 ON. No project code, installs or data downloads. Every command block below is a **non-executed specification** for Phase 5 (P3-D1 (a)). Evidence comes from dataset metadata (DataCite, Crossref, ScienceBase, Zenodo, figshare, GitHub APIs) and read-only text extraction of PDFs |
 | Inputs | `0_point_zero.md` §3, §4, §6, §7; `0a_open_data_questions.md`; `1_literature_matrix.md` §4, §6; `2_mathematical_proofs.md` §1.2, §1.3, §7, §9.5, §10.3, §11 (frozen); design note `option_a_research_design.md` §5–§8 (leads only) |
@@ -31,7 +31,7 @@ Each source is a **DVC tracking unit**: one `acquire_*` stage whose output direc
 | `aridity` | Zomer, Xu & Trabucco (2022) [@Zomer_2022_GlobalAridityV3]; data [@Zomer_2025_GlobalAIv31] | doi:10.1038/s41597-022-01493-1; data doi:10.6084/m9.figshare.7504448.v7 | Global-AI v3.1 (figshare v7). ⚠️ Zarrabi et al. used v2 (Trabucco & Zomer 2019, figshare v3) | CC BY 4.0 (DataCite) | HTTPS | `Global-AI_ET0__annual_v3_1.zip` (645,783,906 B; md5 `ef3f6f53a082fb07365954b468cca55f`); `Global AI_ET0 v3.1 - Readme.docx` (645,897 B; md5 `ad026eba14bd5f50c6be2abc603ed74f`). Monthly files are **not** acquired | Predictor (zonal mean per catchment). Adopted (O-1) |
 | `physiography` | USGS (2023), Physiographic divisions of the conterminous U.S. (digitized Fenneman & Johnson 1946 map) [@USGS_2023_PhysiographicDivisions] | doi:10.5066/P9B1S3K8 → ScienceBase `631405bbd34e36012efa304e` | 2023 release | ⚠️ No rights field in DataCite; USGS product, treated as a U.S. Government work (O-6) | HTTPS | `physio_shp.zip` (451,315 B; md5 `ba126a4526fb75ab5e13100e692613df`); `physio.xml` (18,470 B; md5 `1868489eb8f734eddbef4a4a954401cb`) | S-LRO regions (P3-D5); M0 regions |
 | `ehydro` | USACE eHydro surveys, as processed by Zarrabi et al. (2025) [@Zarrabi_2025_ChannelGeometryCONUS] | ⚠️ No DOI. https://www.sam.usace.army.mil/Missions/Spatial-Data-Branch/eHydro/ | **Route O-5 (c).** The processed 76-location table is **not** on Zenodo or in the Zarrabi GitHub repo (checked 2026-10-08). (1) Request it, with an explicit licence, from the authors; (2) re-derive it from USACE eHydro in Phase 5 following Zarrabi §2.5, both to verify (1) and as the fallback if there is no reply | ⚠️ USACE (U.S. Government) data, treated as a U.S. Government work (O-6). The author-supplied table is used only under the licence they grant | HTTPS (USACE); e-mail (authors) | Author table (if granted) **and** re-derived survey rasters (60 surveys, 394 COMIDs, 25 rivers → 76 locations). SHA-256 at acquisition. The two versions are compared location by location before S-IND is frozen | **Sole independent set** S-IND (P3-D7) |
-| `zarrabi_product` | Zarrabi et al. (2024) [@Zarrabi_2024_GeometryDataset] | doi:10.5281/zenodo.13883263 | Zenodo record (single file) | CC BY 4.0 (DataCite also lists MIT) | HTTPS | `Bankfull_Meanflow_CONUS.txt` (216,303,769 B; md5 `d7c22261bfdc4515ed8a6a627c034d5e`) | Comparator **on S-IND only** (`0_point_zero.md` §6) |
+| `zarrabi_product` | Zarrabi et al. (2024) [@Zarrabi_2024_GeometryDataset] | doi:10.5281/zenodo.13883263 | Zenodo record (single file) | CC BY 4.0 (DataCite also lists MIT) | HTTPS | `Bankfull_Meanflow_CONUS.txt` (216,303,769 B; md5 `d7c22261bfdc4515ed8a6a627c034d5e`). Note (2026-10-08): the code README now links a newer version of the same Zenodo concept (record 19208847, concept 11307036), whose `Bankfull_Meanflow_CONUS_Stream_Reaches.txt` has the **identical** md5, plus a USGS-gage file that is **not** acquired. The pin stays at 13883263 | Comparator **on S-IND only** (`0_point_zero.md` §6) |
 | `zarrabi_code` | Zarrabi et al. code [@Zarrabi_2024_Code] | ⚠️ No DOI. GitHub `Reizrb/Bankfull-and-mean-flow-channel-geometry-for-CONUS` | Commit `a30f1f53392ae0cb650e322b31357347d6ba9c4a` (HEAD, 2026-10-08) | **MIT** (LICENSE plus README: "Code: MIT. Data: CC-BY-4.0") | HTTPS | Notebooks read **as text** to recover the QC sequence and XGB hyperparameters. The `Best_Param/*` files are binary model objects and are **never deserialized** (pickle-type code-execution risk) | M1 fidelity |
 | `hyg` | Enzminger, Minear & Livneh HyG [@Enzminger_2024_HyGDataset]; data [@Enzminger_2023_HyGData] | doi:10.5281/zenodo.7868764 | Zenodo record (2023) | CC BY 4.0 (DataCite) | HTTPS | `HyG_20230426.csv` (6,491,937 B; md5 `1847a0ef304e3403cfa091e5065d119b`) | S1 diagnostic only (P3-D9) |
 
@@ -97,7 +97,7 @@ PoC/Scripts/                      # git repo (on Google Drive)
    - Every source is acquired by a `dvc.yaml` stage (`acquire@<unit>`).
    - Its outputs are recorded in **`dvc.lock` at the repo root**, which is tracked.
    - `dvc add` and `dvc import-url` are **not used** for project data.
-   - `dvc.lock` takes over the role ADL-009 gave to `.dvc` pointer files (proposed ADL-048).
+   - `dvc.lock` takes over the role ADL-009 gave to `.dvc` pointer files (ADL-043).
    - `.gitignore` needs **no change**. The `.gitignore` files DVC writes inside output parents are themselves ignored, which is harmless.
 4. **Author-supplied files without a URL** (the eHydro table, O-5 (c)) are dropped by the PI into `~/dvc_store/ANN_XS_Estimation/inbox/` (outside the repo and Drive). Stage `acquire@ehydro_author` copies the file into `data/raw/ehydro_author/` only if its SHA-256 matches the value pinned in `params.yaml`. Lineage is therefore the pinned hash plus the `dvc.lock` output hash.
 5. **Phase 7 checks.**
@@ -216,43 +216,49 @@ scratch/
 **/scratch/
 ```
 
-**Stage DAG.**
+**Stage DAG** (mirrors the `dvc.yaml` dependencies above; `dvc.yaml` is authoritative).
 
 ```mermaid
 flowchart TD
-  subgraph acquire["acquire_* (one stage per unit; checksum-verified)"]
+  subgraph acquire["acquire@unit (one stage per unit; checksum-verified)"]
     A1["hydroswot"]
     A2["nhdplusv21"]
     A3["streamcat"]
+    A10["usgs_attrs"]
     A4["d50"]
     A5["aridity"]
     A6["physiography"]
     A7["ehydro"]
+    A11["ehydro_author"]
     A8["zarrabi_product"]
     A9["hyg"]
-    A10["usgs_attrs"]
   end
-  A1 --> V["validate_raw: checksums + raw schema"]
+  A1 --> V["validate_raw: checksums + raw schemas (section 2.3)"]
   A2 --> V
   A3 --> V
+  A10 --> V
   A4 --> V
   A5 --> V
   A6 --> V
-  A7 --> V
-  A8 --> V
-  A9 --> V
-  A10 --> V
   V --> U["unit_map: sentinels to missing, then U (SI)"]
   U --> Q["qc: row-wise rules R1-R14, flags kept"]
+  A6 --> Q
   Q --> L["link: site_no to COMID via GageLoc; snap fallback; DA check"]
   L --> C["condition_extract: mean-flow row per site"]
-  C --> F["features: join VAA, EROM, StreamCat, D50, AI zonal mean"]
-  F --> G["groups: site-COMID connected components"]
-  G --> S["split: frozen fold-assignment table (SHA-256)"]
-  S -.-> T["Phase 6+: train / evaluate (not specified here)"]
-  A7 --> I["ind_prepare: eHydro dedupe vs training COMIDs"]
+  C --> F["features: join VAA, EROM, StreamCat, USGS attrs, D50, AI zonal mean"]
+  A3 --> F
+  A10 --> F
+  A4 --> F
+  A5 --> F
+  A6 --> F
+  F --> S["split: site-COMID groups, then frozen fold-assignment table (SHA-256)"]
+  F --> I["ind_prepare: eHydro dedupe vs training COMIDs; author vs re-derived check"]
+  A7 --> I
+  A11 --> I
   A8 --> I
+  S -.-> T["Phase 6+: train / evaluate (not specified here)"]
   I -.-> T
+  A9 -.-> D["Phase 6+: S1 diagnostic only (HyG schema checked at use)"]
 ```
 
 ---
@@ -331,6 +337,33 @@ $\lambda_L=0.3048$ m ft⁻¹ exactly. Sentinels become *missing* **before** $\ma
 | Flags `F_S`, `F_Qsel`, `F_snap`, `F_DA`, `F_t`, `F_qual`, `F_eps`, `F_tout` | bool | – | §2.4 |
 
 **`fold_assignment`** is specified in §3.3. **`ehydro_ind`**: `loc_id`, member COMIDs, river, `W`, `dbar`, `A` (= `W`·`dbar` by construction of the Zarrabi procedure), `dedupe_status`.
+
+**Raw auxiliary units (validated by `validate_raw`, or at first use where marked).** Rules common to every unit:
+
+- **V1** file present, size and checksum match §1.1 or `MANIFEST.sha256`;
+- **V2** every required field present, with a lossless cast to the stated type;
+- **V3** the join key is unique (or the stated multiplicity is logged);
+- **V4** sentinels become missing **before** any check on values;
+- **V5** counts of missing and out-of-rule values are written to `reports/validate_raw.json`; a unit fails only on V1, V2 or V3.
+
+Field names marked ⚠️ were not visible in metadata read during Phase 3; they are **asserted at acquisition** and any deviation is recorded by an ADL amendment, not silently remapped.
+
+| Unit / entity | Join key | Required fields (type; unit as delivered) | Sentinels and value rules | Source of field names |
+|---|---|---|---|---|
+| `nhdplusv21` / PlusFlowlineVAA | `ComID` (int64), unique | `HydroSeq`, `UpHydroSeq`, `DnHydroSeq`, `LevelPathI`, `TerminalPat` (⚠️ DBF 10-character truncation may give `TerminalPa`), `StartFlag`, `TerminalFl`, `Divergence` (int); `PathLength`, `ArbolateSu` (float; km); `TotDASqKm` (float; km²); `StreamOrde` (int8) | `Divergence` ∈ {0, 1, 2}; `StartFlag`, `TerminalFl` ∈ {0, 1}; `TotDASqKm` > 0 for linked COMIDs | NHDPlusV2 User Guide, PlusFlowlineVAA table |
+| `nhdplusv21` / EROM_MA0001 | `ComID` (int64), unique | `Q0001E`, `Q0001C` (float; cfs); `V0001E` (float; ft s⁻¹) | `Q0001E` ≤ 0 or missing → R13; the equivalence `Q0001E` ≡ `QE_MA` is asserted (§1.1) | User Guide, EROM tables |
+| `nhdplusv21` / ElevSlope | `ComID` (int64), unique | `Slope` (float; m m⁻¹); `MinElevSmo` (float; **cm**, so $z_{\min}$ in m = value/100) | `Slope` = −9998 → missing (R12); otherwise `Slope` ≥ 10⁻⁵ or the row fails V5 | User Guide, ElevSlope table |
+| `nhdplusv21` / GageLoc | `Source_Fea` (string, zero-padded `site_no`); multiplicity logged | `FLComID` (int64) | `FLComID` must exist in the VAA (else link fallback, §2.5) | User Guide, GageLoc table |
+| `nhdplusv21` / PlusFlow | (`FromComID`, `ToComID`) (int64) | both fields | IDs absent from the VAA (e.g. 0 at network ends, ⚠️) → "no link" in the nested-basin graph | User Guide, PlusFlow table |
+| `streamcat` | `COMID` (int64), unique | metric columns from the Phase 5 list (float) ⚠️ | no sentinel values allowed after V4; missing → R14 | ⚠️ per metric file |
+| `usgs_attrs` | `COMID` (int64), unique | dams, 2010 population density, seasonal EVI × 4, clay/silt/sand, developed/forest/agriculture (float) ⚠️ | negative sentinel codes (⚠️ e.g. −9999) → missing; missing → R14 (M1 only) | ⚠️ child-item metadata (Zarrabi Table 1 for the list) |
+| `d50` | COMID field ⚠️ (int64), unique | D50 value field ⚠️ (float; unit/scale asserted at acquisition, P3-05) | D50 > 0 after scaling; missing → R14 | ⚠️ DBF header (Zenodo describes the content, not the fields) |
+| `aridity` | raster; zonal mean per NHDPlus catchment | single annual AI band (integer, scaled ⚠️; scale factor from the v3.1 readme, P3-05) | nodata excluded from the zonal mean; AI > 0 after scaling; CRS read from the file | ⚠️ v3.1 readme |
+| `physiography` | polygon ID | division name field ⚠️ (string); valid polygon geometry | geometry valid; every post-QC site falls in exactly one polygon or is dropped (R2) | ⚠️ `physio.xml` (FGDC) |
+| `hyg` (at first use, S1) | gage ID (column 1; string, zero-padded) | latitude/longitude (columns 2–3), drainage area (4), slope (5), AHG parameters (6–11), Manning's $n$ (12); 86 columns in total | column count = 86; $n$ > 0 where present | Zenodo record 7868764 description (column positions) |
+| `zarrabi_product` | `COMID` (int64) ⚠️, unique | bankfull and mean-flow width and depth (float) ⚠️ names and units | values > 0; md5 match (§1.1) | ⚠️ file header |
+| `ehydro` (rasters, at `ind_prepare`) | survey ID | depth or elevation raster; CRS; vertical datum; nodata | CRS and datum recorded per survey; nodata excluded; the derived per-location `W`, `dbar` follow Zarrabi §2.5 | USACE eHydro survey metadata ⚠️ |
+| `ehydro_author` (at `ind_prepare`) | `loc_id` | the `ehydro_ind` fields above | SHA-256 equals the value pinned in `params.yaml`; compared location by location with the re-derived set before S-IND is frozen | author table ⚠️ |
 
 ### 2.4 QC rules (order fixed; every rule logs counts of rows and sites removed or flagged)
 
@@ -513,7 +546,7 @@ $$
 | Neither D nor N | S-ID reported as is; strata in the supplement |
 | D or N | Every S-ID headline number (H2 included) is labelled "optimistic under spatial/network dependence". The far and not-nested strata are reported alongside it, with their own paired-bootstrap CIs. The H2 decision is still taken on full S-ID $\mathcal Q_1$, as pre-registered. If a stratum CI has the opposite sign to the full-set CI, this is stated in the results summary |
 
-The thresholds 0.10 and 20 % are new numbers fixed here (proposed ADL-049).
+The thresholds 0.10 and 20 % are new numbers fixed here (ADL-042).
 
 ---
 
@@ -695,7 +728,7 @@ SA1 `QC_MA` instead of `QE_MA` (L11) · SA2 `meas_q_va` as $Q_{obs}$ · SA3 incl
 | P3-17 | Architecture | MLP 3 × 128, SiLU, LayerNorm (no batch coupling), AdamW | §4.2 | ✅ |
 | P3-18 | Conformal | Not adopted | §4.6 | ✅ |
 | P3-19 | Carry-overs | See below | – | ✅ (NHDPlus terms per O-6) |
-| (middle prompt) | Dependence audit; DVC specification; metric definitions | §3.6 replaces S-BLK block sizing with a diagnostic audit and a pre-registered label rule (thresholds: ADL-049); §1.5 records acquisition as DVC stages tracked in `dvc.lock` (ADL-048); §4.3.1–4.3.2 define every metric and physical-consistency analogue | §1.5, §3.6, §4.3 | ✅ (pending gate) |
+| (middle prompt) | Dependence audit; DVC specification; metric definitions | §3.6 replaces S-BLK block sizing with a diagnostic audit and a pre-registered label rule (thresholds: ADL-042); §1.5 records acquisition as DVC stages tracked in `dvc.lock` (ADL-043); §4.3.1–4.3.2 define every metric and physical-consistency analogue; §2.3 adds raw-unit schemas (gate review) | §1.5, §2.3, §3.6, §4.3 | ✅ |
 
 **Carry-overs.**
 
@@ -728,19 +761,20 @@ SA1 `QC_MA` instead of `QE_MA` (L11) · SA2 `meas_q_va` as $Q_{obs}$ · SA3 incl
 
 ---
 
-## 7. Proposed ADL rows (to be shown as a diff at the gate; not appended)
+## 7. ADL rows appended at the gate (final mapping, PI gate decision 2026-10-08)
 
-| ADL | Content |
-|---|---|
-| ADL-042 | Phase 3 decisions P3-D1 to P3-D9 recorded (§8) |
-| ADL-043 | Group key = site–COMID connected components; no S-BLK; L3 accepted risk with near-neighbour stratification and audit |
-| ADL-044 | eHydro is the sole independent set; acquisition by author request plus USACE re-derivation (O-5 (c)) |
-| ADL-045 | Citation correction: StreamCat = Hill et al. (2016); Wieczorek et al. (2018) is the USGS catchment-attribute release, adopted for M1 only (O-2 (b)) |
-| ADL-046 | Protocol decisions O-1 to O-13 (§6) |
-| ADL-047 | PHASE_03 middle prompt run with item 1 adapted to P3-D4 (no S-BLK; dependence audit diagnostic only, §3.6) and item 2 adapted to P3-D1/P3-D2 (stage-based DVC acquisition, machine paths in `--local` config, §1.5); metric definitions §4.3.1 |
-| ADL-048 | `dvc.lock` replaces per-source `.dvc` pointer files for raw data (amends ADL-009): `.gitignore` excludes `data/raw/` as a directory, so a `!data/raw/*.dvc` exception cannot take effect; acquisition stages record source checksums in `dvc.lock` (§1.5) |
-| ADL-049 | Dependence-audit thresholds pre-registered: Moran's I ≥ 0.10 with pseudo-p < 0.01, or variogram range > median nearest-training-neighbour distance; ≥ 20 % strongly nested ($\psi\ge0.5$) test sites; $\rho^*$ capped at 250 km. Reporting consequence only (§3.6.7) |
-| ADL-050 | Phase 3 gate record (after approval and commit) |
+The earlier decision-organised proposal (ADL-042 to 050) was merged into the topic structure of the PHASE_03 gate prompt. Every earlier row is carried as shown.
+
+| ADL | Topic | Carries (earlier proposal) |
+|---|---|---|
+| ADL-042 | Data partitioning protocol: group key, split families, no S-BLK, leakage controls L1–L11, dependence-audit thresholds | earlier 043 and 049 |
+| ADL-043 | DVC tracking scheme: stage-based acquisition, `dvc.lock` replaces `.dvc` pointers (amends ADL-009), cache/remote, `--local` config, Drive test | earlier 048 and the item-2 part of 047 |
+| ADL-044 | Baseline suite and metrics matrix | item-3 part of 047 |
+| ADL-045 | Provenance and licences; P3-19 closure; StreamCat citation correction; eHydro as sole independent set | earlier 044 and 045 |
+| ADL-046 | Schemas, QC and bounds (P3-01 to P3-08), including the raw-unit schemas | – |
+| ADL-047 | Pre-registered H1–H4 statistics, bootstrap, multiplicity, UQ targets, decision matrix (closes ADL-010) | – |
+| ADL-048 | P3-D1 to P3-D9, O-1 to O-13 and the compute verdict (ADL-016) | earlier 042 and 046 |
+| ADL-049 | Phase 3 gate PASSED, Phase 3 → 4, code unlock | earlier 050 |
 
 ## 8. Decision record (PI, 2026-10-08)
 
