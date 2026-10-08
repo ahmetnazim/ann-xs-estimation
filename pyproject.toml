@@ -42,6 +42,9 @@ dependencies = [
     # spatial statistics (protocol 3.6; P4-D7 (a))
     "esda==2.10.0",
     "libpysal==4.15.0",
+    # data acquisition (src/data/acquire.py; P5-D4; ADL-057): NHDPlusV2.1 ships only .7z
+    "requests==2.34.2",
+    "py7zr==1.1.3",
 ]
 
 [dependency-groups]
