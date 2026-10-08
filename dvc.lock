@@ -1,0 +1,92 @@
+schema: '2.0'
+stages:
+  acquire@zarrabi_product:
+    cmd: python -m src.data.acquire --unit zarrabi_product
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.zarrabi_product:
+          urls:
+          - https://zenodo.org/api/records/13883263/files/Bankfull_Meanflow_CONUS.txt/content
+          md5:
+          - d7c22261bfdc4515ed8a6a627c034d5e
+          sha256_pinned:
+    outs:
+    - path: data/raw/zarrabi_product
+      hash: md5
+      md5: 4f97d69375e4918a2a221f40f3e151fb.dir
+      size: 216304891
+      nfiles: 3
+  acquire@physiography:
+    cmd: python -m src.data.acquire --unit physiography
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.physiography:
+          urls:
+          - https://www.sciencebase.gov/catalog/file/get/631405bbd34e36012efa304e?name=physio_shp.zip
+          - https://www.sciencebase.gov/catalog/file/get/631405bbd34e36012efa304e?name=physio.xml
+          md5:
+          - ba126a4526fb75ab5e13100e692613df
+          - 1868489eb8f734eddbef4a4a954401cb
+          sha256_pinned:
+    outs:
+    - path: data/raw/physiography
+      hash: md5
+      md5: e5b71a1597c9c89417c9c6312b45c367.dir
+      size: 1108956
+      nfiles: 11
+  acquire@hyg:
+    cmd: python -m src.data.acquire --unit hyg
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.hyg:
+          urls:
+          - https://zenodo.org/api/records/7868764/files/HyG_20230426.csv/content
+          md5:
+          - 1847a0ef304e3403cfa091e5065d119b
+          sha256_pinned:
+    outs:
+    - path: data/raw/hyg
+      hash: md5
+      md5: a5f1f0f808cc5915f47539eb77cc128f.dir
+      size: 6492997
+      nfiles: 3
+  acquire@hydroswot:
+    cmd: python -m src.data.acquire --unit hydroswot
+    deps:
+    - path: src/data/acquire.py
+      hash: md5
+      md5: eff850a01c34626f78f38df1e9253613
+      size: 25582
+    params:
+      params.yaml:
+        acquire.hydroswot:
+          urls:
+          - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=SWOT_ADCP_Dataset.txt
+          - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=FieldDefinitions.txt
+          - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=CodeDefinitions.txt
+          - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=EquationDefinitions.txt
+          - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=USGS_HYDRoSWOT_metadata.xml
+          - https://www.sciencebase.gov/catalog/file/get/57435ae5e4b07e28b660af55?name=ReadMe.txt
+          md5:
+          sha256_pinned:
+    outs:
+    - path: data/raw/hydroswot
+      hash: md5
+      md5: 7c52a21c5e86ae0055173d046687f67a.dir
+      size: 87491489
+      nfiles: 8
