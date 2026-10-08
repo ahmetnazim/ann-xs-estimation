@@ -24,3 +24,41 @@ scaler.pkl
 *.parquet
 *.gpkg
 *.gdb/
+
+# Tool caches and build outputs (Phase 4; caches are also redirected outside Drive by scripts/dev_env.sh)
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Model artefacts and binary arrays (Phase 4; DVC-managed under data/ from Phase 5)
+*.ckpt
+*.safetensors
+*.pkl
+*.joblib
+*.npy
+*.npz
+*.tif
+*.7z
+
+# Experiment trackers and logs (Phase 4)
+mlruns/
+wandb/
+*.log
+
+# Secrets: `.env` is ignored above; variants too, but keep a template trackable (Phase 4)
+.env.*
+!.env.example
+
+# Editors and macOS / Google Drive artefacts (Phase 4)
+.idea/
+.vscode/
+Icon?
+
+# NOT ignored on purpose (Phase 4 gate check): dvc.yaml, dvc.lock, params.yaml, .dvcignore,
+# uv.lock, .python-version, reports/*.json, docs/tables/*.csv. `*.csv` is not ignored globally.
