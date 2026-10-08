@@ -15,7 +15,11 @@ Transform kinds (``params.transforms.features``):
 * ``passthrough``: binary flags; not centred or scaled (mean 0, std 1 stored).
 
 No global scaler exists by design: Phase 6 fits one :class:`NormStats` per fit and saves it next
-to that fit's checkpoint. Torch-free and xgboost-free (OpenMP rule, ADL-051).
+to that fit's checkpoint. Every saved artefact carries its **fit provenance**
+(:data:`PROVENANCE_KEYS`: analysis, fold block, training part and index, and the SHA-256 of
+``site_table.parquet`` and ``fold_assignment.parquet``; built by
+:func:`src.data.folds.fit_provenance`), and the part must be a training part (L5).
+Torch-free and xgboost-free (OpenMP rule, ADL-051).
 
 Owning phase: 5.
 """
@@ -30,11 +34,30 @@ from typing import Final, Literal
 
 import numpy as np
 
-__all__ = ["KINDS", "NormStats"]
+__all__ = ["FIT_PARTS", "KINDS", "PROVENANCE_KEYS", "NormStats"]
 
 Kind = Literal["identity", "log", "log_offset", "passthrough"]
 KINDS: Final[tuple[str, ...]] = ("identity", "log", "log_offset", "passthrough")
+#: Keys of the fit provenance stored in the artefact (all values are strings).
+PROVENANCE_KEYS: Final[tuple[str, ...]] = (
+    "analysis",
+    "family",
+    "fold_table_sha256",
+    "index",
+    "outer_fold",
+    "part",
+    "repeat",
+    "site_table_sha256",
+)
+#: Fold-view parts a scaler may be fitted on (protocol 3.4 item 1, L5).
+FIT_PARTS: Final[tuple[str, ...]] = ("train", "inner_train", "es_train")
 _FORMAT: Final[str] = "annxs-normstats-v1"
+
+
+def _provenance_items(provenance: Mapping[str, str] | None) -> tuple[tuple[str, str], ...]:
+    if provenance is None:
+        return ()
+    return tuple(sorted((str(k), str(v)) for k, v in provenance.items()))
 
 
 def _forward(x: np.ndarray, kind: str, offset: float) -> np.ndarray:
@@ -70,6 +93,9 @@ class NormStats:
         standard deviation of the transformed training values.
     n_fit
         Number of training rows used.
+    provenance
+        Sorted ``(key, value)`` pairs over :data:`PROVENANCE_KEYS`, or empty (in-memory use
+        only; :meth:`save` requires it).
     """
 
     names: tuple[str, ...]
@@ -78,6 +104,7 @@ class NormStats:
     mean: tuple[float, ...]
     std: tuple[float, ...]
     n_fit: int
+    provenance: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self) -> None:
         n = len(self.names)
@@ -86,6 +113,17 @@ class NormStats:
         bad = sorted(set(self.kinds) - set(KINDS))
         if bad:
             raise ValueError(f"unknown transform kinds: {bad}")
+        if self.provenance:
+            prov = dict(self.provenance)
+            if tuple(sorted(prov)) != PROVENANCE_KEYS:
+                raise ValueError(f"provenance keys must be {PROVENANCE_KEYS}, got {sorted(prov)}")
+            if prov["part"] not in FIT_PARTS:
+                raise ValueError(f"NormStats may be fitted on {FIT_PARTS} only (L5)")
+
+    @property
+    def provenance_dict(self) -> dict[str, str]:
+        """The fit provenance as a dict (empty if none)."""
+        return dict(self.provenance)
 
     # ------------------------------------------------------------------ fit
     @classmethod
@@ -95,11 +133,13 @@ class NormStats:
         names: Sequence[str],
         kinds: Mapping[str, str],
         log_offset_frac: float,
+        provenance: Mapping[str, str] | None = None,
     ) -> NormStats:
         """Fit on training rows only (``x_train``: shape (n, F), raw feature values).
 
-        Raises ``ValueError`` on non-finite input, a missing transform kind, a domain violation
-        or a zero-variance (non-passthrough) feature.
+        ``provenance`` identifies the fitting part (:func:`src.data.folds.fit_provenance`).
+        Raises ``ValueError`` on non-finite input, a missing transform kind, a domain violation,
+        a zero-variance (non-passthrough) feature or an invalid provenance.
         """
         x = np.asarray(x_train, dtype=np.float64)
         if x.ndim != 2 or x.shape[1] != len(names) or x.shape[0] < 2:
@@ -130,7 +170,15 @@ class NormStats:
             offsets.append(offset)
             means.append(mu)
             stds.append(sd)
-        return cls(tuple(names), tuple(k_list), tuple(offsets), tuple(means), tuple(stds), len(x))
+        return cls(
+            tuple(names),
+            tuple(k_list),
+            tuple(offsets),
+            tuple(means),
+            tuple(stds),
+            len(x),
+            _provenance_items(provenance),
+        )
 
     # ------------------------------------------------------------------ apply
     def transform(self, x: np.ndarray) -> np.ndarray:
@@ -166,6 +214,7 @@ class NormStats:
             "mean": [float(v).hex() for v in self.mean],
             "std": [float(v).hex() for v in self.std],
             "n_fit": self.n_fit,
+            "provenance": dict(self.provenance),
         }
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
 
@@ -182,10 +231,13 @@ class NormStats:
             mean=tuple(float.fromhex(v) for v in raw["mean"]),
             std=tuple(float.fromhex(v) for v in raw["std"]),
             n_fit=int(raw["n_fit"]),
+            provenance=_provenance_items(raw["provenance"]),
         )
 
     def save(self, path: Path) -> None:
-        """Write the JSON artefact."""
+        """Write the JSON artefact; refuses one without fit provenance."""
+        if not self.provenance:
+            raise ValueError("NormStats.save needs the fit provenance (folds.fit_provenance)")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(self.to_json(), encoding="utf-8")
 

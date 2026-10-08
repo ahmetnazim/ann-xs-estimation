@@ -75,6 +75,16 @@ class SiteDataset(Dataset[Batch]):
         self.x = torch.from_numpy(stats.transform(raw_x))
         self.phys = torch.from_numpy(phys)
         self.y = torch.from_numpy(y)
+        n = len(sub)
+        for name, tensor, width in (
+            ("x", self.x, len(features)),
+            ("phys", self.phys, 2),
+            ("y", self.y, 4),
+        ):
+            if tensor.dtype != torch.float64 or tensor.device.type != "cpu":
+                raise TypeError(f"{name} must be float64 on CPU (protocol 4.2)")
+            if tuple(tensor.shape) != (n, width):
+                raise ValueError(f"{name} shape {tuple(tensor.shape)} != {(n, width)}")
         self.row = torch.from_numpy(np.asarray(rows, dtype=np.int64).copy())
         self.omega_value = 1.0 / n_train
         blind = [j for j, name in enumerate(features) if name not in BLIND_EXCLUDED]

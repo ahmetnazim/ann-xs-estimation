@@ -21,7 +21,7 @@ from typing import Final
 import numpy as np
 import pandas as pd
 
-__all__ = ["ANALYSES", "PARTS", "Analysis", "analysis_frame", "get_view"]
+__all__ = ["ANALYSES", "PARTS", "Analysis", "analysis_frame", "fit_provenance", "get_view"]
 
 
 @dataclass(frozen=True)
@@ -120,3 +120,39 @@ def get_view(
             es = block[col].to_numpy(dtype=bool)
             mask = ~test & (es if part == "es_val" else ~es)
     return np.flatnonzero(mask).astype(np.int64)
+
+
+def fit_provenance(
+    analysis: str,
+    family: str,
+    repeat: int,
+    outer_fold: int,
+    part: str,
+    index: int | None,
+    *,
+    site_table_sha256: str,
+    fold_table_sha256: str,
+) -> dict[str, str]:
+    """Identity of one fitting part, stored in the ``NormStats`` JSON (L5 audit trail).
+
+    The two hashes are the SHA-256 of ``site_table.parquet`` and ``fold_assignment.parquet``
+    (``src.data.io.sha256_file``). ``index`` is the inner fold or ensemble member (``""`` when
+    ``None``). ``NormStats`` additionally rejects non-training parts.
+    """
+    if analysis not in ANALYSES:
+        raise ValueError(f"unknown analysis {analysis!r}")
+    if part not in PARTS:
+        raise ValueError(f"unknown part {part!r}; expected one of {PARTS}")
+    for name, digest in (("site_table", site_table_sha256), ("fold_table", fold_table_sha256)):
+        if len(digest) != 64 or set(digest) - set("0123456789abcdef"):
+            raise ValueError(f"{name}_sha256 must be 64 lower-case hex characters")
+    return {
+        "analysis": analysis,
+        "family": family,
+        "fold_table_sha256": fold_table_sha256,
+        "index": "" if index is None else str(index),
+        "outer_fold": str(outer_fold),
+        "part": part,
+        "repeat": str(repeat),
+        "site_table_sha256": site_table_sha256,
+    }
