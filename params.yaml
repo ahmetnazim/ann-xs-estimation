@@ -217,6 +217,15 @@ condition:                                      # 1.5; 2.6
   qsel_ratio_flag: 2.0                          # 2.6: F_Qsel if |ln(Q_obs / Q_E)| > ln 2
   tie_break: latest_date                        # 2.6: ties go to the most recent q_meas_dt
 
+features:                                       # P5-D5; 2.1, 2.3 (ADL: Batch C)
+  landcover_groups:                             # StreamCat NLCD 2016 Ws classes summed per group (%)
+    urban: [pcturbop2016ws, pcturblo2016ws, pcturbmd2016ws, pcturbhi2016ws]
+    forest: [pctdecid2016ws, pctconif2016ws, pctmxfst2016ws]
+    agriculture: [pcthay2016ws, pctcrop2016ws]
+  d50_mm_to_m: 0.001                            # 2.1: D50[mm] x 1e-3 (unit in the DBF field name)
+  aridity_scale: 0.0001                         # 2.1: Global-AI v3.1 readme, AI = value x 0.0001
+  aridity_fill: [0, 65535]                      # GeoTIFF declares no nodata: 0 ocean, 65535 uint16 fill
+
 domain:                                         # 1.5; 2.2 (supersedes provisional n, state 10.1)
   n_bounds: [0.005, 0.6]                        # 2.2 P3-01: transform bounds; Delta_n = ln 120
   n_lit: [0.012, 0.33]                          # 2.2 P3-16: literature range N_lit (H4)

@@ -12,35 +12,45 @@ stages:
       outs: ["data/raw/${item}"]
   validate_raw:
     cmd: python -m src.data.validate_raw
-    deps: [src/data/validate_raw.py, src/data/schemas.py, data/raw/hydroswot, data/raw/nhdplusv21,
-           data/raw/streamcat, data/raw/usgs_attrs, data/raw/d50, data/raw/aridity, data/raw/physiography]
+    deps: [src/data/validate_raw.py, src/data/schemas.py, src/data/readers.py, src/data/nhdplus.py,
+           src/data/io.py, data/raw/hydroswot, data/raw/nhdplusv21, data/raw/streamcat,
+           data/raw/usgs_attrs, data/raw/d50, data/raw/aridity, data/raw/physiography]
+    params: [acquire.streamcat]
     metrics: [{reports/validate_raw.json: {cache: false}}]
   unit_map:
     cmd: python -m src.data.unit_map
-    deps: [src/data/unit_map.py, reports/validate_raw.json, data/raw/hydroswot, data/raw/nhdplusv21]
+    deps: [src/data/unit_map.py, src/data/schemas.py, src/data/readers.py, src/data/nhdplus.py,
+           src/data/io.py, reports/validate_raw.json, data/raw/hydroswot, data/raw/nhdplusv21]
     params: [domain.s_floor]
     outs: [data/processed/unit_mapped]
   qc:
     cmd: python -m src.data.qc
-    deps: [src/data/qc.py, data/processed/unit_mapped, data/raw/physiography]
-    params: [qc]
+    deps: [src/data/qc.py, src/data/schemas.py, src/data/io.py, data/processed/unit_mapped,
+           data/raw/physiography]
+    params: [qc, domain.r_bounds]
     outs: [data/processed/qc/hydroswot_init.parquet]
     metrics: [{reports/qc_counts.json: {cache: false}}]
   link:
     cmd: python -m src.data.link
-    deps: [src/data/link.py, data/processed/qc/hydroswot_init.parquet, data/processed/unit_mapped]
+    deps: [src/data/link.py, src/data/nhdplus.py, src/data/io.py,
+           data/processed/qc/hydroswot_init.parquet, data/processed/unit_mapped, data/raw/nhdplusv21]
     params: [link]
     outs: [data/processed/link/site_comid.parquet]
     metrics: [{reports/link_counts.json: {cache: false}}]
   condition_extract:
     cmd: python -m src.data.condition_extract
-    deps: [src/data/condition_extract.py, data/processed/qc/hydroswot_init.parquet, data/processed/link/site_comid.parquet]
+    deps: [src/data/condition_extract.py, src/data/io.py, data/processed/qc/hydroswot_init.parquet,
+           data/processed/link/site_comid.parquet, data/processed/unit_mapped]
     params: [condition]
     outs: [data/processed/site_core.parquet]
+    metrics: [{reports/condition_counts.json: {cache: false}}]
   features:
     cmd: python -m src.data.features
-    deps: [src/data/features.py, data/processed/site_core.parquet, data/processed/unit_mapped, data/raw/streamcat,
-           data/raw/usgs_attrs, data/raw/d50, data/raw/aridity, data/raw/physiography]
+    deps: [src/data/features.py, src/data/schemas.py, src/data/readers.py, src/data/nhdplus.py,
+           src/data/io.py, src/data/validate_raw.py, data/processed/site_core.parquet,
+           data/processed/unit_mapped, data/raw/streamcat, data/raw/usgs_attrs, data/raw/d50,
+           data/raw/aridity, data/raw/nhdplusv21]
+    params: [features, acquire.streamcat]
     outs: [data/processed/site_table.parquet]
     metrics: [{reports/feature_missing.json: {cache: false}}]
   split:

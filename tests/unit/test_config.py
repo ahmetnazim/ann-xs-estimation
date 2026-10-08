@@ -160,6 +160,16 @@ EXPECTED: dict[str, dict[str, Any]] = {
     },
     "link": {"snap_max_m": 500, "da_ratio_max": 1.25},  # 1.5, 2.5
     "condition": {"qsel_ratio_flag": 2.0, "tie_break": "latest_date"},  # 1.5, 2.6
+    "features": {  # 2.1, 2.3; P5-D5 (Phase 5 Batch C ADL)
+        "landcover_groups": {
+            "urban": ["pcturbop2016ws", "pcturblo2016ws", "pcturbmd2016ws", "pcturbhi2016ws"],
+            "forest": ["pctdecid2016ws", "pctconif2016ws", "pctmxfst2016ws"],
+            "agriculture": ["pcthay2016ws", "pctcrop2016ws"],
+        },
+        "d50_mm_to_m": 0.001,
+        "aridity_scale": 0.0001,
+        "aridity_fill": [0, 65535],
+    },
     "domain": {  # 1.5, 2.2
         "n_bounds": [0.005, 0.6],
         "n_lit": [0.012, 0.33],

@@ -184,6 +184,15 @@ class ConditionParams(_Frozen):
     tie_break: Literal["latest_date"]
 
 
+class FeaturesParams(_Frozen):
+    """Per-feature data rules of the ``features`` stage (P5-D5; protocol 2.1, 2.3)."""
+
+    landcover_groups: dict[str, tuple[str, ...]] = Field(min_length=1)
+    d50_mm_to_m: PosFloat
+    aridity_scale: PosFloat
+    aridity_fill: tuple[int, ...] = Field(min_length=1)
+
+
 class DomainParams(_Frozen):
     """Admissible domain and transform bounds (protocol 2.2; proofs 1.3, 7.6)."""
 
@@ -513,6 +522,7 @@ class ProtocolParams(_Frozen):
     qc: QcParams
     link: LinkParams
     condition: ConditionParams
+    features: FeaturesParams
     domain: DomainParams
     splits: SplitsParams
     audit: AuditParams
