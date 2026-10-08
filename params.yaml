@@ -1,0 +1,168 @@
+# params.yaml -- pre-registered study parameters; single source of truth (P4-D4 (a); ADL-052).
+# Every value equals docs/3_experimental_protocol.md at a98feff; the governing section is cited
+# per key ("4.2" = protocol section 4.2; "Prop." = docs/2_mathematical_proofs.md).
+# Changing ANY value requires a new ADL row (PHASE_04 rule 4). Read only by
+# src/config.py:load_settings(); environment variables can never override these values.
+# Groups seeds..audit are the protocol 1.5 keys read by dvc.yaml; audit_rules, model..evaluation and
+# compute are the additive Phase 4 extension carrying protocol 3.6 and 4.1-4.8 (P4-D4 (a)).
+# Exponents are written as 1.0e-N so that YAML 1.1 parsers read them as floats.
+
+seeds:                                          # 1.5; 3.2; 4.4
+  global: 20261008                              # 1.5; S-IND and S-RND seed (3.2)
+  sid_repeats: [20261008, 20261009, 20261010]   # 3.2: S-ID, R = 3 repeats
+
+acquire:                                        # 1.1 manifest; 1.5. Filled in Phase 5 (ADL-043)
+  hydroswot:       {urls: [], md5: null, sha256_pinned: null}
+  nhdplusv21:      {urls: [], md5: null, sha256_pinned: null}
+  streamcat:       {urls: [], md5: null, sha256_pinned: null}
+  usgs_attrs:      {urls: [], md5: null, sha256_pinned: null}
+  d50:             {urls: [], md5: null, sha256_pinned: null}
+  aridity:         {urls: [], md5: null, sha256_pinned: null}
+  physiography:    {urls: [], md5: null, sha256_pinned: null}
+  ehydro:          {urls: [], md5: null, sha256_pinned: null}
+  ehydro_author:   {urls: [], md5: null, sha256_pinned: null}   # 1.5 item 4: inbox file, SHA-256 pinned
+  zarrabi_product: {urls: [], md5: null, sha256_pinned: null}
+  hyg:             {urls: [], md5: null, sha256_pinned: null}
+
+qc:                                             # 1.5; 2.2; 2.4
+  q_tol: 0.05                                   # 2.4 R7: discharge pairs within +/-5 %
+  epsA_tol: 0.05                                # 2.2, 2.4 R8: |eps_A| <= ln(1 + 0.05) = ln 1.05
+  W_max_m: 5000                                 # 2.2 R5: 0 < W <= 5000 m
+  dbar_max_m: 50                                # 2.2 R5: 0 < d_bar <= 50 m
+  dmax_max_m: 70                                # 2.2 R5: 0 < d_max <= 70 m
+  V_max_ms: 6                                   # 2.2 R5: 0 < V <= 6 m/s
+
+link:                                           # 1.5; 2.5
+  snap_max_m: 500                               # 2.5 step 2: snap fallback radius (EPSG:5070)
+  da_ratio_max: 1.25                            # 2.5 step 3: |ln(TotDASqKm / DA_site)| <= ln 1.25
+
+condition:                                      # 1.5; 2.6
+  qsel_ratio_flag: 2.0                          # 2.6: F_Qsel if |ln(Q_obs / Q_E)| > ln 2
+  tie_break: latest_date                        # 2.6: ties go to the most recent q_meas_dt
+
+domain:                                         # 1.5; 2.2 (supersedes provisional n, state 10.1)
+  n_bounds: [0.005, 0.6]                        # 2.2 P3-01: transform bounds; Delta_n = ln 120
+  n_lit: [0.012, 0.33]                          # 2.2 P3-16: literature range N_lit (H4)
+  r_bounds: [0.5, 10.0]                         # 2.2 P3-02: r_min = 1/2 is the Prop. 2.6 boundary (O-9)
+  s_floor: 1.0e-5                               # 2.2 P3-03: NHDPlusV2 slope floor (A1.1)
+
+splits:                                         # 1.5; 3.2-3.4
+  sid_k: 5                                      # 3.2: S-ID K = 5
+  sid_r: 3                                      # 3.2: S-ID R = 3
+  inner_k: 3                                    # 3.4: grouped inner CV
+  es_frac: 0.10                                 # 3.3, 4.2: member-specific grouped early-stopping split
+  lro_min_groups: 50                            # 3.2: S-LRO division merge rule
+  tail_deciles: [1, 10]                         # 3.2: S-TAIL-DA test deciles
+  tail_order_min: 7                             # 3.2: S-TAIL-SO test on stream order >= 7
+  ind_dedupe_m: 1000                            # 3.5 L8: eHydro dedupe radius, 1 km (EPSG:5070)
+
+audit:                                          # 1.5; 3.6 (diagnostic only)
+  knn_k: 8                                      # 3.6.2: weights W1, k nearest neighbours
+  idw_band_km: 100                              # 3.6.2: weights W2, inverse distance band
+  permutations: 999                             # 3.6.2, 3.6.3
+  lisa_alpha: 0.01                              # 3.6.3
+  dist_classes_km: [10, 25, 50, 100, 250, 500]  # 3.6.2: correlogram class upper edges
+  vgm_bins: 20                                  # 3.6.4: equal-pair-count lag classes
+  vgm_max_km: 500                               # 3.6.4
+  rho_cap_km: 250                               # 3.6.4: rho* = min(range, 250 km)
+  moran_material: 0.10                          # 3.6.7: condition D
+  nested_psi: 0.5                               # 3.6.5: strongly nested if psi >= 0.5
+  nested_share_material: 0.20                   # 3.6.7: condition N
+
+audit_rules:                                    # 3.6.4, 3.6.6, 3.6.7: audit decision constants
+  vgm_models: [spherical, exponential, nugget]  # 3.6.4: candidates, least squares weighted by N_k
+  nugget_sse_margin: 0.05                       # 3.6.4: pure nugget within 5 % of best SSE -> rho = 0
+  range_sill_frac: 0.95                         # 3.6.4: practical range at 95 % of the sill
+  moran_pseudo_p: 0.01                          # 3.6.7: condition D requires pseudo-p < 0.01
+  aoa_iqr_mult: 1.5                             # 3.6.6: AOA threshold = Q3 + 1.5 IQR of training DI
+
+model:                                          # 4.1; 4.2
+  backbone:                                     # 4.2 P3-17
+    hidden_layers: 3                            # MLP 3 x 128
+    hidden_width: 128
+    activation: silu
+    norm: layernorm                             # row-wise; no BatchNorm (Prop. 3.4 scope)
+  optimizer:                                    # 4.2
+    name: adamw
+    lr: 1.0e-3
+    schedule: cosine
+    batch_size: 256
+    max_epochs: 500
+    patience: 50                                # on the member's grouped 10 % split
+  inner_grid:                                   # 4.2
+    weight_decay: [0.0, 1.0e-5, 1.0e-4, 1.0e-3]
+    lr: [1.0e-3, 3.0e-4]
+    m4_lambda_max: [10.0, 100.0, 1000.0]        # 4.1 P3-09: lambda_max by inner CV (M4 only)
+  loss_weights:                                 # 4.2 P3-06 (w_A = 1 is a sensitivity run)
+    w_W: 1.0
+    w_dbar: 1.0
+    w_t: 1.0
+    w_A: 0.0
+  m4_schedule:                                  # 4.1 P3-09: lambda_M(e) = min(lambda0 * gamma^e, lambda_max)
+    lambda0: 1.0
+    gamma: 1.1
+  xgb:                                          # 4.2: XGB grid (M1, M2-XGB, M6-XGB)
+    max_depth: [4, 6, 8]
+    eta: [0.03, 0.1]
+    min_child_weight: [1, 5]
+    subsample: 0.8
+    colsample: 0.8
+    max_rounds: 2000
+    early_stopping_rounds: 100
+  baselines:                                    # 4.1
+    m0_min_division_sites: 30                   # M0: < 30 training sites -> pooled national curve
+    m1_floor_quantile: 0.001                    # M1: negative predictions floored at the 0.1th percentile
+
+solver:                                         # 4.2 P3-12; Props 3.3-3.6
+  tau_l: 1.0e-10                                # stopping tolerance (log units)
+  k_max: 40                                     # maximum Picard iterations
+  tau_q: 1.0e-8                                 # quadrature tolerance (Phase 7, E1-E5)
+  stopping: per_row                             # Prop. 3.4 (c)
+  quadrature: tanh_sinh                         # double-exponential rule; ln F via log1p
+
+uq:                                             # 4.2 P3-13; 4.6 P3-18
+  ensemble_m: 10
+  sigma_min: 0.01
+  beta_nll: 0.5                                 # beta-NLL, beta_N = 0.5
+  warm_start_epochs: 20                         # MSE warm start
+  alpha: 0.10                                   # 4.6: nominal 90 % central interval
+  coverage_band: [0.85, 0.95]                   # 4.6: quality target on pooled S-ID OOF, not a hypothesis
+  correlation_head: false                       # 4.2
+  conformal: false                              # 4.6: not adopted
+
+priors:                                         # 4.1 P3-07, P3-08
+  strickler:
+    c_s: 0.047                                  # n_S = c_S * D50^(1/6), D50 in m (Strickler 1923; no DOI)
+  jarrett:                                      # Jarrett 1985, eq. 6
+    c_j_us: 0.39                                # R in ft
+    c_j_si: 0.3225                              # = 0.39 * 0.3048^0.16 (SI)
+    a_j: 0.38
+    b_j: -0.16                                  # Prop. 7.5 requires b_J < 5/3
+    s_j: 0.002                                  # Jarrett branch for S >= S_J
+    validity_s: [0.002, 0.04]                   # rows outside are flagged, never clipped
+    validity_r_ft: [0.5, 7.0]
+  strickler_prior:                              # ablation A3-SP
+    tau_p: 0.5
+    lambda_p: 2.0                               # = 1 / (2 tau_p^2)
+  strickler_residual:                           # ablation A3-SR
+    varpi: 0.01
+    lambda_delta: 2.865                         # = lambda_p * Delta_n^2 / 16 (Prop. 7.2 at pi_S = 1/2)
+
+evaluation:                                     # 4.4-4.7 (P3-15, P3-16; O-7, O-10)
+  mstar_candidates: [M1, M2-MLP, M2-XGB]        # 4.4: M* chosen on S-ID OOF RMSE_log, per target
+  bootstrap:                                    # 4.4: paired cluster bootstrap over sites
+    b: 10000
+    alpha_b: 0.05                               # percentile 95 % CI
+    seed: 20261008
+    stratify: division
+  s2:                                           # 4.5
+    n_contrasts: 4
+    alpha: 0.05                                 # Bonferroni level 1 - 0.05/4 = 0.9875 (derived)
+  h4:                                           # 4.4 H4
+    vartheta: 0.05                              # boundary band (n < 0.0064 or n > 0.47)
+    pi_boundary_max: 0.10                       # falsified if pi_boundary > 0.10
+    pi_lit_min: 0.80                            # falsified if pi_lit < 0.80
+  no_loss_margin_log: 0.05                      # 4.7 O-10
+
+compute:                                        # 4.8 (ADL-048)
+  pilot_max_fit_s: 120                          # Phase 6 timing pilot: > 120 s per fit -> ADL revision
