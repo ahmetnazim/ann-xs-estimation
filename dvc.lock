@@ -373,8 +373,8 @@ stages:
       size: 6589
     - path: src/data/schemas.py
       hash: md5
-      md5: b87a8a012ab8ad1851a77c51295edddc
-      size: 10857
+      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
+      size: 13780
     - path: src/data/validate_raw.py
       hash: md5
       md5: 4f2ca4e8bc6b6efac47f8e702da06f72
@@ -442,8 +442,8 @@ stages:
       size: 6589
     - path: src/data/schemas.py
       hash: md5
-      md5: b87a8a012ab8ad1851a77c51295edddc
-      size: 10857
+      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
+      size: 13780
     - path: src/data/unit_map.py
       hash: md5
       md5: 76ceb28eccf09c659b6fe1aebceb34e7
@@ -480,8 +480,8 @@ stages:
       size: 10928
     - path: src/data/schemas.py
       hash: md5
-      md5: b87a8a012ab8ad1851a77c51295edddc
-      size: 10857
+      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
+      size: 13780
     params:
       params.yaml:
         domain.r_bounds:
@@ -639,8 +639,8 @@ stages:
       size: 6589
     - path: src/data/schemas.py
       hash: md5
-      md5: b87a8a012ab8ad1851a77c51295edddc
-      size: 10857
+      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
+      size: 13780
     - path: src/data/validate_raw.py
       hash: md5
       md5: 4f2ca4e8bc6b6efac47f8e702da06f72
@@ -700,3 +700,68 @@ stages:
       hash: md5
       md5: 20a94a4626084477edd32a32e1cd06f7
       size: 2270
+  split:
+    cmd: python -m src.data.split
+    deps:
+    - path: data/processed/qc/hydroswot_init.parquet
+      hash: md5
+      md5: 9711cc7503caa2d2f6669abc713cb117
+      size: 2950832
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/raw/physiography
+      hash: md5
+      md5: e5b71a1597c9c89417c9c6312b45c367.dir
+      size: 1108956
+      nfiles: 11
+    - path: src/data/io.py
+      hash: md5
+      md5: 019c1fbf8ac4b95dd22b3cb458015cf0
+      size: 4437
+    - path: src/data/qc.py
+      hash: md5
+      md5: 7f798b49bc8b48ed392e6a642dd95a4d
+      size: 10928
+    - path: src/data/schemas.py
+      hash: md5
+      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
+      size: 13780
+    - path: src/data/split.py
+      hash: md5
+      md5: 7fe42bac6eadef97a154241713c68801
+      size: 22390
+    params:
+      params.yaml:
+        seeds:
+          global: 20261008
+          sid_repeats:
+          - 20261008
+          - 20261009
+          - 20261010
+        splits:
+          sid_k: 5
+          sid_r: 3
+          inner_k: 3
+          es_frac: 0.1
+          lro_min_groups: 50
+          tail_deciles:
+          - 1
+          - 10
+          tail_order_min: 7
+          ind_dedupe_m: 1000
+        uq.ensemble_m: 10
+    outs:
+    - path: data/processed/splits/fold_assignment.parquet
+      hash: md5
+      md5: e09eafc7d1032584d8ce9fd56cdf1dc3
+      size: 609163
+    - path: data/processed/splits/srnd_assignment.parquet
+      hash: md5
+      md5: 3e01536b960383e982aace1378c4adc2
+      size: 232119
+    - path: reports/split_summary.json
+      hash: md5
+      md5: 571936825c2fa38e50d17bc5ecaa0b05
+      size: 10396

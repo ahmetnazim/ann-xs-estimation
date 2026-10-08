@@ -1,0 +1,483 @@
+{
+  "S-ID": {
+    "strata_quintile_groups": [
+      971,
+      970,
+      970,
+      970,
+      970
+    ]
+  },
+  "S-LRO": {
+    "groups_per_division": {
+      "APPALACHIAN HIGHLANDS": 1262,
+      "ATLANTIC PLAIN": 824,
+      "INTERIOR HIGHLANDS": 188,
+      "INTERIOR PLAINS": 1628,
+      "INTERMONTANE PLATEAUS": 260,
+      "LAURENTIAN UPLAND": 99,
+      "PACIFIC MOUNTAIN SYSTEM": 320,
+      "ROCKY MOUNTAIN SYSTEM": 270
+    },
+    "merges": []
+  },
+  "S-RND": {
+    "rows": 38693,
+    "rows_init": 39927,
+    "rows_outside_U": 1234,
+    "sites_in_both": 3006,
+    "test_rows": 9673
+  },
+  "S-TAIL-DA": {
+    "decile_cutpoints_km2": [
+      72.42876000000001,
+      171.74768,
+      309.53448000000003,
+      513.47916,
+      831.5352,
+      1370.9559999999997,
+      2440.37502,
+      4732.806780000001,
+      13955.845439999997
+    ],
+    "test_deciles": [
+      1,
+      10
+    ]
+  },
+  "S-TAIL-SO": {
+    "test_order_min": 7
+  },
+  "blocks": [
+    {
+      "es_member_1_sites": 390,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1303,
+        "1": 1300,
+        "2": 1299
+      },
+      "lro_division": null,
+      "outer_fold": 0,
+      "repeat": 0,
+      "test_groups": 971,
+      "test_sites": 977,
+      "train_groups": 3880,
+      "train_sites": 3902
+    },
+    {
+      "es_member_1_sites": 390,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1296,
+        "1": 1302,
+        "2": 1301
+      },
+      "lro_division": null,
+      "outer_fold": 1,
+      "repeat": 0,
+      "test_groups": 970,
+      "test_sites": 980,
+      "train_groups": 3881,
+      "train_sites": 3899
+    },
+    {
+      "es_member_1_sites": 391,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1304,
+        "1": 1300,
+        "2": 1303
+      },
+      "lro_division": null,
+      "outer_fold": 2,
+      "repeat": 0,
+      "test_groups": 970,
+      "test_sites": 972,
+      "train_groups": 3881,
+      "train_sites": 3907
+    },
+    {
+      "es_member_1_sites": 391,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1301,
+        "1": 1300,
+        "2": 1303
+      },
+      "lro_division": null,
+      "outer_fold": 3,
+      "repeat": 0,
+      "test_groups": 970,
+      "test_sites": 975,
+      "train_groups": 3881,
+      "train_sites": 3904
+    },
+    {
+      "es_member_1_sites": 391,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1306,
+        "1": 1294,
+        "2": 1304
+      },
+      "lro_division": null,
+      "outer_fold": 4,
+      "repeat": 0,
+      "test_groups": 970,
+      "test_sites": 975,
+      "train_groups": 3881,
+      "train_sites": 3904
+    },
+    {
+      "es_member_1_sites": 393,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1301,
+        "1": 1302,
+        "2": 1302
+      },
+      "lro_division": null,
+      "outer_fold": 0,
+      "repeat": 1,
+      "test_groups": 970,
+      "test_sites": 974,
+      "train_groups": 3881,
+      "train_sites": 3905
+    },
+    {
+      "es_member_1_sites": 391,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1302,
+        "1": 1301,
+        "2": 1300
+      },
+      "lro_division": null,
+      "outer_fold": 1,
+      "repeat": 1,
+      "test_groups": 970,
+      "test_sites": 976,
+      "train_groups": 3881,
+      "train_sites": 3903
+    },
+    {
+      "es_member_1_sites": 392,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1301,
+        "1": 1301,
+        "2": 1302
+      },
+      "lro_division": null,
+      "outer_fold": 2,
+      "repeat": 1,
+      "test_groups": 970,
+      "test_sites": 975,
+      "train_groups": 3881,
+      "train_sites": 3904
+    },
+    {
+      "es_member_1_sites": 393,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1299,
+        "1": 1298,
+        "2": 1303
+      },
+      "lro_division": null,
+      "outer_fold": 3,
+      "repeat": 1,
+      "test_groups": 971,
+      "test_sites": 979,
+      "train_groups": 3880,
+      "train_sites": 3900
+    },
+    {
+      "es_member_1_sites": 390,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1303,
+        "1": 1301,
+        "2": 1300
+      },
+      "lro_division": null,
+      "outer_fold": 4,
+      "repeat": 1,
+      "test_groups": 970,
+      "test_sites": 975,
+      "train_groups": 3881,
+      "train_sites": 3904
+    },
+    {
+      "es_member_1_sites": 392,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1298,
+        "1": 1300,
+        "2": 1306
+      },
+      "lro_division": null,
+      "outer_fold": 0,
+      "repeat": 2,
+      "test_groups": 970,
+      "test_sites": 975,
+      "train_groups": 3881,
+      "train_sites": 3904
+    },
+    {
+      "es_member_1_sites": 392,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1305,
+        "1": 1300,
+        "2": 1299
+      },
+      "lro_division": null,
+      "outer_fold": 1,
+      "repeat": 2,
+      "test_groups": 970,
+      "test_sites": 975,
+      "train_groups": 3881,
+      "train_sites": 3904
+    },
+    {
+      "es_member_1_sites": 393,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1303,
+        "1": 1300,
+        "2": 1301
+      },
+      "lro_division": null,
+      "outer_fold": 2,
+      "repeat": 2,
+      "test_groups": 970,
+      "test_sites": 975,
+      "train_groups": 3881,
+      "train_sites": 3904
+    },
+    {
+      "es_member_1_sites": 393,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1299,
+        "1": 1302,
+        "2": 1301
+      },
+      "lro_division": null,
+      "outer_fold": 3,
+      "repeat": 2,
+      "test_groups": 971,
+      "test_sites": 977,
+      "train_groups": 3880,
+      "train_sites": 3902
+    },
+    {
+      "es_member_1_sites": 393,
+      "family": "S-ID",
+      "inner_fold_sites": {
+        "0": 1301,
+        "1": 1297,
+        "2": 1304
+      },
+      "lro_division": null,
+      "outer_fold": 4,
+      "repeat": 2,
+      "test_groups": 970,
+      "test_sites": 977,
+      "train_groups": 3881,
+      "train_sites": 3902
+    },
+    {
+      "es_member_1_sites": 489,
+      "family": "S-IND",
+      "inner_fold_sites": {
+        "0": 1627,
+        "1": 1625,
+        "2": 1627
+      },
+      "lro_division": null,
+      "outer_fold": 0,
+      "repeat": 0,
+      "test_groups": 0,
+      "test_sites": 0,
+      "train_groups": 4851,
+      "train_sites": 4879
+    },
+    {
+      "es_member_1_sites": 361,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1203,
+        "1": 1199,
+        "2": 1204
+      },
+      "lro_division": "APPALACHIAN HIGHLANDS",
+      "outer_fold": 0,
+      "repeat": 0,
+      "test_groups": 1262,
+      "test_sites": 1273,
+      "train_groups": 3589,
+      "train_sites": 3606
+    },
+    {
+      "es_member_1_sites": 405,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1348,
+        "1": 1350,
+        "2": 1353
+      },
+      "lro_division": "ATLANTIC PLAIN",
+      "outer_fold": 1,
+      "repeat": 0,
+      "test_groups": 824,
+      "test_sites": 828,
+      "train_groups": 4027,
+      "train_sites": 4051
+    },
+    {
+      "es_member_1_sites": 471,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1561,
+        "1": 1566,
+        "2": 1563
+      },
+      "lro_division": "INTERIOR HIGHLANDS",
+      "outer_fold": 2,
+      "repeat": 0,
+      "test_groups": 188,
+      "test_sites": 189,
+      "train_groups": 4663,
+      "train_sites": 4690
+    },
+    {
+      "es_member_1_sites": 323,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1082,
+        "1": 1077,
+        "2": 1082
+      },
+      "lro_division": "INTERIOR PLAINS",
+      "outer_fold": 3,
+      "repeat": 0,
+      "test_groups": 1628,
+      "test_sites": 1638,
+      "train_groups": 3223,
+      "train_sites": 3241
+    },
+    {
+      "es_member_1_sites": 465,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1535,
+        "1": 1543,
+        "2": 1541
+      },
+      "lro_division": "INTERMONTANE PLATEAUS",
+      "outer_fold": 4,
+      "repeat": 0,
+      "test_groups": 260,
+      "test_sites": 260,
+      "train_groups": 4591,
+      "train_sites": 4619
+    },
+    {
+      "es_member_1_sites": 479,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1592,
+        "1": 1595,
+        "2": 1593
+      },
+      "lro_division": "LAURENTIAN UPLAND",
+      "outer_fold": 5,
+      "repeat": 0,
+      "test_groups": 99,
+      "test_sites": 99,
+      "train_groups": 4752,
+      "train_sites": 4780
+    },
+    {
+      "es_member_1_sites": 457,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1517,
+        "1": 1519,
+        "2": 1521
+      },
+      "lro_division": "PACIFIC MOUNTAIN SYSTEM",
+      "outer_fold": 6,
+      "repeat": 0,
+      "test_groups": 320,
+      "test_sites": 322,
+      "train_groups": 4531,
+      "train_sites": 4557
+    },
+    {
+      "es_member_1_sites": 462,
+      "family": "S-LRO",
+      "inner_fold_sites": {
+        "0": 1537,
+        "1": 1538,
+        "2": 1534
+      },
+      "lro_division": "ROCKY MOUNTAIN SYSTEM",
+      "outer_fold": 7,
+      "repeat": 0,
+      "test_groups": 270,
+      "test_sites": 270,
+      "train_groups": 4581,
+      "train_sites": 4609
+    },
+    {
+      "es_member_1_sites": 390,
+      "family": "S-TAIL-DA",
+      "inner_fold_sites": {
+        "0": 1300,
+        "1": 1301,
+        "2": 1302
+      },
+      "lro_division": null,
+      "outer_fold": 0,
+      "repeat": 0,
+      "test_groups": 971,
+      "test_sites": 976,
+      "train_groups": 3880,
+      "train_sites": 3903
+    },
+    {
+      "es_member_1_sites": 449,
+      "family": "S-TAIL-SO",
+      "inner_fold_sites": {
+        "0": 1499,
+        "1": 1502,
+        "2": 1495
+      },
+      "lro_division": null,
+      "outer_fold": 0,
+      "repeat": 0,
+      "test_groups": 381,
+      "test_sites": 383,
+      "train_groups": 4470,
+      "train_sites": 4496
+    }
+  ],
+  "fold_assignment_sha256": "1bf628c83fd658c179243499af5d533738fefaeb15b63a71c476530c40dc872c",
+  "groups": {
+    "group_size_counts": {
+      "1": 4826,
+      "2": 22,
+      "3": 3
+    },
+    "n_groups": 4851,
+    "n_sites": 4879
+  },
+  "params_sha256": "03dc55ea51b8feebe3aceb57ea50ac6d5db8735f0dff552bb2c3b80a549c3241",
+  "rows": 126854,
+  "site_table_sha256": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470",
+  "srnd_assignment_sha256": "b3c07ba313f5e3b834d85dbeb7ec1c9b17c31e7f5b2db0f1ef775a52013808a1"
+}
