@@ -142,12 +142,57 @@ def test_round_trip_and_standardization() -> None:
     assert c == 0.5 * xd[xd > 0].min()
 
 
+SHA_SITE = "a" * 64
+SHA_FOLD = "b" * 64
+
+
+def provenance(part: str = "es_train", index: int | None = 1) -> dict[str, str]:
+    return fv.fit_provenance(
+        "SA6", "S-ID", 0, 0, part, index, site_table_sha256=SHA_SITE, fold_table_sha256=SHA_FOLD
+    )
+
+
 def test_json_round_trip_is_exact(tmp_path: Path) -> None:
-    _, _, stats = fitted()
+    fr, train, _ = fitted()
+    x = fr.loc[train, list(FEATURES)].to_numpy(dtype=np.float64)
+    stats = NormStats.fit(x, FEATURES, KINDS, 0.5, provenance=provenance("train", None))
     path = tmp_path / "normstats.json"
     stats.save(path)
     assert NormStats.load(path) == stats
     assert path.read_text(encoding="utf-8").endswith("\n")
+
+
+def test_normstats_records_and_guards_the_fit_provenance(tmp_path: Path) -> None:
+    fr, train, bare = fitted()
+    x = fr.loc[train, list(FEATURES)].to_numpy(dtype=np.float64)
+    stats = NormStats.fit(x, FEATURES, KINDS, 0.5, provenance=provenance())
+    path = tmp_path / "fit" / "normstats.json"
+    stats.save(path)
+    loaded = NormStats.load(path)
+    assert loaded.provenance_dict == provenance()
+    assert loaded.provenance_dict["site_table_sha256"] == SHA_SITE
+    assert loaded.mean == bare.mean  # provenance does not touch the statistics
+    with pytest.raises(ValueError, match="needs the fit provenance"):
+        bare.save(tmp_path / "bare.json")
+    with pytest.raises(ValueError, match="fitted on"):
+        NormStats.fit(x, FEATURES, KINDS, 0.5, provenance=provenance("es_val"))
+    with pytest.raises(ValueError, match="keys"):
+        NormStats.fit(x, FEATURES, KINDS, 0.5, provenance={"part": "train"})
+    with pytest.raises(ValueError, match="64 lower-case hex"):
+        fv.fit_provenance(
+            "SA6", "S-ID", 0, 0, "train", None, site_table_sha256="x", fold_table_sha256=SHA_FOLD
+        )
+    with pytest.raises(ValueError, match="unknown analysis"):
+        fv.fit_provenance(
+            "SA9",
+            "S-ID",
+            0,
+            0,
+            "train",
+            None,
+            site_table_sha256=SHA_SITE,
+            fold_table_sha256=SHA_FOLD,
+        )
 
 
 @pytest.mark.parametrize(
