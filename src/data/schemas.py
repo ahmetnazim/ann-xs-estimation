@@ -22,6 +22,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Final
 
+import numpy as np
 import pandas as pd
 import pandera.pandas as pa
 from pandera.typing.pandas import Series
@@ -41,6 +42,9 @@ __all__ = [
     "NhdGageLocSI",
     "NhdPlusFlowSI",
     "NhdVaaSI",
+    "FoldAssignment",
+    "SiteTable",
+    "SrndAssignment",
 ]
 
 #: Numeric sentinel codes that become missing before any value check or unit map (V4; 2.7).
@@ -259,3 +263,78 @@ class NhdPlusFlowSI(_Closed):
 
     from_comid: Series[int]
     to_comid: Series[int]
+
+
+# ----------------------------------------------------------------------------- site and fold tables
+class SiteTable(pa.DataFrameModel):
+    """``site_table.parquet`` (features stage): long, one row per (site_no, variant) (P5-D6).
+
+    Open schema (predictor columns follow ``params.features`` and the StreamCat list); the
+    columns used by the split stage are asserted here.
+    """
+
+    site_no: Series[str] = pa.Field(str_matches=_SITE_NO)
+    variant: Series[str] = pa.Field(isin=["primary", "sa2", "sa3"])
+    comid: Series[int]
+    division: Series[str]
+    DA_km2: Series[float] = pa.Field(gt=0.0)
+    stream_order: Series[np.int8] = pa.Field(ge=1)
+    Q_E: Series[float] = pa.Field(gt=0.0, description="R13")
+    S: Series[float] = pa.Field(gt=0.0, description="R12")
+
+    class Config:
+        """Open schema, no coercion."""
+
+        strict = False
+        coerce = False
+
+    @pa.dataframe_check
+    @classmethod
+    def unique_site_variant(cls, df: pd.DataFrame) -> bool:
+        """One row per (site_no, variant)."""
+        return not bool(df.duplicated(["site_no", "variant"]).any())
+
+
+class FoldAssignment(_Closed):
+    """``splits/fold_assignment.parquet`` (protocol 3.3; ``is_test`` and ``lro_division`` added).
+
+    One row per (family, repeat, outer_fold, site_no). ``inner_fold`` is -1 and every
+    ``es_member_m`` is ``False`` on outer-test rows.
+    """
+
+    group_id: Series[str] = pa.Field(str_matches=r"^[0-9a-f]{16}$")
+    site_no: Series[str] = pa.Field(str_matches=_SITE_NO)
+    family: Series[str] = pa.Field(isin=["S-ID", "S-LRO", "S-TAIL-DA", "S-TAIL-SO", "S-IND"])
+    repeat: Series[np.int8] = pa.Field(ge=0)
+    outer_fold: Series[np.int8] = pa.Field(ge=0)
+    is_test: Series[bool]
+    inner_fold: Series[np.int8] = pa.Field(ge=-1)
+    es_member_1: Series[bool]
+    es_member_2: Series[bool]
+    es_member_3: Series[bool]
+    es_member_4: Series[bool]
+    es_member_5: Series[bool]
+    es_member_6: Series[bool]
+    es_member_7: Series[bool]
+    es_member_8: Series[bool]
+    es_member_9: Series[bool]
+    es_member_10: Series[bool]
+    lro_division: Series[str] = pa.Field(nullable=True)
+    seed: Series[np.int64]
+    site_table_sha256: Series[str] = pa.Field(str_matches=r"^[0-9a-f]{64}$")
+
+    @pa.dataframe_check
+    @classmethod
+    def unique_key(cls, df: pd.DataFrame) -> bool:
+        """One row per (family, repeat, outer_fold, site_no)."""
+        return not bool(df.duplicated(["family", "repeat", "outer_fold", "site_no"]).any())
+
+
+class SrndAssignment(_Closed):
+    """``splits/srnd_assignment.parquet``: S-RND row-level 75:25 split (P5-D7; secondary)."""
+
+    site_no: Series[str] = pa.Field(str_matches=_SITE_NO)
+    q_meas_no: Series[str] = pa.Field(str_length={"min_value": 1})
+    row_id: Series[np.int64] = pa.Field(unique=True)
+    is_test: Series[bool]
+    seed: Series[np.int64]

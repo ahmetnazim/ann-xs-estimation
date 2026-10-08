@@ -125,7 +125,8 @@ warn_required_dynamic_aliases = true
 
 [[tool.mypy.overrides]]
 # Untyped geospatial / spatial-statistics libraries only (no py.typed); add others by ADL.
-module = ["geopandas.*", "shapely.*", "pyogrio.*", "rasterio.*", "esda.*", "libpysal.*", "pyarrow.*"]
+module = ["geopandas.*", "shapely.*", "pyogrio.*", "rasterio.*", "esda.*", "libpysal.*", "pyarrow.*",
+          "scipy.*", "sklearn.*"]
 ignore_missing_imports = true
 
 # ---------------------------------------------------------------- pytest

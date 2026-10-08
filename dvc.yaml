@@ -55,9 +55,11 @@ stages:
     metrics: [{reports/feature_missing.json: {cache: false}}]
   split:
     cmd: python -m src.data.split
-    deps: [src/data/split.py, data/processed/site_table.parquet]
-    params: [seeds, splits]
-    outs: [data/processed/splits/fold_assignment.parquet]
+    deps: [src/data/split.py, src/data/schemas.py, src/data/io.py, src/data/qc.py,
+           data/processed/site_table.parquet, data/processed/qc/hydroswot_init.parquet,
+           data/raw/physiography]
+    params: [seeds, splits, uq.ensemble_m]
+    outs: [data/processed/splits/fold_assignment.parquet, data/processed/splits/srnd_assignment.parquet]
     metrics: [{reports/split_summary.json: {cache: false}}]
   ind_prepare:
     cmd: python -m src.data.ind_prepare
