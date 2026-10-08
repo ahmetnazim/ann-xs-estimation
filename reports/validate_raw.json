@@ -1,0 +1,555 @@
+{
+  "failed": [],
+  "params_sha256": "03dc55ea51b8feebe3aceb57ea50ac6d5db8735f0dff552bb2c3b80a549c3241",
+  "units": {
+    "aridity": {
+      "conus_window": {
+        "ai_max": 5.3723,
+        "ai_mean": 0.7186885515385193,
+        "ai_min": 0.019,
+        "fill_pixels": {
+          "0": 6641533,
+          "65535": 0
+        },
+        "pixels": 22089600
+      },
+      "crs": "EPSG:4326",
+      "declared_nodata": null,
+      "dtype": "uint16",
+      "failures": [],
+      "res_deg": [
+        0.008333333333,
+        0.008333333333
+      ],
+      "scale": 0.0001,
+      "status": "pass",
+      "v1": {
+        "bytes": 646429803,
+        "extracted": 18,
+        "files": 2
+      }
+    },
+    "d50": {
+      "failures": [],
+      "key_le_0": 0,
+      "range_mm": [
+        0.0079835635,
+        171.52353
+      ],
+      "rows": 2691339,
+      "status": "pass",
+      "v1": {
+        "bytes": 244912011,
+        "extracted": 0,
+        "files": 1
+      },
+      "v4_sentinels": {
+        "D50[mm]": 0
+      },
+      "v5_le_0": 0,
+      "v5_missing": {
+        "D50[mm]": 0
+      },
+      "v5_negative": {
+        "D50[mm]": 0
+      }
+    },
+    "hydroswot": {
+      "codes": {
+        "coord_datum_cd": {
+          "NAD83": 223022
+        },
+        "data_aging_cd": {
+          "A": 212858,
+          "W": 10164
+        },
+        "q_meas_qual_cd": {
+          "EXCL": 717,
+          "FAIR": 77077,
+          "GOOD": 76370,
+          "POOR": 33377,
+          "UNSP": 35481
+        },
+        "q_meas_used_fg": {
+          "N": 1310,
+          "Y": 221712
+        },
+        "site_tp_cd": {
+          "AT": 2,
+          "ES": 4929,
+          "FA-DV": 211,
+          "FA-OF": 1,
+          "FA-QC": 1,
+          "LK": 465,
+          "OC-CO": 374,
+          "SB-GWD": 1,
+          "SP": 1460,
+          "ST": 205497,
+          "ST-CA": 7205,
+          "ST-DCH": 624,
+          "ST-TS": 2252
+        }
+      },
+      "columns": 75,
+      "failures": [],
+      "q_meas_dt_range": [
+        "1940-10-07 05:00:00",
+        "2310-06-03 19:48:00"
+      ],
+      "rows": 223022,
+      "sites": 10081,
+      "status": "pass",
+      "v1": {
+        "bytes": 87485982,
+        "extracted": 0,
+        "files": 6
+      },
+      "v3_multiplicity": {
+        "duplicated_keys": 1992,
+        "duplicated_rows_with_chan_ge_1": 4561,
+        "rows_in_duplicated_keys": 4568
+      },
+      "v4_sentinels": {
+        "dec_lat_va": 0,
+        "dec_long_va": 0,
+        "drain_area_va": 0,
+        "max_depth_va": 0,
+        "max_vel_va": 0,
+        "mean_depth_va": 0,
+        "mean_vel_va": 0,
+        "meas_q_va": 1,
+        "q_adj_va": 0,
+        "q_meas_chan_nu": 0,
+        "q_va": 1,
+        "stream_wdth_va": 0,
+        "xsec_area_va": 0
+      },
+      "v5_missing": {
+        "base_flw_cd": 0,
+        "chan_mat_cd": 0,
+        "chan_stability_cd": 0,
+        "coord_datum_cd": 0,
+        "data_aging_cd": 0,
+        "dec_lat_va": 67,
+        "dec_long_va": 67,
+        "drain_area_va": 64736,
+        "max_depth_va": 167098,
+        "max_vel_va": 165785,
+        "mean_depth_va": 165893,
+        "mean_vel_va": 21848,
+        "meas_q_va": 1,
+        "q_adj_va": 220776,
+        "q_meas_chan_nu": 0,
+        "q_meas_dt": 0,
+        "q_meas_qual_cd": 0,
+        "q_meas_td": 0,
+        "q_meas_type_cd": 0,
+        "q_meas_used_fg": 0,
+        "q_va": 11,
+        "site_tp_cd": 0,
+        "stream_wdth_va": 24243,
+        "xsec_area_va": 26900
+      },
+      "v5_out_of_rule": {
+        "chan_nu_ge_2": 3071,
+        "flags_not_in_0_-1": 0,
+        "lat_out_of_range": 0,
+        "lon_out_of_range": 0,
+        "max_depth_va_le_0": 2,
+        "max_vel_va_le_0": 323,
+        "mean_depth_va_le_0": 3,
+        "mean_vel_va_le_0": 16071,
+        "meas_q_va_le_0": 22876,
+        "q_meas_dt_after_retrieval": 1,
+        "q_va_le_0": 22825,
+        "stream_wdth_va_le_0": 6671,
+        "xsec_area_va_le_0": 2341
+      }
+    },
+    "nhdplusv21": {
+      "failures": [],
+      "status": "pass",
+      "tables": {
+        "elevslope": {
+          "rows": 2667770,
+          "rows_in_duplicated_keys": 0,
+          "v4_sentinels": {
+            "MinElevSmo": 1122,
+            "Slope": 24222
+          },
+          "v5_missing": {
+            "MinElevSmo": 1122,
+            "Slope": 24222
+          },
+          "v5_out_of_rule": {
+            "slope_below_floor": 0,
+            "vaa_comid_without_slope_row": 23574
+          }
+        },
+        "erom": {
+          "rows": 2691339,
+          "rows_in_duplicated_keys": 0,
+          "v4_sentinels": {
+            "Q0001C": 0,
+            "Q0001E": 0,
+            "V0001E": 319031
+          },
+          "v5_missing": {
+            "Q0001C": 0,
+            "Q0001E": 0,
+            "V0001E": 319031
+          },
+          "v5_out_of_rule": {
+            "comid_not_in_vaa": 0,
+            "q0001e_le_0_or_missing": 34830,
+            "v0001e_le_0_or_missing": 319031
+          }
+        },
+        "gageloc": {
+          "rows": 28164,
+          "rows_in_duplicated_keys": 0,
+          "v4_sentinels": {},
+          "v5_missing": {},
+          "v5_out_of_rule": {
+            "flcomid_not_in_vaa": 3332,
+            "source_fea_not_digits": 0
+          }
+        },
+        "plusflow": {
+          "rows": 3708276,
+          "rows_in_duplicated_keys": 54,
+          "v4_sentinels": {},
+          "v5_missing": {},
+          "v5_out_of_rule": {
+            "from_nonzero_not_in_vaa": 1,
+            "from_zero": 947737,
+            "to_nonzero_not_in_vaa": 0,
+            "to_zero": 7936
+          }
+        },
+        "vaa": {
+          "rows": 2691339,
+          "rows_in_duplicated_keys": 0,
+          "rows_per_vpu": {
+            "01": 67906,
+            "02": 129670,
+            "03N": 136181,
+            "03S": 56604,
+            "03W": 137637,
+            "04": 107692,
+            "05": 172400,
+            "06": 58834,
+            "07": 186591,
+            "08": 154658,
+            "09": 29053,
+            "10L": 202357,
+            "10U": 261005,
+            "11": 207296,
+            "12": 68901,
+            "13": 55854,
+            "14": 85730,
+            "15": 101278,
+            "16": 96269,
+            "17": 232810,
+            "18": 142613
+          },
+          "v4_sentinels": {
+            "ArbolateSu": 23585,
+            "PathLength": 21141,
+            "TotDASqKm": 0
+          },
+          "v5_missing": {
+            "ArbolateSu": 23585,
+            "PathLength": 21141,
+            "TotDASqKm": 0
+          },
+          "v5_out_of_rule": {
+            "divergence_not_0_1_2": 0,
+            "non_network_div9_order-9": 23585,
+            "startflag_not_0_1": 0,
+            "streamorde_le_0": 0,
+            "terminalfl_not_0_1": 0,
+            "totdasqkm_le_0": 8827
+          }
+        }
+      },
+      "v1": {
+        "bytes": 6563079263,
+        "extracted": 2244,
+        "files": 85
+      }
+    },
+    "physiography": {
+      "crs": "EPSG:4269",
+      "divisions": {
+        "APPALACHIAN HIGHLANDS": 74,
+        "ATLANTIC PLAIN": 261,
+        "INTERIOR HIGHLANDS": 4,
+        "INTERIOR PLAINS": 57,
+        "INTERMONTANE PLATEAUS": 16,
+        "LAURENTIAN UPLAND": 16,
+        "PACIFIC MOUNTAIN SYSTEM": 63,
+        "ROCKY MOUNTAIN SYSTEM": 4
+      },
+      "failures": [],
+      "polygons": 501,
+      "status": "pass",
+      "v1": {
+        "bytes": 469785,
+        "extracted": 7,
+        "files": 2
+      },
+      "v3_multiplicity": {
+        "duplicated_keys": 0,
+        "rows_in_duplicated_keys": 0
+      },
+      "v5_invalid_geometry": 13,
+      "v5_missing_division": 6
+    },
+    "streamcat": {
+      "failures": [],
+      "key_le_0": 8520,
+      "regions": {
+        "Region01": 65968,
+        "Region02": 126185,
+        "Region03N": 132903,
+        "Region03S": 55586,
+        "Region03W": 135522,
+        "Region04": 105452,
+        "Region05": 170145,
+        "Region06": 57642,
+        "Region07": 183667,
+        "Region08": 151544,
+        "Region09": 29776,
+        "Region10L": 196552,
+        "Region10U": 256645,
+        "Region11": 204120,
+        "Region12": 68127,
+        "Region13": 56220,
+        "Region14": 83084,
+        "Region15": 100243,
+        "Region16": 95143,
+        "Region17": 231698,
+        "Region18": 140835
+      },
+      "rows": 2647057,
+      "status": "pass",
+      "v1": {
+        "bytes": 1205222152,
+        "extracted": 0,
+        "files": 21
+      },
+      "v4_sentinels": {
+        "bfiws": 0,
+        "clayws": 0,
+        "damdensws": 0,
+        "elevws": 0,
+        "pctconif2016ws": 0,
+        "pctcrop2016ws": 0,
+        "pctdecid2016ws": 0,
+        "pcthay2016ws": 0,
+        "pctmxfst2016ws": 0,
+        "pcturbhi2016ws": 0,
+        "pcturblo2016ws": 0,
+        "pcturbmd2016ws": 0,
+        "pcturbop2016ws": 0,
+        "permws": 0,
+        "popden2010ws": 0,
+        "precip8110ws": 0,
+        "runoffws": 0,
+        "sandws": 0,
+        "tmean8110ws": 0,
+        "wetindexws": 0
+      },
+      "v5_missing": {
+        "bfiws": 4846,
+        "clayws": 7267,
+        "damdensws": 1241,
+        "elevws": 1,
+        "pctconif2016ws": 1244,
+        "pctcrop2016ws": 1244,
+        "pctdecid2016ws": 1244,
+        "pcthay2016ws": 1244,
+        "pctmxfst2016ws": 1244,
+        "pcturbhi2016ws": 1244,
+        "pcturblo2016ws": 1244,
+        "pcturbmd2016ws": 1244,
+        "pcturbop2016ws": 1244,
+        "permws": 10090,
+        "popden2010ws": 1242,
+        "precip8110ws": 941,
+        "runoffws": 2119,
+        "sandws": 7267,
+        "tmean8110ws": 941,
+        "wetindexws": 1963
+      },
+      "v5_negative": {
+        "bfiws": 0,
+        "clayws": 0,
+        "damdensws": 0,
+        "elevws": 1816,
+        "pctconif2016ws": 0,
+        "pctcrop2016ws": 0,
+        "pctdecid2016ws": 0,
+        "pcthay2016ws": 0,
+        "pctmxfst2016ws": 0,
+        "pcturbhi2016ws": 0,
+        "pcturblo2016ws": 0,
+        "pcturbmd2016ws": 0,
+        "pcturbop2016ws": 0,
+        "permws": 0,
+        "popden2010ws": 0,
+        "precip8110ws": 0,
+        "runoffws": 0,
+        "sandws": 0,
+        "tmean8110ws": 9828,
+        "wetindexws": 0
+      }
+    },
+    "usgs_attrs": {
+      "failures": [],
+      "status": "pass",
+      "tables": {
+        "EVI_AMJ_2012_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "CAT_EVI_AMJ_2012": 487
+          },
+          "v5_missing": {
+            "CAT_EVI_AMJ_2012": 487
+          },
+          "v5_negative": {
+            "CAT_EVI_AMJ_2012": 0
+          }
+        },
+        "EVI_JAS_2012_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "CAT_EVI_JAS_2012": 487
+          },
+          "v5_missing": {
+            "CAT_EVI_JAS_2012": 487
+          },
+          "v5_negative": {
+            "CAT_EVI_JAS_2012": 0
+          }
+        },
+        "EVI_JFM_2012_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "CAT_EVI_JFM_2012": 488
+          },
+          "v5_missing": {
+            "CAT_EVI_JFM_2012": 488
+          },
+          "v5_negative": {
+            "CAT_EVI_JFM_2012": 0
+          }
+        },
+        "EVI_OND_2011_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "CAT_EVI_OND_2011": 490
+          },
+          "v5_missing": {
+            "CAT_EVI_OND_2011": 490
+          },
+          "v5_negative": {
+            "CAT_EVI_OND_2011": 0
+          }
+        },
+        "NID_2010_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "ACC_NDAMS2010": 8520
+          },
+          "v5_missing": {
+            "ACC_NDAMS2010": 8520
+          },
+          "v5_negative": {
+            "ACC_NDAMS2010": 0
+          }
+        },
+        "NLCD16_CAT_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "CAT_NLCD16_21": 0,
+            "CAT_NLCD16_22": 0,
+            "CAT_NLCD16_23": 0,
+            "CAT_NLCD16_24": 0,
+            "CAT_NLCD16_41": 0,
+            "CAT_NLCD16_42": 0,
+            "CAT_NLCD16_43": 0,
+            "CAT_NLCD16_81": 0,
+            "CAT_NLCD16_82": 0
+          },
+          "v5_missing": {
+            "CAT_NLCD16_21": 0,
+            "CAT_NLCD16_22": 0,
+            "CAT_NLCD16_23": 0,
+            "CAT_NLCD16_24": 0,
+            "CAT_NLCD16_41": 0,
+            "CAT_NLCD16_42": 0,
+            "CAT_NLCD16_43": 0,
+            "CAT_NLCD16_81": 0,
+            "CAT_NLCD16_82": 0
+          },
+          "v5_negative": {
+            "CAT_NLCD16_21": 0,
+            "CAT_NLCD16_22": 0,
+            "CAT_NLCD16_23": 0,
+            "CAT_NLCD16_24": 0,
+            "CAT_NLCD16_41": 0,
+            "CAT_NLCD16_42": 0,
+            "CAT_NLCD16_43": 0,
+            "CAT_NLCD16_81": 0,
+            "CAT_NLCD16_82": 0
+          }
+        },
+        "POPDENS10_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "CAT_POPDENS10": 0
+          },
+          "v5_missing": {
+            "CAT_POPDENS10": 0
+          },
+          "v5_negative": {
+            "CAT_POPDENS10": 0
+          }
+        },
+        "STATSGO_TEXT_CAT_CONUS": {
+          "key_le_0": 8520,
+          "rows": 2699864,
+          "v4_sentinels": {
+            "CAT_CLAYAVE": 1112,
+            "CAT_SANDAVE": 1112,
+            "CAT_SILTAVE": 1111
+          },
+          "v5_missing": {
+            "CAT_CLAYAVE": 1112,
+            "CAT_SANDAVE": 1112,
+            "CAT_SILTAVE": 1111
+          },
+          "v5_negative": {
+            "CAT_CLAYAVE": 0,
+            "CAT_SANDAVE": 0,
+            "CAT_SILTAVE": 0
+          }
+        }
+      },
+      "v1": {
+        "bytes": 152517735,
+        "extracted": 8,
+        "files": 12
+      }
+    }
+  }
+}

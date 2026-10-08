@@ -1,0 +1,19 @@
+{
+  "F_DA_primary": 217,
+  "F_Qsel_per_variant": {
+    "primary": 1433,
+    "sa2": 1432,
+    "sa3": 1561
+  },
+  "R13_QE_le_0_or_missing": 4,
+  "params_sha256": "03dc55ea51b8feebe3aceb57ea50ac6d5db8735f0dff552bb2c3b80a549c3241",
+  "sa3_row_differs_from_primary": 1144,
+  "sa3_selected_F_eps": 1818,
+  "sites_linked": 4889,
+  "sites_per_variant": {
+    "primary": 4211,
+    "sa2": 4211,
+    "sa3": 4885
+  },
+  "sites_union": 4885
+}

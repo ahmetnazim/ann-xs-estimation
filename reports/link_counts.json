@@ -1,0 +1,22 @@
+{
+  "F_DA": 261,
+  "F_DA_gageloc": 261,
+  "da_ratio_tolerance_log": 0.22314355131420976,
+  "gageloc_comid_not_in_network": 14,
+  "gageloc_record": 4583,
+  "knn_disagree_gageloc": 2274,
+  "knn_disagree_rate_gageloc": 0.49770190413657256,
+  "linked_gageloc": 4569,
+  "linked_snap": 320,
+  "params_sha256": "03dc55ea51b8feebe3aceb57ea50ac6d5db8735f0dff552bb2c3b80a549c3241",
+  "sites": 5141,
+  "sites_in": 5141,
+  "sites_with_varying_coordinates": 0,
+  "sites_with_varying_drain_area": 0,
+  "snap_dist_m_quantiles": {
+    "0.5": 217.0202548374432,
+    "0.9": 447.9314060943236,
+    "1.0": 499.464622102084
+  },
+  "unlinked": 252
+}

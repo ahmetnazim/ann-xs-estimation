@@ -1,0 +1,129 @@
+{
+  "divisions": {
+    "APPALACHIAN HIGHLANDS": 8324,
+    "ATLANTIC PLAIN": 6697,
+    "INTERIOR HIGHLANDS": 2128,
+    "INTERIOR PLAINS": 14745,
+    "INTERMONTANE PLATEAUS": 2522,
+    "LAURENTIAN UPLAND": 847,
+    "PACIFIC MOUNTAIN SYSTEM": 2744,
+    "ROCKY MOUNTAIN SYSTEM": 1920
+  },
+  "eps_a_log_tol": 0.04879016416943201,
+  "ln_1_plus_q_tol": 0.04879016416943201,
+  "params_sha256": "03dc55ea51b8feebe3aceb57ea50ac6d5db8735f0dff552bb2c3b80a549c3241",
+  "rows_out": 39927,
+  "rules": {
+    "F_tout": {
+      "action": "flag",
+      "band": [
+        0.09531017980432487,
+        1.0986122886681098
+      ],
+      "rows_flagged": 324,
+      "rows_in": 39927,
+      "sites_with_flag": 229
+    },
+    "R1": {
+      "action": "drop",
+      "rows_in": 223022,
+      "rows_out": 205497,
+      "rows_removed": 17525,
+      "sites_in": 10081,
+      "sites_out": 9644,
+      "sites_removed": 437
+    },
+    "R10": {
+      "action": "flag",
+      "rows_flagged": 8255,
+      "rows_in": 39939,
+      "sites_with_flag": 3175
+    },
+    "R11": {
+      "action": "drop",
+      "rows_in": 39939,
+      "rows_out": 39927,
+      "rows_removed": 12,
+      "sites_in": 5141,
+      "sites_out": 5141,
+      "sites_removed": 0
+    },
+    "R2": {
+      "action": "drop",
+      "rows_in": 205497,
+      "rows_out": 197547,
+      "rows_removed": 7950,
+      "sites_in": 9644,
+      "sites_out": 9248,
+      "sites_removed": 396
+    },
+    "R3": {
+      "action": "drop",
+      "rows_chan_0_kept": 772,
+      "rows_chan_ge_2": 2963,
+      "rows_in": 197547,
+      "rows_out": 192738,
+      "rows_removed": 4809,
+      "sites_in": 9248,
+      "sites_out": 9216,
+      "sites_removed": 32
+    },
+    "R4": {
+      "action": "drop",
+      "rows_in": 192738,
+      "rows_out": 41754,
+      "rows_removed": 150984,
+      "sites_in": 9216,
+      "sites_out": 5239,
+      "sites_removed": 3977
+    },
+    "R5": {
+      "action": "drop",
+      "rows_in": 41754,
+      "rows_out": 41743,
+      "rows_removed": 11,
+      "sites_in": 5239,
+      "sites_out": 5239,
+      "sites_removed": 0
+    },
+    "R6": {
+      "action": "drop",
+      "agree_with_q5": 41726,
+      "rows_in": 41743,
+      "rows_out": 41528,
+      "rows_removed": 215,
+      "sites_in": 5239,
+      "sites_out": 5221,
+      "sites_removed": 18
+    },
+    "R7": {
+      "action": "drop",
+      "agree_with_q1_q2": 40933,
+      "per_pair": {
+        "av_vs_meas": 987,
+        "av_vs_q": 1513,
+        "meas_vs_q": 625
+      },
+      "rows_in": 41528,
+      "rows_out": 39939,
+      "rows_removed": 1589,
+      "sites_in": 5221,
+      "sites_out": 5141,
+      "sites_removed": 80
+    },
+    "R8": {
+      "action": "flag",
+      "rows_flagged": 13865,
+      "rows_in": 39939,
+      "sites_with_flag": 3671,
+      "tolerance": 0.04879016416943201
+    },
+    "R9": {
+      "action": "flag",
+      "rows_flagged": 3,
+      "rows_in": 39939,
+      "sites_with_flag": 3
+    }
+  },
+  "sites_out": 5141
+}
