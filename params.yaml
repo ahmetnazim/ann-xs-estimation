@@ -226,6 +226,32 @@ features:                                       # P5-D5; 2.1, 2.3 (ADL: Batch C)
   aridity_scale: 0.0001                         # 2.1: Global-AI v3.1 readme, AI = value x 0.0001
   aridity_fill: [0, 65535]                      # GeoTIFF declares no nodata: 0 ocean, 65535 uint16 fill
 
+transforms:                                     # P5-D5, P5-D9; 3.4: NormStats, fitted per training part
+  features:                                     # NN feature set (M2, M4, M5, M6); XGB uses raw values
+    DA_km2: log
+    stream_order: identity
+    z_min_m: identity                           # can be <= 0 (11 primary sites)
+    S: log
+    F_S: passthrough                            # binary flag, not standardized
+    Q_E: log
+    damdensws: log_offset                       # 534 primary sites have 0
+    popden2010ws: log
+    clayws: identity
+    sandws: identity
+    precip8110ws: log
+    tmean8110ws: identity                       # can be < 0
+    runoffws: log
+    bfiws: identity
+    elevws: log
+    permws: log
+    wetindexws: identity
+    urban: identity                             # percentages (sum of NLCD classes)
+    forest: identity
+    agriculture: identity
+    D50_m: log
+    AI: log
+  log_offset_frac: 0.5                          # c = 0.5 x smallest positive training value
+
 domain:                                         # 1.5; 2.2 (supersedes provisional n, state 10.1)
   n_bounds: [0.005, 0.6]                        # 2.2 P3-01: transform bounds; Delta_n = ln 120
   n_lit: [0.012, 0.33]                          # 2.2 P3-16: literature range N_lit (H4)

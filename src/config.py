@@ -193,6 +193,19 @@ class FeaturesParams(_Frozen):
     aridity_fill: tuple[int, ...] = Field(min_length=1)
 
 
+class TransformsParams(_Frozen):
+    """Per-feature transform manifest for ``NormStats`` (P5-D5, P5-D9; protocol 3.4).
+
+    ``log_offset`` uses ``ln(x + c)`` with ``c = log_offset_frac`` x the smallest positive
+    training value (fitted per training part).
+    """
+
+    features: dict[str, Literal["identity", "log", "log_offset", "passthrough"]] = Field(
+        min_length=1
+    )
+    log_offset_frac: OpenUnit
+
+
 class DomainParams(_Frozen):
     """Admissible domain and transform bounds (protocol 2.2; proofs 1.3, 7.6)."""
 
@@ -523,6 +536,7 @@ class ProtocolParams(_Frozen):
     link: LinkParams
     condition: ConditionParams
     features: FeaturesParams
+    transforms: TransformsParams
     domain: DomainParams
     splits: SplitsParams
     audit: AuditParams
