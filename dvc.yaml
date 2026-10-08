@@ -9,7 +9,7 @@ stages:
       cmd: python -m src.data.acquire --unit ${item}
       deps: [src/data/acquire.py]
       params: [acquire]
-      outs: [data/raw/${item}]
+      outs: ["data/raw/${item}"]
   validate_raw:
     cmd: python -m src.data.validate_raw
     deps: [src/data/validate_raw.py, src/data/schemas.py, data/raw/hydroswot, data/raw/nhdplusv21,
