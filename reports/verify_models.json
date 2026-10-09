@@ -2643,7 +2643,7 @@
  ],
  "header": {
   "git": {
-   "commit": "55a3b5fec9c088fac827d43a1b6f21ba2a0ba3bd",
+   "commit": "279a49e63b3d309db8e7b672afcb9311dc58d83b",
    "dirty": false
   },
   "packages": {
@@ -2653,7 +2653,7 @@
    "torch": "2.14.1",
    "xgboost": "3.4.1"
   },
-  "params_sha256": "4652c11b0fc3a5622e8d1dd6e92a7495293ab57745371849cc8e3d44ba6c4b98",
+  "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
   "platform": "macOS-26.6.2-arm64-arm-64bit",
   "python": "3.12.13",
   "quick": false,
@@ -2672,7 +2672,7 @@
   "torch_threads": 1
  },
  "info": {
-  "e2e_params_sha256": "6bb42a05c437d0cd940674b08bb37e62ceac548f0e23d5496bf5e2ddb1c475c9",
+  "e2e_params_sha256": "799060ec28bc5c9dbc6ed915df5a1bd753a1e7c43454f29ea7d0e98708955fda",
   "loss_first_last": {
    "M2-MLP epoch 0": {
     "first": 5.1916892677314,
@@ -2770,10 +2770,10 @@
    "rows": 20000
   },
   "phi_timing_ms_1_thread": {
-   "B1024_forward_backward_ms": 21.524052100721747,
-   "B1024_forward_ms": 21.834368747659028,
-   "B256_forward_backward_ms": 7.018641650211066,
-   "B256_forward_ms": 6.992864597123116
+   "B1024_forward_backward_ms": 21.038689598208293,
+   "B1024_forward_ms": 20.9852707979735,
+   "B256_forward_backward_ms": 6.479616655269638,
+   "B256_forward_ms": 6.479408347513527
   },
   "quad_grid_points": 575,
   "quad_level_study_max_rel": {
@@ -2797,15 +2797,15 @@
   "quad_min_passing_level_at_params_trunc": 6
  },
  "seconds": {
-  "e2e": 4.912255291012116,
-  "ensemble": 0.08661179197952151,
-  "grad": 0.12911591702140868,
-  "hand": 0.17083662492223084,
-  "isolation": 1.447980083990842,
-  "losses": 5.186448207939975,
-  "phi": 1.8295015830080956,
-  "quad": 39.686447874992155,
-  "rungs": 0.7132201669737697
+  "e2e": 6.031462000100873,
+  "ensemble": 0.08321612502913922,
+  "grad": 0.11963587498757988,
+  "hand": 0.16430366702843457,
+  "isolation": 1.5157209590543061,
+  "losses": 5.041478166938759,
+  "phi": 1.7325142500922084,
+  "quad": 38.84501775004901,
+  "rungs": 0.6700834999792278
  },
  "summary": {
   "n_checks": 330,
