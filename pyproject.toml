@@ -150,3 +150,10 @@ filterwarnings = ["error"]
 source = ["src"]
 branch = true
 # Data file location: COVERAGE_FILE (scripts/dev_env.sh, outside Drive).
+
+[tool.coverage.report]
+# P7-D9 (c): per-package floors (physics 95, models 87, evaluation 90, data 74) are enforced by
+# `coverage report --include=... --fail-under=...` in scripts/ci_local.sh and ci.yml, compared at
+# integer precision (PI decision 2026-10-09). `# pragma: no cover` stays the only exclusion.
+precision = 0
+show_missing = true

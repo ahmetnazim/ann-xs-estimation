@@ -1,0 +1,36 @@
+# Dormant until a git remote exists (ADL-019; P7-D3 (a)). The binding gate evidence is
+# scripts/ci_local.sh. The `run:` steps below must equal, in order, the commands between the
+# CI-COMMANDS markers of scripts/ci_local.sh (enforced by tests/unit/test_ci_config.py).
+# Linux pulls torch from the pinned CPU index (pyproject.toml [tool.uv.sources]). Real data is
+# DVC-managed and absent here, so the integration tests are deselected (and skip without data).
+# Action versions were set without network verification; refresh them when a remote is added.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HYPOTHESIS_PROFILE: ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.1"
+          python-version: "3.12"
+      - run: uv sync --frozen --all-groups
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - run: uv run pytest -m "not integration and not slow" --cov=src --cov-branch --cov-report=term-missing:skip-covered
+      - run: uv run coverage report --include="src/physics/*" --fail-under=95
+      - run: uv run coverage report --include="src/models/*" --fail-under=87
+      - run: uv run coverage report --include="src/evaluation/*" --fail-under=90
+      - run: uv run coverage report --include="src/data/*" --fail-under=74
