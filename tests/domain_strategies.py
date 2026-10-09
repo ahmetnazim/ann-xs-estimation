@@ -16,6 +16,9 @@ bounds only ``r``, ``n`` and ``S`` from below; ``W`` and ``Q_E`` may be any posi
 
 This module is importable because ``pyproject.toml`` sets ``pythonpath = ["tests"]``:
 ``@given`` needs its strategies at import time (P7-D4 (a) places them beside ``conftest.py``).
+
+Also shared here: the closed-end rule O5 (``closed_end_rows``) with its O8 bounds (P7-A3 (a),
+P7-B1 (a)) and the saturated-logistic rule O9 (``saturated``, P7-B2 (a)); docs/3 section 12.
 """
 
 from __future__ import annotations
@@ -23,14 +26,17 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+import mpmath as mp
 import numpy as np
 import torch
 from hypothesis import strategies as st
 from torch import Tensor
 
+import reference_oracles as ro
 from src.config import load_settings
 from src.data.normstats import NormStats
 from src.models.heads import BoundedTransforms, LogFeature
+from src.physics.shape import section_terms
 
 PROTOCOL = load_settings().protocol
 DOMAIN = PROTOCOL.domain
@@ -48,6 +54,35 @@ Q_RANGE = (1e-4, 1e5)
 S_MAX = 0.1
 LOGIT_ATOM = 40.0
 MAX_ROWS = 32
+
+#: mpmath spot rows (W, r, n, Q_E, S): E1, E2 and rows spanning beta in [1e-8, 1e3].
+SPOT_ROWS: list[tuple[float, float, float, float, float]] = [
+    (20.0, 2.0, 0.035, 10.0, 1e-3),
+    (3.0, 1.0, 0.04, 1.0, 0.01),
+    (150.0, 0.5, 0.03, 500.0, 2e-4),
+    (8.0, 0.7, 0.05, 3.0, 5e-3),
+    (40.0, 1.3, 0.02, 80.0, 1e-5),
+    (1.5, 10.0, 0.1, 2.0, 0.05),
+    (500.0, 4.0, 0.6, 1000.0, 1e-4),
+    (0.5, 0.5, 0.005, 0.01, 0.1),
+]
+
+#: float64 machine epsilon (2^-52) and the closed-end constants of docs/3 section 12, O5 / O8.
+EPS = float(np.finfo(np.float64).eps)
+O5_TOL = 4.0 * EPS  # P7-A3 (a): |eta_float - eta_mp| <= 4 eps near the closed end (O5)
+ETA_MAX = 1.0 + O5_TOL
+D_MIN = 1.0 - (8.0 / 3.0) * EPS
+SLOPE_MAX = 1.0 / (1.0 - 3.0 * EPS)  # 1/D on O5 rows (O5): d ell/dq, d ell/dnu
+
+
+def _up(x: float) -> float:
+    return float(np.nextafter(x, math.inf))
+
+
+#: O8 (P7-B1 (a)): bounds attained as eta -> 1, evaluated on the O5 interval, rounded up.
+O8_DW_MAX = _up((5.0 / 3.0 + (8.0 / 3.0) * EPS) / (1.0 - 3.0 * EPS))  # |d ell / d z_W|
+O8_DZN_MAX = _up((TR.delta_n / 4.0) / (1.0 - 3.0 * EPS))  # d ell / d z_n
+O8_LNA_MAX = _up(O8_DW_MAX - 1.0)  # |d ln A / d z_W|
 
 #: Synthetic feature layout of the ladder tests (batch contract ADL-077): F = 9, I_blind routes
 #: out columns 3, 4, 8 (they play Q_E, S, F_S); column 6 is D50 (log feature, for A3-SP/SR).
@@ -83,6 +118,12 @@ q_values = st.floats(math.log(Q_RANGE[0]), math.log(Q_RANGE[1]))
 s_values = st.one_of(st.just(LN_S_FLOOR), st.floats(LN_S_FLOOR, math.log(S_MAX)))
 nu_values = logits.map(_nu_of)
 r_values = st.one_of(st.sampled_from([R_MIN, R_MAX]), logits.map(_r_of))
+
+
+def saturated(z: Tensor) -> Tensor:
+    """O9 (P7-B2 (a)): rows where float ``sigma(z)`` rounds to 0 or 1 (docs/2 Prop 3.6 table)."""
+    sig = torch.sigmoid(z.detach())
+    return (sig == 0.0) | (sig == 1.0)
 
 
 @dataclass(frozen=True)
@@ -145,6 +186,64 @@ def phi_rows(draw: st.DrawFn, min_size: int = 1, max_size: int = MAX_ROWS) -> Ro
     )
     cols = [torch.tensor(c, dtype=torch.float64) for c in zip(*table, strict=True)]
     return Rows(w=cols[0], r=cols[1], nu=cols[2], q=cols[3], s=cols[4])
+
+
+@dataclass(frozen=True)
+class LogitRows:
+    """Rows in network coordinates ``(z_W, z_n, z_r, q, s)`` (docs/2 7.6, Theorem 8.2)."""
+
+    z_w: Tensor
+    z_n: Tensor
+    z_r: Tensor
+    q: Tensor
+    s: Tensor
+
+    def rows(self) -> Rows:
+        """The domain rows ``(w, r, nu, q, s)`` (``w = z_W``; logistic maps of 7.6)."""
+        return Rows(w=self.z_w, r=TR.r(self.z_r), nu=TR.nu(self.z_n), q=self.q, s=self.s)
+
+
+@st.composite
+def logit_rows(draw: st.DrawFn, max_size: int = MAX_ROWS) -> LogitRows:
+    """Batches in logit coordinates with the P7-D6 atoms ``z = +/-40`` (O1 ranges for W, Q, S)."""
+    table = draw(
+        st.lists(
+            st.tuples(w_values, logits, logits, q_values, s_values),
+            min_size=1,
+            max_size=max_size,
+        )
+    )
+    cols = [torch.tensor(c, dtype=torch.float64) for c in zip(*table, strict=True)]
+    return LogitRows(z_w=cols[0], z_n=cols[1], z_r=cols[2], q=cols[3], s=cols[4])
+
+
+def closed_end_rows(ell: Tensor, w: Tensor, r: Tensor, rows: Rows) -> Tensor:
+    """P7-A1/A2/A3 (a), docs/3 section 12 O5: rows allowed at the closed end of eta.
+
+    Prop 2.7 gives ``eta < 1`` in exact arithmetic. Rows with float ``eta >= 1 - 4 eps`` are
+    checked against mpmath: ``|eta_float - eta_mp| <= 4 eps`` is required (the computed
+    ``eta = beta F_beta / F`` is accurate to 4 machine epsilons; measured worst case 2 eps).
+    Such rows may show ``eta`` in [1, 1 + 4 eps], ``D`` in [1 - (8/3) eps, 1] and
+    ``d ell/dq`` in [1, 1/(1 - 3 eps)]; an inaccurate row fails here with the row report.
+    The O8 bounds (P7-B1 (a)) apply to the same rows.
+    """
+    terms = section_terms(
+        ell.detach(), w.detach(), r.detach(), level=SOLVER.quad_level, trunc=SOLVER.quad_trunc
+    )
+    eta = terms.eta
+    allowed = torch.zeros_like(eta, dtype=torch.bool)
+    for i in (eta >= 1.0 - O5_TOL).nonzero().flatten().tolist():
+        gap = ro.one_minus_eta(float(terms.beta[i]), float(r[i]))
+        with mp.workdps(ro.MP_DPS):
+            err = float(abs(mp.mpf(float(eta[i])) - (1 - gap)))
+        if not err <= O5_TOL:
+            raise AssertionError(
+                f"O5 violated (docs/2 Prop 2.7; docs/3 section 12): float eta = {float(eta[i])!r},"
+                f" exact 1 - eta = {float(gap):.3e}, |eta_float - eta_mp| = {err:.3e}; required "
+                f"<= 4 eps = {O5_TOL:.3e}; {rows.describe(i)}"
+            )
+        allowed[i] = True
+    return allowed
 
 
 def model_batch(rows: Rows, seed: int) -> dict[str, Tensor]:

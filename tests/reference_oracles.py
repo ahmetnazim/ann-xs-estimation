@@ -120,13 +120,37 @@ def eta(beta: Mpf, r: float) -> Mpf:
 def one_minus_eta(beta: float, r: float) -> Mpf:
     """``1 - eta = (F - beta F_beta) / F`` from the u-integrals (Prop 2.7), at 40 digits.
 
-    Used by the P7-A1 (a) rule (docs/3 section 12, O5): float64 may round ``eta`` to 1 only
-    where this exact value is below the unit roundoff ``2^-53``.
+    Used by the closed-end rule O5 (docs/3 section 12; P7-A1/A2/A3 (a)): rows with float
+    ``eta >= 1 - 4 eps`` must satisfy ``|eta_float - (1 - this value)| <= 4 eps``.
     """
     with mp.workdps(MP_DPS):
         fm1, f_beta, _ = f_integrals(beta, r)
         f = 1 + fm1
         return (f - mp.mpf(beta) * f_beta) / f
+
+
+def ift_partials(ell: Mpf, w: Mpf, r: float) -> dict[str, Mpf]:
+    """Proposition 3.3 at depth ``ell``: ``d ell*/d(q, nu, s, w, r)`` from the u-integrals.
+
+    ``eta = beta F_beta / F``, ``k_r = -(2 a F_beta + F_r) / F`` (Props 2.7, 2.8),
+    ``D = 5/3 - (2/3) eta``; then ``1/D``, ``-1/(2D)``, ``-(1 + 2 eta/3)/D``, ``-(2/3) k_r/D``.
+    """
+    with mp.workdps(MP_DPS):
+        beta_f = float(2 * (mp.mpf(r) + 1) * mp.exp(mp.mpf(ell) - mp.mpf(w)))
+        beta = mp.mpf(beta_f)
+        a = beta / (2 * (mp.mpf(r) + 1))
+        fm1, f_beta, f_r = f_integrals(beta_f, r)
+        f = 1 + fm1
+        eta_v = beta * f_beta / f
+        k_r = -(2 * a * f_beta + f_r) / f
+        d = mp.mpf(5) / 3 - mp.mpf(2) / 3 * eta_v
+        return {
+            "q": 1 / d,
+            "nu": 1 / d,
+            "s": -1 / (2 * d),
+            "w": -(1 + mp.mpf(2) / 3 * eta_v) / d,
+            "r": -(mp.mpf(2) / 3) * k_r / d,
+        }
 
 
 def rel(got: float, ref: Mpf) -> float:

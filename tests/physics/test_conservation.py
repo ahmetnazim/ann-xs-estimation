@@ -26,6 +26,9 @@ from torch import Tensor
 import reference_oracles as ro
 from domain_strategies import (
     BLIND_IDX,
+    D_MIN,
+    EPS,
+    ETA_MAX,
     LN_D50,
     LN_S_FLOOR,
     N_FEATURES,
@@ -34,10 +37,13 @@ from domain_strategies import (
     PROTOCOL,
     R_MAX,
     R_MIN,
+    SLOPE_MAX,
     SOLVER,
+    SPOT_ROWS,
     TAU_L,
     TR,
     Rows,
+    closed_end_rows,
     model_batch,
     phi_rows,
     require,
@@ -74,39 +80,6 @@ MODEL_EXAMPLES = max(10, settings.default.max_examples // 8)
 SLOW_EXAMPLES = max(10, settings.default.max_examples // 4)
 NU_HI = TR.nu_min + TR.delta_n
 LN_R_HI = TR.ln_r_min + TR.delta_r
-EPS = float(np.finfo(np.float64).eps)
-O5_TOL = 4.0 * EPS  # P7-A3 (a): |eta_float - eta_mp| <= 4 eps near the closed end (O5)
-ETA_MAX = 1.0 + O5_TOL  # closed-end bounds under O5 (docs/3 section 12)
-D_MIN = 1.0 - (8.0 / 3.0) * EPS
-SLOPE_MAX = 1.0 / (1.0 - 3.0 * EPS)
-
-
-def closed_end_rows(ell: Tensor, w: Tensor, r: Tensor, rows: Rows) -> Tensor:
-    """P7-A1/A2/A3 (a), docs/3 section 12 O5: rows allowed at the closed end of eta.
-
-    Prop 2.7 gives ``eta < 1`` in exact arithmetic. Rows with float ``eta >= 1 - 4 eps`` are
-    checked against mpmath: ``|eta_float - eta_mp| <= 4 eps`` is required (the computed
-    ``eta = beta F_beta / F`` is accurate to 4 machine epsilons; measured worst case 2 eps).
-    Such rows may show ``eta`` in [1, 1 + 4 eps], ``D`` in [1 - (8/3) eps, 1] and
-    ``d ell/dq`` in [1, 1/(1 - 3 eps)]; an inaccurate row fails here with the row report.
-    """
-    terms = section_terms(
-        ell.detach(), w.detach(), r.detach(), level=SOLVER.quad_level, trunc=SOLVER.quad_trunc
-    )
-    eta = terms.eta
-    allowed = torch.zeros_like(eta, dtype=torch.bool)
-    for i in (eta >= 1.0 - O5_TOL).nonzero().flatten().tolist():
-        gap = ro.one_minus_eta(float(terms.beta[i]), float(r[i]))
-        with mp.workdps(ro.MP_DPS):
-            err = float(abs(mp.mpf(float(eta[i])) - (1 - gap)))
-        if not err <= O5_TOL:
-            raise AssertionError(
-                f"O5 violated (docs/2 Prop 2.7; docs/3 section 12): float eta = {float(eta[i])!r},"
-                f" exact 1 - eta = {float(gap):.3e}, |eta_float - eta_mp| = {err:.3e}; required "
-                f"<= 4 eps = {O5_TOL:.3e}; {rows.describe(i)}"
-            )
-        allowed[i] = True
-    return allowed
 
 
 # ----------------------------------------------------------------------------- shared checks
@@ -366,16 +339,6 @@ def test_inv_7_transforms_own_band(z: list[float]) -> None:
 
 
 # ----------------------------------------------------------------------------- inv. 3 vs mpmath
-SPOT_ROWS = [  # (W, r, n, Q_E, S): E1, E2 and rows spanning beta in [1e-8, 1e3]
-    (20.0, 2.0, 0.035, 10.0, 1e-3),
-    (3.0, 1.0, 0.04, 1.0, 0.01),
-    (150.0, 0.5, 0.03, 500.0, 2e-4),
-    (8.0, 0.7, 0.05, 3.0, 5e-3),
-    (40.0, 1.3, 0.02, 80.0, 1e-5),
-    (1.5, 10.0, 0.1, 2.0, 0.05),
-    (500.0, 4.0, 0.6, 1000.0, 1e-4),
-    (0.5, 0.5, 0.005, 0.01, 0.1),
-]
 
 
 @pytest.mark.parametrize(("tau", "label"), [(TAU_L, "params tau_l"), (1e-14, "tight")])
