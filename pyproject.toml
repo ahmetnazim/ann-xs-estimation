@@ -133,6 +133,8 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "9.0"
 testpaths = ["tests"]
+# tests/ on sys.path: shared hypothesis strategies and mpmath oracles (P7-D4 (a), ADL-101).
+pythonpath = ["tests"]
 # no:cacheprovider -> no .pytest_cache written into the Drive-synced tree (P4-D2 (a)).
 addopts = "-ra --strict-markers --strict-config --import-mode=importlib -p no:cacheprovider"
 markers = [
