@@ -402,6 +402,10 @@ class SolverParams(_Frozen):
     #: Per-row freezing keeps the computed iterate row-wise (Proposition 3.4 (c)).
     stopping: Literal["per_row"]
     quadrature: Literal["tanh_sinh"]
+    #: Tanh-sinh step h = 2^-quad_level and truncation |t| <= quad_trunc (P6-D3; chosen against
+    #: an mpmath reference so that F - 1, F_beta and F_r meet tau_q with margin).
+    quad_level: int = Field(ge=1, le=12)
+    quad_trunc: float = Field(gt=0, le=6)
 
 
 class UqParams(_Frozen):

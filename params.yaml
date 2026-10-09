@@ -331,6 +331,8 @@ solver:                                         # 4.2 P3-12; Props 3.3-3.6
   tau_q: 1.0e-8                                 # quadrature tolerance (Phase 7, E1-E5)
   stopping: per_row                             # Prop. 3.4 (c)
   quadrature: tanh_sinh                         # double-exponential rule; ln F via log1p
+  quad_level: 6                                 # P6-D3: step h = 2^-6 (level 5 misses tau_q)
+  quad_trunc: 4.0                               # P6-D3: |t| <= 4, 513 nodes; max rel err 4.1e-15
 
 uq:                                             # 4.2 P3-13; 4.6 P3-18
   ensemble_m: 10
