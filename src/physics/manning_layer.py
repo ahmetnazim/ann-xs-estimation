@@ -23,9 +23,11 @@ per-row freezing; its backward applies Algorithm Phi at the converged ``ell``::
 within ``K_max`` raises :class:`PhiConvergenceError`; it is never returned silently.
 :func:`phi_one_step` is the P6-D2 (b) surrogate, kept as a cross-check.
 
-The backward is first order only (``once_differentiable``, P7-Q1): ``eta`` and ``k_r`` are saved
-as constants, so a double backward would omit ``d(1/D)/dtheta``; it raises instead of returning
-a wrong Hessian. No model or loss in this project uses second derivatives.
+The backward is first order only (P7-Q1, P7-B4): ``eta`` and ``k_r`` are saved as constants, so
+a double backward would omit ``d(1/D)/dtheta``. Any backward run with ``create_graph=True`` (grad
+mode on inside the backward) raises ``RuntimeError`` before computing anything, on every autograd
+route (``.backward()`` and ``torch.autograd.grad(inputs=...)``). No model or loss in this project
+uses second derivatives.
 
 Torch-only, float64, CPU. Owning phase: 6.
 """
@@ -38,11 +40,11 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 from torch import Tensor
-from torch.autograd.function import FunctionCtx, once_differentiable
+from torch.autograd.function import FunctionCtx
 
 from src.config import JarrettParams, SolverParams
 from src.physics.quadrature import perimeter_fm1
-from src.physics.shape import check_rows, log_kappa, section_terms, t_of_r
+from src.physics.shape import check_rows, forbid_create_graph, log_kappa, section_terms, t_of_r
 
 __all__ = [
     "ManningPhi",
@@ -218,11 +220,11 @@ class ManningPhi(torch.autograd.Function):
         return ell, iters
 
     @staticmethod
-    @once_differentiable
     def backward(
         ctx: FunctionCtx, g: Tensor, _g_iters: Tensor | None
     ) -> tuple[Tensor, Tensor, Tensor, Tensor, Tensor, None]:
         """Algorithm Phi, backward: Proposition 3.3 at the converged root (no unrolling)."""
+        forbid_create_graph("ManningPhi")
         eta, k_r = ctx.saved_tensors  # type: ignore[attr-defined]
         inv_d = 1.0 / (5.0 / 3.0 - (2.0 / 3.0) * eta)  # 1/D, D in (1, 5/3] (Prop 3.1)
         gd = g * inv_d

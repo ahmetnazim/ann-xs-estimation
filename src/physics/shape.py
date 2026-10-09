@@ -18,11 +18,34 @@ from dataclasses import dataclass
 
 import torch
 from torch import Tensor
-from torch.autograd.function import FunctionCtx, once_differentiable
+from torch.autograd.function import FunctionCtx
 
 from src.physics.quadrature import perimeter_integrals
 
-__all__ = ["SectionTerms", "check_rows", "dt_dr", "log_kappa", "r_of_t", "section_terms", "t_of_r"]
+__all__ = [
+    "SectionTerms",
+    "check_rows",
+    "dt_dr",
+    "forbid_create_graph",
+    "log_kappa",
+    "r_of_t",
+    "section_terms",
+    "t_of_r",
+]
+
+
+def forbid_create_graph(name: str) -> None:
+    """Raise inside a first-order-only backward run with ``create_graph=True`` (P7-Q1, P7-B4).
+
+    Autograd enables grad mode inside ``backward`` exactly when ``create_graph=True``. The saved
+    ``eta, k_r`` are constants, so a graph built here would give a wrong second derivative on
+    every route (``.backward()`` and ``torch.autograd.grad(inputs=...)``); refuse instead.
+    """
+    if torch.is_grad_enabled():
+        raise RuntimeError(
+            f"{name} is first order only (docs/2 section 3.4; P7-Q1, P7-B4): create_graph=True "
+            "and higher-order derivatives are not supported"
+        )
 
 
 def check_rows(**tensors: Tensor) -> int:
@@ -102,7 +125,7 @@ def section_terms(ell: Tensor, w: Tensor, r: Tensor, *, level: int, trunc: float
 class _LogKappa(torch.autograd.Function):
     """``k(e^(ell - w), r)`` with the analytic partials ``(-eta, +eta, k_r)`` (Props 2.7, 2.8).
 
-    First order only (``once_differentiable``, P7-Q1): a double backward raises.
+    First order only (P7-Q1, P7-B4): a backward with ``create_graph=True`` raises.
     """
 
     @staticmethod
@@ -116,9 +139,9 @@ class _LogKappa(torch.autograd.Function):
         return terms.k
 
     @staticmethod
-    @once_differentiable
     def backward(ctx: FunctionCtx, grad: Tensor) -> tuple[Tensor, Tensor, Tensor, None, None]:
         """Chain rule with ``dk/d ln a = -eta`` and ``dk/dr|_a = k_r``."""
+        forbid_create_graph("log_kappa")
         eta, k_r = ctx.saved_tensors  # type: ignore[attr-defined]
         # dk/d ln a = -eta (proof of Proposition 3.1); a = e^(ell - w); dk/dr|_a = k_r.
         return -grad * eta, grad * eta, grad * k_r, None, None
