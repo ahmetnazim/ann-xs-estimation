@@ -1,0 +1,139 @@
+# Phase 7 coverage report (P7-D9 (c); Batch E, ADL-107)
+# commit: 1484c95ac870e160df45e69cdb43f5e7b2be3319
+# date: 2026-10-09T12:35:11Z
+# command: HYPOTHESIS_PROFILE=ci uv run pytest -m "not integration and not slow" --cov=src --cov-branch (pytest exit 0)
+# floors (integer precision): physics 95, models 87, evaluation 90, data 74
+
+## src/physics
+Name                              Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------
+src/physics/__init__.py               0      0      0      0 100.00%
+src/physics/manning_layer.py        134      6     28      6  92.59%   84, 251, 267, 274, 290, 327
+src/physics/quadrature.py            90      2     32      2  96.72%   91, 160
+src/physics/roughness_priors.py      26      0      0      0 100.00%
+src/physics/shape.py                 70      1     18      1  97.73%   66
+------------------------------------------------------------------------------
+TOTAL                               320      9     78      9  95.48%
+
+## src/models
+Name                         Stmts   Miss Branch BrPart   Cover   Missing
+-------------------------------------------------------------------------
+src/models/__init__.py           0      0      0      0 100.00%
+src/models/backbone.py          36      1     12      1  95.83%   65
+src/models/baselines.py        208     29     52     12  82.69%   130, 159, 161, 176, 192, 237, 239, 255, 277, 280, 386, 452, 467-487, 492-498
+src/models/checkpoint.py       101      8     22      5  89.43%   71, 79, 84, 143-145, 202, 207
+src/models/ensemble.py          78      9     28      8  83.96%   44, 46, 49, 64-65, 108, 135, 141, 152
+src/models/heads.py            136      5     42      5  94.38%   64, 131, 251, 297, 300
+src/models/losses.py            87      8     40      8  87.40%   56, 105, 109, 162, 164, 171, 178, 200
+src/models/m2_mlp.py            44      1      2      1  95.65%   65
+src/models/m3_physics.py        88      2     12      2  96.00%   78, 80
+src/models/m4_soft.py           66      2      6      1  95.83%   75, 92
+src/models/m5_hard.py           81      0     12      0 100.00%
+src/models/m6_two_stage.py      88      2      6      2  95.74%   67, 120
+src/models/registry.py          96     10     30      6  87.30%   80, 97, 122, 134, 165, 169, 193-195, 202
+src/models/runner.py           320     68     84     16  75.74%   94, 98, 102, 117, 128, 155, 157, 159, 180, 231, 322-327, 334-386, 504, 541, 543, 569, 572, 598-604
+src/models/trainer.py          169      7     40      8  92.82%   68, 70, 186, 196, 241, 256->258, 273-274, 307->306
+-------------------------------------------------------------------------
+TOTAL                         1598    152    388     75  87.66%
+
+## src/evaluation
+Name                                 Stmts   Miss Branch BrPart   Cover   Missing
+---------------------------------------------------------------------------------
+src/evaluation/__init__.py               0      0      0      0 100.00%
+src/evaluation/bootstrap.py            109      0     30      0 100.00%
+src/evaluation/dependence_audit.py     311      2     76      2  98.97%   180, 252
+src/evaluation/hypotheses.py            96      0     26      0 100.00%
+src/evaluation/metrics.py              127      0     28      0 100.00%
+src/evaluation/uq.py                   108      0     28      0 100.00%
+---------------------------------------------------------------------------------
+TOTAL                                  751      2    188      2  99.57%
+
+## src/data
+Name                            Stmts   Miss Branch BrPart   Cover   Missing
+----------------------------------------------------------------------------
+src/data/__init__.py                0      0      0      0 100.00%
+src/data/acquire.py               375     23    118     13  92.29%   157-158, 164-165, 213, 272, 300-301, 323-324, 336-338, 364, 380, 399-400, 409, 532, 537, 571, 578, 666
+src/data/condition_extract.py      64     15      6      2  75.71%   104, 125-148, 156-162, 166
+src/data/dataset.py                51      4     16      4  88.06%   63, 65, 85, 87
+src/data/ehydro.py                477     71    106     12  84.39%   145-159, 165-177, 182-194, 208-242, 267, 287, 312, 497->494, 670, 723, 754, 769, 787, 898, 923, 993-999, 1003
+src/data/features.py              139     69     20      1  47.17%   97-105, 110-121, 236-279, 284-314, 329-335, 339
+src/data/folds.py                  58      6     30      6  86.36%   63, 94, 102, 114, 119, 145
+src/data/ind_prepare.py           221     73     34      6  65.10%   168, 184, 239-246, 324, 333-335, 373-383, 391-404, 409-414, 479-561, 566-570, 574
+src/data/io.py                     54      0     14      0 100.00%
+src/data/link.py                   93     28      2      1  69.47%   54-77, 214-248, 256-262, 266
+src/data/nhdplus.py               122     91     38      0  19.38%   93, 143-159, 173-192, 197-260, 278-298
+src/data/normstats.py             120      7     50      7  91.76%   112, 115, 146, 151, 160, 188, 226
+src/data/qc.py                    105     22      2      1  78.50%   117-124, 238-256, 272-278, 282
+src/data/readers.py                74      5     10      0  94.05%   161-166
+src/data/schemas.py               182      0      2      0 100.00%
+src/data/split.py                 230     38     50      8  82.14%   169, 183-194, 362, 367, 369, 372, 377, 436, 452-485, 502-510, 514
+src/data/unit_map.py              117     45     22      1  58.27%   172-194, 199-207, 212-220, 227-228, 235-237, 241-244, 249-279, 290-296, 300
+src/data/validate_raw.py          258    170     70      6  32.93%   167, 172-173, 179, 182-185, 191, 195-196, 200-201, 214-263, 289-290, 303-308, 319-332, 345, 351-374, 379-394, 400-428, 439-452, 485-494, 499-516, 520
+----------------------------------------------------------------------------
+TOTAL                            2740    667    590     68  73.96%
+
+## src/utils
+Name                    Stmts   Miss Branch BrPart   Cover   Missing
+--------------------------------------------------------------------
+src/utils/__init__.py       0      0      0      0 100.00%
+src/utils/io.py             0      0      0      0 100.00%
+src/utils/logging.py       36     13      4      1  60.00%   31-38, 58-59, 66-67, 77
+src/utils/seeding.py       42      3     16      3  89.66%   57, 77, 96
+--------------------------------------------------------------------
+TOTAL                      78     16     20      4  77.55%
+
+## all of src (per file)
+Name                                 Stmts   Miss Branch BrPart   Cover   Missing
+---------------------------------------------------------------------------------
+src/__init__.py                          0      0      0      0 100.00%
+src/config.py                          428      6     68      6  97.58%   228, 270, 339, 630, 638, 732
+src/data/__init__.py                     0      0      0      0 100.00%
+src/data/acquire.py                    375     23    118     13  92.29%   157-158, 164-165, 213, 272, 300-301, 323-324, 336-338, 364, 380, 399-400, 409, 532, 537, 571, 578, 666
+src/data/condition_extract.py           64     15      6      2  75.71%   104, 125-148, 156-162, 166
+src/data/dataset.py                     51      4     16      4  88.06%   63, 65, 85, 87
+src/data/ehydro.py                     477     71    106     12  84.39%   145-159, 165-177, 182-194, 208-242, 267, 287, 312, 497->494, 670, 723, 754, 769, 787, 898, 923, 993-999, 1003
+src/data/features.py                   139     69     20      1  47.17%   97-105, 110-121, 236-279, 284-314, 329-335, 339
+src/data/folds.py                       58      6     30      6  86.36%   63, 94, 102, 114, 119, 145
+src/data/ind_prepare.py                221     73     34      6  65.10%   168, 184, 239-246, 324, 333-335, 373-383, 391-404, 409-414, 479-561, 566-570, 574
+src/data/io.py                          54      0     14      0 100.00%
+src/data/link.py                        93     28      2      1  69.47%   54-77, 214-248, 256-262, 266
+src/data/nhdplus.py                    122     91     38      0  19.38%   93, 143-159, 173-192, 197-260, 278-298
+src/data/normstats.py                  120      7     50      7  91.76%   112, 115, 146, 151, 160, 188, 226
+src/data/qc.py                         105     22      2      1  78.50%   117-124, 238-256, 272-278, 282
+src/data/readers.py                     74      5     10      0  94.05%   161-166
+src/data/schemas.py                    182      0      2      0 100.00%
+src/data/split.py                      230     38     50      8  82.14%   169, 183-194, 362, 367, 369, 372, 377, 436, 452-485, 502-510, 514
+src/data/unit_map.py                   117     45     22      1  58.27%   172-194, 199-207, 212-220, 227-228, 235-237, 241-244, 249-279, 290-296, 300
+src/data/validate_raw.py               258    170     70      6  32.93%   167, 172-173, 179, 182-185, 191, 195-196, 200-201, 214-263, 289-290, 303-308, 319-332, 345, 351-374, 379-394, 400-428, 439-452, 485-494, 499-516, 520
+src/evaluation/__init__.py               0      0      0      0 100.00%
+src/evaluation/bootstrap.py            109      0     30      0 100.00%
+src/evaluation/dependence_audit.py     311      2     76      2  98.97%   180, 252
+src/evaluation/hypotheses.py            96      0     26      0 100.00%
+src/evaluation/metrics.py              127      0     28      0 100.00%
+src/evaluation/uq.py                   108      0     28      0 100.00%
+src/models/__init__.py                   0      0      0      0 100.00%
+src/models/backbone.py                  36      1     12      1  95.83%   65
+src/models/baselines.py                208     29     52     12  82.69%   130, 159, 161, 176, 192, 237, 239, 255, 277, 280, 386, 452, 467-487, 492-498
+src/models/checkpoint.py               101      8     22      5  89.43%   71, 79, 84, 143-145, 202, 207
+src/models/ensemble.py                  78      9     28      8  83.96%   44, 46, 49, 64-65, 108, 135, 141, 152
+src/models/heads.py                    136      5     42      5  94.38%   64, 131, 251, 297, 300
+src/models/losses.py                    87      8     40      8  87.40%   56, 105, 109, 162, 164, 171, 178, 200
+src/models/m2_mlp.py                    44      1      2      1  95.65%   65
+src/models/m3_physics.py                88      2     12      2  96.00%   78, 80
+src/models/m4_soft.py                   66      2      6      1  95.83%   75, 92
+src/models/m5_hard.py                   81      0     12      0 100.00%
+src/models/m6_two_stage.py              88      2      6      2  95.74%   67, 120
+src/models/registry.py                  96     10     30      6  87.30%   80, 97, 122, 134, 165, 169, 193-195, 202
+src/models/runner.py                   320     68     84     16  75.74%   94, 98, 102, 117, 128, 155, 157, 159, 180, 231, 322-327, 334-386, 504, 541, 543, 569, 572, 598-604
+src/models/trainer.py                  169      7     40      8  92.82%   68, 70, 186, 196, 241, 256->258, 273-274, 307->306
+src/physics/__init__.py                  0      0      0      0 100.00%
+src/physics/manning_layer.py           134      6     28      6  92.59%   84, 251, 267, 274, 290, 327
+src/physics/quadrature.py               90      2     32      2  96.72%   91, 160
+src/physics/roughness_priors.py         26      0      0      0 100.00%
+src/physics/shape.py                    70      1     18      1  97.73%   66
+src/utils/__init__.py                    0      0      0      0 100.00%
+src/utils/io.py                          0      0      0      0 100.00%
+src/utils/logging.py                    36     13      4      1  60.00%   31-38, 58-59, 66-67, 77
+src/utils/seeding.py                    42      3     16      3  89.66%   57, 77, 96
+---------------------------------------------------------------------------------
+TOTAL                                 5915    852   1332    164  83.88%
