@@ -373,8 +373,8 @@ stages:
       size: 6589
     - path: src/data/schemas.py
       hash: md5
-      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
-      size: 13780
+      md5: 0304b96a68805724a82b120476ce1115
+      size: 15837
     - path: src/data/validate_raw.py
       hash: md5
       md5: 4f2ca4e8bc6b6efac47f8e702da06f72
@@ -442,8 +442,8 @@ stages:
       size: 6589
     - path: src/data/schemas.py
       hash: md5
-      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
-      size: 13780
+      md5: 0304b96a68805724a82b120476ce1115
+      size: 15837
     - path: src/data/unit_map.py
       hash: md5
       md5: 76ceb28eccf09c659b6fe1aebceb34e7
@@ -480,8 +480,8 @@ stages:
       size: 10928
     - path: src/data/schemas.py
       hash: md5
-      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
-      size: 13780
+      md5: 0304b96a68805724a82b120476ce1115
+      size: 15837
     params:
       params.yaml:
         domain.r_bounds:
@@ -639,8 +639,8 @@ stages:
       size: 6589
     - path: src/data/schemas.py
       hash: md5
-      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
-      size: 13780
+      md5: 0304b96a68805724a82b120476ce1115
+      size: 15837
     - path: src/data/validate_raw.py
       hash: md5
       md5: 4f2ca4e8bc6b6efac47f8e702da06f72
@@ -726,8 +726,8 @@ stages:
       size: 10928
     - path: src/data/schemas.py
       hash: md5
-      md5: 447fe6ff1377ea55ca9ffbfd244b16b1
-      size: 13780
+      md5: 0304b96a68805724a82b120476ce1115
+      size: 15837
     - path: src/data/split.py
       hash: md5
       md5: 7fe42bac6eadef97a154241713c68801
@@ -1267,3 +1267,87 @@ stages:
       md5: 0c10b1d965ae93d3b8cfc411f9822b63.dir
       size: 24749818685
       nfiles: 47912
+  ind_prepare:
+    cmd: python -m src.data.ind_prepare
+    deps:
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/raw/ehydro
+      hash: md5
+      md5: 0c10b1d965ae93d3b8cfc411f9822b63.dir
+      size: 24749818685
+      nfiles: 47912
+    - path: data/raw/nhdplusv21
+      hash: md5
+      md5: 69b67b8e05ee2f8fc888e9a3399b7b67.dir
+      size: 43848085319
+      nfiles: 2331
+    - path: data/raw/zarrabi_product
+      hash: md5
+      md5: 4f97d69375e4918a2a221f40f3e151fb.dir
+      size: 216304891
+      nfiles: 3
+    - path: reports/ehydro_selection.json
+      hash: md5
+      md5: 162772289457bce938e392c3ff8f9599
+      size: 228326
+    - path: src/data/ehydro.py
+      hash: md5
+      md5: 325f0a000e4eed69015cf01585a17ca5
+      size: 39860
+    - path: src/data/ind_prepare.py
+      hash: md5
+      md5: 65a67b7f92a02d0e1c87977d2bbd79c0
+      size: 23310
+    params:
+      params.yaml:
+        ehydro:
+          catalogue: 
+            https://services7.arcgis.com/n1YM8pTrFmm7L4hs/arcgis/rest/services/eHydro_Survey_Data/FeatureServer/0
+          rivers:
+          - Ohio River
+          - Arkansas River
+          - Monongahela River
+          - Illinois River
+          - Missouri River
+          - Colorado River
+          - Kaskaskia River
+          - Tombigbee River
+          - Vermilion River
+          - Allegheny River
+          - Choptank River
+          - Mississippi River
+          - Kanawha River
+          - San Bernard River
+          - Broad Creek
+          - James River
+          - Buffalo Bayou
+          - Columbia River
+          - Arroyo Colorado
+          - Green River
+          - Delaware River
+          - Cocheco River
+          - Willamette River
+          - Alabama River
+          - Mackeys Creek
+          date_start: '2017-01-01'
+          date_end: '2023-12-31'
+          cell_m: 5.0
+          coverage_min: 0.8
+          buffer_m: 100.0
+          loc_length_km: 10.0
+          min_locations: 30
+          min_rivers: 10
+          size_cap_gb: 20.0
+        splits.ind_dedupe_m: 1000
+    outs:
+    - path: data/processed/ind/ehydro_ind.parquet
+      hash: md5
+      md5: a0a7f1ecbb69bd4b2763a8c97c220da2
+      size: 18326
+    - path: reports/ind_prepare.json
+      hash: md5
+      md5: 379adada3e24d953555308632f772d0a
+      size: 131095

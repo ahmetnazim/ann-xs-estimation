@@ -1,0 +1,4916 @@
+{
+  "catchment_vpus": [
+    "01",
+    "02",
+    "03N",
+    "04",
+    "05",
+    "07",
+    "08",
+    "10L",
+    "11",
+    "12",
+    "17"
+  ],
+  "da_distribution_kept": {
+    "n": 135,
+    "n_missing": 0,
+    "quantiles_km2": {
+      "q000": 163.9512,
+      "q010": 4290.04296,
+      "q025": 21718.224,
+      "q050": 394622.2062,
+      "q075": 621771.3099,
+      "q090": 2880815.6817,
+      "q100": 2881518.6402
+    }
+  },
+  "e_r10": {
+    "descriptive_only": false,
+    "locations_kept": 135,
+    "min_locations": 30,
+    "min_rivers": 10,
+    "note": "rivers are counted by GNIS name; homonyms are listed under per_river",
+    "rivers_kept": 18
+  },
+  "inputs": {
+    "ehydro": "0b3e51b06f4591995c56304e38df54b8491ca915cb21b3746941ec6bc927a2e8",
+    "ehydro_selection.json": "8248db4582154e765b578fe67ef001ffa28573ef1a4fc504aaa060369368bcdc",
+    "nhdplusv21": "e40d54cf755343ac96eed33c2c935191abdc7d34d67ea7611a9251b4e6665ecc",
+    "site_table.parquet": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470"
+  },
+  "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+  "per_river": {
+    "Alabama River": {
+      "kept": 0,
+      "locations": 0,
+      "vpus_all": [],
+      "vpus_kept": []
+    },
+    "Allegheny River": {
+      "kept": 2,
+      "locations": 4,
+      "vpus_all": [
+        "05"
+      ],
+      "vpus_kept": [
+        "05"
+      ]
+    },
+    "Arkansas River": {
+      "kept": 2,
+      "locations": 2,
+      "vpus_all": [
+        "11"
+      ],
+      "vpus_kept": [
+        "11"
+      ]
+    },
+    "Arroyo Colorado": {
+      "kept": 2,
+      "locations": 2,
+      "vpus_all": [
+        "12"
+      ],
+      "vpus_kept": [
+        "12"
+      ]
+    },
+    "Broad Creek": {
+      "kept": 1,
+      "locations": 1,
+      "vpus_all": [
+        "03N"
+      ],
+      "vpus_kept": [
+        "03N"
+      ]
+    },
+    "Buffalo Bayou": {
+      "kept": 3,
+      "locations": 3,
+      "vpus_all": [
+        "12"
+      ],
+      "vpus_kept": [
+        "12"
+      ]
+    },
+    "Choptank River": {
+      "kept": 2,
+      "locations": 2,
+      "vpus_all": [
+        "02"
+      ],
+      "vpus_kept": [
+        "02"
+      ]
+    },
+    "Cocheco River": {
+      "kept": 1,
+      "locations": 1,
+      "vpus_all": [
+        "01"
+      ],
+      "vpus_kept": [
+        "01"
+      ]
+    },
+    "Colorado River": {
+      "kept": 3,
+      "locations": 3,
+      "vpus_all": [
+        "12"
+      ],
+      "vpus_kept": [
+        "12"
+      ]
+    },
+    "Columbia River": {
+      "kept": 34,
+      "locations": 36,
+      "vpus_all": [
+        "17"
+      ],
+      "vpus_kept": [
+        "17"
+      ]
+    },
+    "Delaware River": {
+      "kept": 10,
+      "locations": 10,
+      "vpus_all": [
+        "02"
+      ],
+      "vpus_kept": [
+        "02"
+      ]
+    },
+    "Green River": {
+      "kept": 0,
+      "locations": 0,
+      "vpus_all": [],
+      "vpus_kept": []
+    },
+    "Illinois River": {
+      "kept": 0,
+      "locations": 0,
+      "vpus_all": [],
+      "vpus_kept": []
+    },
+    "James River": {
+      "kept": 7,
+      "locations": 7,
+      "vpus_all": [
+        "02"
+      ],
+      "vpus_kept": [
+        "02"
+      ]
+    },
+    "Kanawha River": {
+      "kept": 0,
+      "locations": 0,
+      "vpus_all": [],
+      "vpus_kept": []
+    },
+    "Kaskaskia River": {
+      "kept": 0,
+      "locations": 0,
+      "vpus_all": [],
+      "vpus_kept": []
+    },
+    "Mackeys Creek": {
+      "kept": 0,
+      "locations": 0,
+      "vpus_all": [],
+      "vpus_kept": []
+    },
+    "Mississippi River": {
+      "kept": 39,
+      "locations": 40,
+      "vpus_all": [
+        "07",
+        "08"
+      ],
+      "vpus_kept": [
+        "07",
+        "08"
+      ]
+    },
+    "Missouri River": {
+      "kept": 1,
+      "locations": 1,
+      "vpus_all": [
+        "10L"
+      ],
+      "vpus_kept": [
+        "10L"
+      ]
+    },
+    "Monongahela River": {
+      "kept": 6,
+      "locations": 7,
+      "vpus_all": [
+        "05"
+      ],
+      "vpus_kept": [
+        "05"
+      ]
+    },
+    "Ohio River": {
+      "kept": 9,
+      "locations": 9,
+      "vpus_all": [
+        "05"
+      ],
+      "vpus_kept": [
+        "05"
+      ]
+    },
+    "San Bernard River": {
+      "kept": 3,
+      "locations": 3,
+      "vpus_all": [
+        "12"
+      ],
+      "vpus_kept": [
+        "12"
+      ]
+    },
+    "Tombigbee River": {
+      "kept": 0,
+      "locations": 0,
+      "vpus_all": [],
+      "vpus_kept": []
+    },
+    "Vermilion River": {
+      "kept": 9,
+      "locations": 9,
+      "vpus_all": [
+        "04",
+        "08"
+      ],
+      "vpus_kept": [
+        "04",
+        "08"
+      ]
+    },
+    "Willamette River": {
+      "kept": 1,
+      "locations": 1,
+      "vpus_all": [
+        "17"
+      ],
+      "vpus_kept": [
+        "17"
+      ]
+    }
+  },
+  "reaches_and_locations": {
+    "cells_pooled": 24133976,
+    "comids_coverage_pass": 475,
+    "comids_coverage_pass_without_catchment": 2,
+    "comids_coverage_pass_without_cells": 2,
+    "comids_dropped_by_coverage": 300,
+    "comids_retained": 473,
+    "comids_with_cells": 773,
+    "frame_catchments": 9761,
+    "frame_comids": 15822,
+    "l8": {
+      "dropped_comid": 3,
+      "dropped_distance": 3,
+      "kept": 135,
+      "locations": 141
+    },
+    "locations": 141
+  },
+  "reference_plane": {
+    "by_source": {
+      "S1:geodetic": 12,
+      "S1:water": 364,
+      "S3:geodetic": 18,
+      "S3:water": 66,
+      "conflict:unresolved": 3,
+      "none:unresolved": 20
+    },
+    "classes": {
+      "geodetic": 30,
+      "unresolved": 23,
+      "water": 430
+    },
+    "excluded": [
+      {
+        "class": "geodetic",
+        "district": "CESAM",
+        "edomv": [
+          "NGVD_29"
+        ],
+        "field_values": [
+          "NGVD 1929"
+        ],
+        "source": "S1",
+        "statement": "Values are based on the North American Vertical Datum of 1988 (NAVD 88)",
+        "survey": "AR_01_CBL_20231206_CS_IRVIN_CREEK"
+      },
+      {
+        "class": "geodetic",
+        "district": "CESAM",
+        "edomv": [
+          "NGVD_29"
+        ],
+        "field_values": [
+          "NGVD 1929"
+        ],
+        "source": "S1",
+        "statement": "Values are based on the North American Vertical Datum of 1988 (NAVD 88)",
+        "survey": "AR_02_CBN_20230726_CS_MILLERS_FERRY_LOWER_PICES"
+      },
+      {
+        "class": "geodetic",
+        "district": "CESAM",
+        "edomv": [
+          "NGVD_29"
+        ],
+        "field_values": [
+          "NGVD 1929"
+        ],
+        "source": "S1",
+        "statement": "Values are based on the North American Vertical Datum of 1988 (NAVD 88)",
+        "survey": "AR_03_MLF_20230725_CS_MILLERS_FERRY_UPPER_PICES"
+      },
+      {
+        "class": "geodetic",
+        "district": "CESAM",
+        "edomv": [
+          "NGVD_29"
+        ],
+        "field_values": [
+          "NGVD 1929"
+        ],
+        "source": "S1",
+        "statement": "Values are based on the North American Vertical Datum of 1988 (NAVD 88)",
+        "survey": "AR_04_RFH_20220412_CS_JACKSON_LAKE_NORTH"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESWT",
+        "edomv": [
+          "SD (NAVD_88 North American Vertical Datum of 1988)"
+        ],
+        "field_values": [
+          "mllw"
+        ],
+        "source": "conflict",
+        "statement": null,
+        "survey": "AR_13_TR2_20220301_CS_RM309_TO_HWY64BRIDGE"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESWT",
+        "edomv": [
+          "SD (NAVD_88 North American Vertical Datum of 1988)"
+        ],
+        "field_values": [
+          "mllw"
+        ],
+        "source": "conflict",
+        "statement": null,
+        "survey": "AR_15_RSK_20231108_CS_LOCK15_RM338"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESWT",
+        "edomv": [
+          "SD (NAVD_88 North American Vertical Datum of 1988)"
+        ],
+        "field_values": [
+          "mllw"
+        ],
+        "source": "conflict",
+        "statement": null,
+        "survey": "AR_16_WBF_20221011_CS_3FORKS"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "CELRH_DIS_KA_HD_MAR_20230911_CS_0710_0715_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "CELRH_DIS_KA_HD_RCB_20230824_CS_0282_0299_SORT"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "NGVD1929"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_IL_DR_MVR_20230418_CS_27142718_23B"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "NGVD1929"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_IL_LA_MVR_20231227_CS_14351450_23H"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "NGVD1929"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_IL_MA_MVR_20231115_CS_27002714_23E"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "NGVD1929"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_IL_PE_MVR_20231024_CS_20602070_23C"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "NGVD1929"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_IL_SR_MVR_20231031_CS_24402445_23A"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_11_MVR_20230823_CS_59655980_23C"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_12_MVR_20230829_CS_56705690_23C"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_13_MVR_20230918_CS_53135320_23D"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_14_MVR_20230731_CS_51565175_23B"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_15_MVR_20231025_CS_49224926_23E"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_17_MVR_20230926_CS_44604468_23F"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_18_MVR_20230926_CS_42404250_23F"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_19_MVR_20230815_CS_38903904_23C"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_20_MVR_20230919_CS_34503456_23E"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_21_MVR_20230927_CS_33073330_23C"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_22_MVR_20230919_CS_30453057_23E"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_24_MVR_20230914_CS_30023012_23G"
+      },
+      {
+        "class": "geodetic",
+        "district": "CELRL",
+        "edomv": [
+          "SD (National Geodetic Vertical Datum of 1929: NGVD_29)"
+        ],
+        "field_values": [],
+        "source": "S1",
+        "statement": "Soundings are shown in feet and indicate depths below National Geodetic Vertical Datum of 1929 (NGVD_29)",
+        "survey": "GR_LD_GR1_20181011_CS_24_27_SORT"
+      },
+      {
+        "class": "geodetic",
+        "district": "CELRL",
+        "edomv": [
+          "SD (National Geodetic Vertical Datum of 1929: NGVD_29)"
+        ],
+        "field_values": [],
+        "source": "S1",
+        "statement": "Soundings are shown in feet and indicate depths below National Geodetic Vertical Datum of 1929 (NGVD_29)",
+        "survey": "GR_LD_GR2_20220607_CS_62_64_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "KA_HD_LON_20210506_CS_0824_0827_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "KA_HD_WIN_20230607_CS_0310_0305_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CENAB",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "MD_29_029_20210716_CS"
+      },
+      {
+        "class": "unresolved",
+        "district": "CENAB",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "MD_38_038_20170322_CS"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVN",
+        "edomv": [
+          "MLLW"
+        ],
+        "field_values": [
+          "NGVD"
+        ],
+        "source": "S1",
+        "statement": "Soundings are shown in feet and indicate depths below National Geodetic Vertical Datum or 1929 (NGVD29)",
+        "survey": "MD_70_SB1X_20230921_CS"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVN",
+        "edomv": [
+          "MLLW"
+        ],
+        "field_values": [
+          "NGVD"
+        ],
+        "source": "S1",
+        "statement": "Soundings are shown in feet and indicate depths below National Geodetic Vertical Datum or 1929 (NGVD29)",
+        "survey": "MD_71_SB2X_20230921_CS"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVN",
+        "edomv": [
+          "MLLW"
+        ],
+        "field_values": [
+          "NGVD"
+        ],
+        "source": "S1",
+        "statement": "Soundings are shown in feet and indicate depths below National Geodetic Vertical Datum or 1929 (NGVD29)",
+        "survey": "MD_72_SB3_20231219_CS_3X3"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "OH_HD_BEL_20230711_CS_1670_1678_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "OH_HD_CAM_20230308_CS_3556_3563_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "OH_HD_GRO_20221006_CS_3049_3055_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "OH_HD_RCB_20230320_CS_2799_2792_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CELRH",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "OH_HD_WIO_20210614_CS_1270_1291_SORT"
+      },
+      {
+        "class": "unresolved",
+        "district": "CENAO",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "PL_03_GHC_20171221_CS"
+      },
+      {
+        "class": "geodetic",
+        "district": "CESAM",
+        "edomv": [
+          "NGVD_29"
+        ],
+        "field_values": [
+          "NGVD 1929"
+        ],
+        "source": "S1",
+        "statement": "Values are based on the North American Vertical Datum of 1988 (NAVD 88)",
+        "survey": "TB_01_CFL_20231107_CS_MILE_57_BAR"
+      },
+      {
+        "class": "geodetic",
+        "district": "CESAM",
+        "edomv": [
+          "NGVD_29"
+        ],
+        "field_values": [
+          "NGVD 1929"
+        ],
+        "source": "S1",
+        "statement": "Values are based on the North American Vertical Datum of 1988 (NAVD 88)",
+        "survey": "TB_02_CFV_20231129_CS_BLACK_BLUFF_MILE_198"
+      },
+      {
+        "class": "geodetic",
+        "district": "CESAM",
+        "edomv": [
+          "NGVD_29"
+        ],
+        "field_values": [
+          "NGVD 1929"
+        ],
+        "source": "S1",
+        "statement": "Values are based on the North American Vertical Datum of 1988 (NAVD 88)",
+        "survey": "TB_03_DEM_20231006_CS_DEMOPOLIS_LOCK_UA_PARTIAL"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_01_DEM_20230420_CS_30"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_02_GAI_20230502_CS_24"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_03_ALI_20230406_CS_03"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_04_ALM_20230921_CS_10"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_05_COL_20230331_CS_13"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_06_ABE_20230308_CS_08"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_11_MON_20230323_CS_02"
+      },
+      {
+        "class": "unresolved",
+        "district": "CESAM",
+        "edomv": [],
+        "field_values": [],
+        "source": "none",
+        "statement": null,
+        "survey": "TT_12_BDC_20230206_CS_2"
+      },
+      {
+        "class": "geodetic",
+        "district": "CEMVR",
+        "edomv": [],
+        "field_values": [
+          "MSL1912"
+        ],
+        "source": "S3",
+        "statement": null,
+        "survey": "CEMVR_DIS_UM_16_MVR_20230925_CS_46004615_23E"
+      }
+    ],
+    "excluded_by_district": {
+      "CELRH": {
+        "unresolved": 9
+      },
+      "CELRL": {
+        "geodetic": 2
+      },
+      "CEMVN": {
+        "geodetic": 3
+      },
+      "CEMVR": {
+        "geodetic": 18
+      },
+      "CENAB": {
+        "unresolved": 2
+      },
+      "CENAO": {
+        "unresolved": 1
+      },
+      "CESAM": {
+        "geodetic": 7,
+        "unresolved": 8
+      },
+      "CESWT": {
+        "unresolved": 3
+      }
+    },
+    "excluded_share": 0.10973084886128365,
+    "expected": {
+      "geodetic": 30,
+      "unresolved": 23,
+      "water": 430
+    },
+    "matches_expected": true,
+    "rivers_with_water_survey": 18,
+    "stop": false,
+    "surveys_per_river": {
+      "Alabama River": {
+        "selected": 4,
+        "water": 0
+      },
+      "Allegheny River": {
+        "selected": 5,
+        "water": 5
+      },
+      "Arkansas River": {
+        "selected": 14,
+        "water": 11
+      },
+      "Arroyo Colorado": {
+        "selected": 4,
+        "water": 4
+      },
+      "Broad Creek": {
+        "selected": 3,
+        "water": 2
+      },
+      "Buffalo Bayou": {
+        "selected": 17,
+        "water": 17
+      },
+      "Choptank River": {
+        "selected": 2,
+        "water": 1
+      },
+      "Cocheco River": {
+        "selected": 1,
+        "water": 1
+      },
+      "Colorado River": {
+        "selected": 10,
+        "water": 10
+      },
+      "Columbia River": {
+        "selected": 85,
+        "water": 85
+      },
+      "Delaware River": {
+        "selected": 24,
+        "water": 24
+      },
+      "Green River": {
+        "selected": 2,
+        "water": 0
+      },
+      "Illinois River": {
+        "selected": 5,
+        "water": 0
+      },
+      "James River": {
+        "selected": 16,
+        "water": 15
+      },
+      "Kanawha River": {
+        "selected": 4,
+        "water": 0
+      },
+      "Kaskaskia River": {
+        "selected": 0,
+        "water": 0
+      },
+      "Mackeys Creek": {
+        "selected": 2,
+        "water": 0
+      },
+      "Mississippi River": {
+        "selected": 189,
+        "water": 173
+      },
+      "Missouri River": {
+        "selected": 8,
+        "water": 8
+      },
+      "Monongahela River": {
+        "selected": 9,
+        "water": 9
+      },
+      "Ohio River": {
+        "selected": 18,
+        "water": 13
+      },
+      "San Bernard River": {
+        "selected": 8,
+        "water": 8
+      },
+      "Tombigbee River": {
+        "selected": 9,
+        "water": 0
+      },
+      "Vermilion River": {
+        "selected": 40,
+        "water": 40
+      },
+      "Willamette River": {
+        "selected": 6,
+        "water": 6
+      }
+    }
+  },
+  "rules": "docs/3 11.3 E-R1 to E-R12 (07e00d6); 11.4 E-R5a to E-R5e (708f832)",
+  "selection": {
+    "bytes_total_known": 6895735272,
+    "condition_codes": [
+      "CS"
+    ],
+    "counts": {
+      "catalogue": 58075,
+      "condition_survey": 46864,
+      "https_zip": 46864,
+      "in_window": 46864,
+      "intersects_frame": 15976,
+      "no_channel_area": 0,
+      "selected": 483,
+      "with_footprint": 46864
+    }
+  },
+  "surveys_read": {
+    "empty_geometry_dropped": 0,
+    "footprints_repaired": 0,
+    "n": 430,
+    "null_depth_dropped": 0,
+    "per_survey": [
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2009,
+        "survey": "CM_14_CC1_20170210_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 35579
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 33681,
+        "survey": "HS_0A_TPB_20170301_CS_37_PH_MLLW",
+        "units": "usSurveyFoot",
+        "wetted_cells": 25785
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 19891,
+        "survey": "HS_8A_TPH_20170303_CS_41_PH_MLLW",
+        "units": "usSurveyFoot",
+        "wetted_cells": 17151
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 201013,
+        "survey": "MN_LP_OPE_20170320_CS_1154_1154",
+        "units": "usSurveyFoot",
+        "wetted_cells": 833
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2096,
+        "survey": "CL_54_BRS_20170324_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 29310
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2592,
+        "survey": "CL_55_CEL_20170324_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 37048
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1780,
+        "survey": "CL_59_PRE_20170417_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 24813
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2371,
+        "survey": "CL_57_BIJ_20170418_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 34249
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2077,
+        "survey": "CL_58_MHR_20170418_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 29237
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4736,
+        "survey": "CL_56_MLI_20170419_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 67240
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2054,
+        "survey": "CL_61_JDR_20170425_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28810
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2040,
+        "survey": "CL_62_GNR_20170425_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28824
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2044,
+        "survey": "CL_63_RCR_20170426_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28947
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2056,
+        "survey": "CL_64_PHC_20170501_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28270
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2058,
+        "survey": "CL_65_SDR_20170502_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28753
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2496,
+        "survey": "CL_66_JOC_20170502_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 40716
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2952,
+        "survey": "CL_67_ARL_20170502_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 53033
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2059,
+        "survey": "CL_68_MYR_20170502_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28865
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2527,
+        "survey": "CL_69_WSR_20170503_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 30929
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3014,
+        "survey": "CL_70_TMC_20170503_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 33216
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2049,
+        "survey": "CL_71_ACR_20170503_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28590
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2110,
+        "survey": "CL_72_CBR_20170504_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 29421
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1811,
+        "survey": "CL_73_MLR_20170516_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 29129
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1967,
+        "survey": "CL_75_MUR_20170517_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 27314
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2208,
+        "survey": "CL_76_ILR_20170517_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 30967
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2373,
+        "survey": "CL_77_IMR_20170518_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 33714
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2070,
+        "survey": "CL_78_IUR_20170518_CS_POOL",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28916
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 625,
+        "survey": "MR_56_NO3_20170620_CS_10X10",
+        "units": "usSurveyFoot",
+        "wetted_cells": 19377
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3241,
+        "survey": "SW_06_SWP_20171008_CS_POSTSTORM",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3241,
+        "survey": "SW_07_SWP_20171008_CS_POSTSTORM",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3241,
+        "survey": "SW_08_SWP_20171008_CS_POSTSTORM",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3241,
+        "survey": "SW_09_SWP_20171008_CS_POSTSTORM",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3241,
+        "survey": "SW_10_SWP_20171008_CS_POSTSTORM",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3241,
+        "survey": "SW_11_SWP_20171008_CS_POSTSTORM",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3241,
+        "survey": "SW_12_SWP_20171008_CS_POSTSTORM",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 268973,
+        "survey": "CO_09_TNB_20171018_CS_11_1005_THRU_1018_0925_MLLW",
+        "units": "usSurveyFoot",
+        "wetted_cells": 79046
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 35520,
+        "survey": "MN_LP_HIL_20180315_CS_1080_1080",
+        "units": "usSurveyFoot",
+        "wetted_cells": 1275
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2935,
+        "survey": "CL_47_BGR_20180816_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 56135
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1036,
+        "survey": "MR_04_RED_20190319_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 20836
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1566,
+        "survey": "MR_30_BEL_20190529_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 32851
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 348,
+        "survey": "MR_29_RIB_20190619_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 1073
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 901,
+        "survey": "MR_48_FRV_20190620_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 20396
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1787,
+        "survey": "MR_01_BRF_20190624_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 34039
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 609,
+        "survey": "MR_06_SDP_20190624_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 14181
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 669,
+        "survey": "MR_08_MED_20190624_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15149
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 873,
+        "survey": "MR_19_PHP_20190708_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 16477
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 738,
+        "survey": "MR_22_SMB_20190708_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 13536
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 996,
+        "survey": "MR_10_GRA_20190709_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 19261
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 740,
+        "survey": "MR_13_GOU_20190709_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15230
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1131,
+        "survey": "MR_16_ALH_20190709_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 22078
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 12548,
+        "survey": "PT_07_BLA_20190712_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 40420
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1527,
+        "survey": "CM_20_OSU_20190819_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 11235
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1076,
+        "survey": "MS_31_PI2X_20190921_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 82759
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4125,
+        "survey": "AL_LP_AR5_20191017_CS_30_31",
+        "units": "usSurveyFoot",
+        "wetted_cells": 1669
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2940,
+        "survey": "CL_41_CAR_20200201_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 53560
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2337,
+        "survey": "CL_42_WML_20200201_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 39898
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2358,
+        "survey": "CL_43_WMU_20200202_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 40179
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2176,
+        "survey": "CL_44_LWS_20200202_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 42371
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1957,
+        "survey": "CL_45_MIP_20200202_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 37377
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2774,
+        "survey": "CL_48_EMS_20200203_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 49836
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1743,
+        "survey": "CL_51_CRP_20200203_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 53820
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2668,
+        "survey": "CL_50_SPR_20200204_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 49748
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2568,
+        "survey": "CL_49_MEM_20200205_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 46361
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3043,
+        "survey": "CL_79_MNR_20200225_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 64752
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 17190,
+        "survey": "CO_01_MZT_20200430_CS_14_MLLW_XC_PH",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5864
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 6364,
+        "survey": "JR_56_W2D_20200602_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 139239
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1641,
+        "survey": "JR_58_J2W_20200602_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 35316
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4845,
+        "survey": "JR_60_C2J_20200721_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 13587
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 982,
+        "survey": "BR_SP_BR1_20200804_CS_0000_0010",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9232
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4769,
+        "survey": "CL_46_HDR_20200807_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 82117
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2151,
+        "survey": "CL_40_BOD_20200819_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 37494
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 878,
+        "survey": "MD_51_AV3X_20210316_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75417
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 882,
+        "survey": "MD_52_CA1X_20210316_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 73151
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 651,
+        "survey": "MD_27_BP1X_20210317_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 58236
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 647,
+        "survey": "MD_28_BP2X_20210317_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 57196
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1155,
+        "survey": "MD_49_AV1X_20210317_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 101175
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1179,
+        "survey": "MD_50_AV2X_20210317_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 103513
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 785,
+        "survey": "MD_24_BS1X_20210318_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 68892
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 649,
+        "survey": "MD_25_BS2X_20210318_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 59227
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 801,
+        "survey": "MD_26_STAX_20210318_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 70757
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 868,
+        "survey": "MD_45_LU1X_20210318_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 74537
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 772,
+        "survey": "MD_46_LU2X_20210318_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 66203
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 720,
+        "survey": "MD_47_LU3X_20210318_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 62695
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 811,
+        "survey": "MD_23_PHOX_20210323_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 68917
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 705,
+        "survey": "MD_20_MCHX_20210324_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 60753
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 748,
+        "survey": "MD_41_35PX_20210324_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 64583
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 605,
+        "survey": "MD_42_BCSX_20210324_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 58878
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 894,
+        "survey": "MD_43_HANX_20210324_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 76390
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 837,
+        "survey": "MD_44_26PX_20210324_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 72585
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1125,
+        "survey": "MD_17_CB1X_20210325_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 79999
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 693,
+        "survey": "MD_18_CB2X_20210325_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 56671
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 680,
+        "survey": "MD_38_LUCX_20210325_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 59462
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 886,
+        "survey": "MD_39_BC1X_20210325_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75288
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 894,
+        "survey": "MD_40_BC2X_20210325_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 78583
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 656,
+        "survey": "MD_12_SG2X_20210330_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 64973
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 971,
+        "survey": "MD_14_WC1X_20210330_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 79267
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 826,
+        "survey": "MD_15_WC2X_20210330_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 66606
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1628,
+        "survey": "PL_06_JPC_20210401_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 37629
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2296,
+        "survey": "MD_05_MIBX_20210402_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 186648
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 737,
+        "survey": "MD_31_GV1X_20210406_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 64429
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 890,
+        "survey": "MD_32_GV2X_20210406_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 80002
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 991,
+        "survey": "MD_33_GV3X_20210406_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 83632
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2105,
+        "survey": "JR_11_RHB_20210416_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5512
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3148,
+        "survey": "JR_10_JJR_20210417_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 33836
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 822,
+        "survey": "MD_58_TD2X_20210510_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 72919
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 827,
+        "survey": "MD_59_CO1X_20210510_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 72516
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 593,
+        "survey": "MD_60_CO2X_20210510_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 53043
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 731,
+        "survey": "MD_61_PYDX_20210510_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 64005
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 947,
+        "survey": "MD_62_TW1X_20210511_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 83454
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 713,
+        "survey": "MD_63_TW2X_20210511_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 64886
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 774,
+        "survey": "MD_64_ET1X_20210511_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 68685
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 822,
+        "survey": "MD_65_ET2X_20210511_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 72040
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 795,
+        "survey": "MD_66_BLCX_20210511_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 70595
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 840,
+        "survey": "MD_67_OP1X_20210512_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75690
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 879,
+        "survey": "MD_68_OP2X_20210512_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 80184
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1217,
+        "survey": "MD_69_JSBX_20210512_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 104868
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 763,
+        "survey": "MD_56_NO3X_20210513_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 63366
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 796,
+        "survey": "MD_57_TD1X_20210513_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 68664
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1217,
+        "survey": "MD_87_SX1X_20210513_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 99638
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 874,
+        "survey": "MD_88_SX2X_20210513_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75670
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 930,
+        "survey": "MD_89_TB1X_20210513_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 79320
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1048,
+        "survey": "MD_90_TB2X_20210513_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 90063
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1162,
+        "survey": "MD_83_PH5X_20210514_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 99597
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 980,
+        "survey": "MD_84_PS1X_20210514_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 83997
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 989,
+        "survey": "MD_85_PS2X_20210514_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 84833
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 908,
+        "survey": "MD_86_PS3X_20210514_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 78730
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 11263,
+        "survey": "AR_09_ORM_20210517_CS_NM195",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5783
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5648,
+        "survey": "AL_LP_AR3_20210518_CS_0221_0242",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15599
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5501,
+        "survey": "AL_LP_AR4_20210518_CS_0284_0304",
+        "units": "usSurveyFoot",
+        "wetted_cells": 16067
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 819,
+        "survey": "MD_53_CA2X_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 71755
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1040,
+        "survey": "MD_54_NO1X_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 89871
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 917,
+        "survey": "MD_55_NO2X_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 80408
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 995,
+        "survey": "MD_73_ALIX_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 86792
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 770,
+        "survey": "MD_74_MG1X_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 69013
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 877,
+        "survey": "MD_75_MG2X_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 78409
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 862,
+        "survey": "MD_76_JR1X_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75987
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 807,
+        "survey": "MD_77_JR2X_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 71456
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 17237,
+        "survey": "PT_02_FRA_20210518_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 56151
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 872,
+        "survey": "MD_78_JR3X_20210519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 76027
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 903,
+        "survey": "MD_79_PH1X_20210519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 80955
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1017,
+        "survey": "MD_80_PH2X_20210519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 87123
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1062,
+        "survey": "MD_81_PH3X_20210519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 93139
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 827,
+        "survey": "MD_82_PH4X_20210519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 70241
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5379,
+        "survey": "AL_LP_AR2_20210520_CS_0124_0145",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15242
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5914,
+        "survey": "AL_LP_EMS_20210520_CS_0046_0067",
+        "units": "usSurveyFoot",
+        "wetted_cells": 16432
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 195963,
+        "survey": "GI_11_SBC_20210523_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 145928
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 36566,
+        "survey": "PS_21_MHA_20210527_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 121481
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5885,
+        "survey": "OH_LP_DAS_20210607_CS_0062_0082",
+        "units": "usSurveyFoot",
+        "wetted_cells": 17315
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 6700,
+        "survey": "OH_LP_MNT_20210608_CS_0134_0154",
+        "units": "usSurveyFoot",
+        "wetted_cells": 19044
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 6569,
+        "survey": "OH_LP_PIK_20210615_CS_0546_0568",
+        "units": "usSurveyFoot",
+        "wetted_cells": 18277
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 18494,
+        "survey": "PT_01_HAR_20210615_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 60828
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5869,
+        "survey": "OH_LP_NC1_20210616_CS_0317_0336",
+        "units": "usSurveyFoot",
+        "wetted_cells": 16376
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 84128,
+        "survey": "CO_06_GTE_20210713_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 18005
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 840,
+        "survey": "MN_SP_MN1_20210715_CS_0000_0011",
+        "units": "usSurveyFoot",
+        "wetted_cells": 7746
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 103198,
+        "survey": "CO_07_GET_20210720_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15945
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4720,
+        "survey": "MN_LP_EMS_20210726_CS_0093_0113",
+        "units": "usSurveyFoot",
+        "wetted_cells": 14566
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 111329,
+        "survey": "SB_06_MTT_20210726_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 13859
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 7892,
+        "survey": "NH_10_CNN_20210728_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 197027
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 22613,
+        "survey": "PS_15_TIN_20210728_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 74854
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 8749,
+        "survey": "PS_14_EDD_20210730_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 29406
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4905,
+        "survey": "MN_LP_BRD_20210805_CS_0216_0238",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15281
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2105,
+        "survey": "PL_06_JPW_20210805_CS",
+        "units": "usSuveryFoot",
+        "wetted_cells": 54669
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 13207,
+        "survey": "PS_13_CHE_20210805_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 44088
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 14488,
+        "survey": "PS_18_EAG_20210812_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 48305
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4680,
+        "survey": "MN_LP_MAX_20210813_CS_0800_0819",
+        "units": "usSurveyFoot",
+        "wetted_cells": 14468
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4884,
+        "survey": "MN_LP_CHR_20210817_CS_0590_0610",
+        "units": "usSurveyFoot",
+        "wetted_cells": 14535
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1705,
+        "survey": "MS_20_BP2X_20210823_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 148452
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1705,
+        "survey": "MS_21_AB1X_20210823_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 148280
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4932,
+        "survey": "MN_LP_PTM_20210920_CS_1000_1020",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15041
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4860,
+        "survey": "MN_LP_GRY_20210921_CS_0888_0908",
+        "units": "usSurveyFoot",
+        "wetted_cells": 14996
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 660,
+        "survey": "MN_LP_ELZ_20210922_CS_0414_0419",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2111
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 35542,
+        "survey": "PS_19_PHI_20211006_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 118221
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 7764,
+        "survey": "OH_LP_HAN_20211109_CS_1127_1140",
+        "units": "usSurveyFoot",
+        "wetted_cells": 29920
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 544,
+        "survey": "VM_19_UPR_20211116_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2762
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2006,
+        "survey": "VM_20_UPR_20211116_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10549
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2033,
+        "survey": "VM_21_UPR_20211116_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10232
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1840,
+        "survey": "VM_22_UPR_20211116_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 8946
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2047,
+        "survey": "VM_23_UPR_20211116_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9798
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1881,
+        "survey": "VM_24_UPR_20211117_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 8815
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2088,
+        "survey": "VM_25_UPR_20211117_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9003
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1930,
+        "survey": "VM_26_UPR_20211117_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 8265
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1755,
+        "survey": "VM_27_PRY_20211117_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 7435
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1556,
+        "survey": "VM_28_ABV_20211117_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6459
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1196,
+        "survey": "VM_29_ABV_20211117_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4917
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1168,
+        "survey": "VM_30_UPR_20211117_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4792
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1227,
+        "survey": "VM_31_UPR_20211118_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5278
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1289,
+        "survey": "VM_32_UPR_20211118_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5405
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1457,
+        "survey": "VM_33_UPR_20211118_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6008
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1206,
+        "survey": "VM_34_UPR_20211118_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4803
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 16117,
+        "survey": "PT_06_FLO_20211130_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 52555
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2799,
+        "survey": "CM_19_OSL_20211202_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 49711
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 21043,
+        "survey": "PS_17_MIF_20211207_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 69067
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 16184,
+        "survey": "PT_05_LEH_20211208_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 52883
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 14678,
+        "survey": "PT_04_BEV_20211209_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 47941
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1156,
+        "survey": "MD_07_MCBX_20211214_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 90946
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 32648,
+        "survey": "PS_06_REE_20211228_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 109383
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 31526,
+        "survey": "PS_10_CHE_20211229_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 103209
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 6320,
+        "survey": "PS_20_CAM_20211230_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 21458
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1871,
+        "survey": "CL_52_DDL_20220105_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 36221
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2216,
+        "survey": "CL_53_DDU_20220106_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 41527
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1076,
+        "survey": "VM_35_UPR_20220112_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5043
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 887,
+        "survey": "VM_36_UPR_20220112_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4036
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1016,
+        "survey": "VM_37_MIL_20220112_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4598
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 937,
+        "survey": "VM_38_UPR_20220112_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4184
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1053,
+        "survey": "VM_39_UPR_20220112_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4811
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1067,
+        "survey": "VM_40_UPR_20220112_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4717
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1290,
+        "survey": "VM_41_UPR_20220112_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5516
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3183,
+        "survey": "VM_08_SWP_20220113_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 124577
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3183,
+        "survey": "VM_09_BAY_20220113_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 124577
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3183,
+        "survey": "VM_15_BAY_20220113_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 124577
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3183,
+        "survey": "VM_16_3MC_20220113_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 120231
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3183,
+        "survey": "VM_17_3MC_20220113_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 120231
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3183,
+        "survey": "VM_18_IWW_20220113_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 113010
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 143747,
+        "survey": "PS_04_LIS_20220120_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 479653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 33471,
+        "survey": "PS_07_NEW_20220125_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 110689
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1576,
+        "survey": "VM_43_LAF_20220202_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2792
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1944,
+        "survey": "VM_42_LAF_20220203_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 3613
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1342,
+        "survey": "VM_44_LAF_20220203_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2404
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1426,
+        "survey": "VM_45_LAF_20220203_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2544
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 29207,
+        "survey": "PS_09_DEE_20220207_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 97238
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1592,
+        "survey": "CL_39_WNRX_20220210_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 77373
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2357,
+        "survey": "CM_17_WSL_20220210_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 7633
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 29104,
+        "survey": "CO_04_MFS_20220303_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9981
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4567,
+        "survey": "JR_04_DPC_20220412_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 108539
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 35554,
+        "survey": "AR_03_HAR_20220419_CS_NM64",
+        "units": "usSurveyFoot",
+        "wetted_cells": 19674
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2499,
+        "survey": "JR_07_CPT_20220421_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 25792
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 8041,
+        "survey": "MD_27_027_20220421_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28925
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3273,
+        "survey": "SB_07_MTS_20220510_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 951
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1341,
+        "survey": "UM_SP_P01_20220510_CS_8490_8499",
+        "units": "internationalFoot",
+        "wetted_cells": 12142
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5698,
+        "survey": "BI_02_DCB_20220513_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 918
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 122267,
+        "survey": "SB_05_MET_20220520_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 42428
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2434,
+        "survey": "MD_95_FJ2X_20220608_CS_5X5",
+        "units": "usSurveyFoot",
+        "wetted_cells": 107703
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3873,
+        "survey": "JR_03_GHC_20220609_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 92320
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3051,
+        "survey": "MD_94_FJ1X_20220609_CS_5X5",
+        "units": "usSurveyFoot",
+        "wetted_cells": 88814
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4516,
+        "survey": "JR_01_RLS_20220725_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 100419
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 801,
+        "survey": "MD_09_PLBX_20220802_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 83840
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1019,
+        "survey": "MD_11_SG1X_20220802_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 101831
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 19091,
+        "survey": "PS_22_MAA_20220803_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 63278
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 21852,
+        "survey": "AR_04_SAN_20220804_CS_NM86",
+        "units": "usSurveyFoot",
+        "wetted_cells": 3112
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 13417,
+        "survey": "CENAO_DIS_JR_08_RTH_20220809_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 137325
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 895,
+        "survey": "CENAO_DIS_JR_09_RDT_20220825_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9509
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 780,
+        "survey": "MD_34_50PX_20220924_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 65768
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 683,
+        "survey": "MD_35_WIBX_20220924_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 57784
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 844,
+        "survey": "MD_36_RE1X_20220924_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 73032
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 872,
+        "survey": "MD_37_RE2X_20220924_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 76630
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 792,
+        "survey": "MS_17_IP3X_20221003_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 68297
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 627,
+        "survey": "MS_18_MGBX_20221003_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 53457
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1951,
+        "survey": "MS_33_PI4X_20221018_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 154849
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1951,
+        "survey": "MS_34_SP1X_20221018_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 154849
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 14187,
+        "survey": "PT_03_MUD_20221108_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 46171
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 10599,
+        "survey": "CESAS_DIS_GA_02_AIW_20221121_CS_HILTON_HEAD",
+        "units": "usSurveyFoot",
+        "wetted_cells": 173765
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1088,
+        "survey": "MD_96_BTVX_20230125_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 92869
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 785,
+        "survey": "MD_97_VENX_20230125_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 63863
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4132,
+        "survey": "CENAO_DIS_JR_06_JPC_20230209_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 91447
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 30058,
+        "survey": "CESWG_DIS_HR_04_ETT_20230321_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 41271
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 14330,
+        "survey": "CESWG_DIS_BU_03_TBC_20230323_CS_0P00_36P00",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2597
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 16664,
+        "survey": "CESWG_DIS_HR_03_ZTE_20230323_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 24963
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 6582,
+        "survey": "CENWP_DIS_WR_04_B2M_20230327_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 24253
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 881,
+        "survey": "MD_91_BU1X_20230329_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 77008
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 56860,
+        "survey": "CESWG_DIS_HS_05_ECB_20230403_CS_420P00_520P00",
+        "units": "usSurveyFoot",
+        "wetted_cells": 31235
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 38008,
+        "survey": "CESWL_DIS_AR_06_TER_20230404_CS_NM111",
+        "units": "usSurveyFoot",
+        "wetted_cells": 8809
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1186,
+        "survey": "CENWP_DIS_CL_36_CPHX_20230405_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 132441
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 16568,
+        "survey": "CESWG_DIS_HR_05_TTT_20230417_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 20186
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1655,
+        "survey": "CESWG_DIS_HR_06_HTB_20230417_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 1014
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3417,
+        "survey": "CESWL_DIS_AR_12_OZA_20230417_CS_NM292",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2790
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 10862,
+        "survey": "CESWL_DIS_AR_08_TOA_20230419_CS_NM169",
+        "units": "usSurveyFoot",
+        "wetted_cells": 8972
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 7520,
+        "survey": "CESWL_DIS_AR_07_MUR_20230424_CS_NM142",
+        "units": "usSurveyFoot",
+        "wetted_cells": 15414
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2457,
+        "survey": "LB_15_VER_20230426_CS_FULLSURVEY",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5849
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1155,
+        "survey": "OH_LD_MCA_20230502_CS_537_540_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 70706
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1140,
+        "survey": "OH_LD_CAN_20230511_CS_721_723_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 38965
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 17068,
+        "survey": "CESWG_DIS_CO_02_MTF_20230516_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9173
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 7909,
+        "survey": "CESWG_DIS_CO_03_MFF_20230516_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5410
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 6078,
+        "survey": "CESWG_DIS_SB_01_GTG_20230519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2658
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 8361,
+        "survey": "CESWG_DIS_SB_02_MZF_20230519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2420
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 22056,
+        "survey": "CESWG_DIS_SB_03_MOT_20230519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 10931
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 25959,
+        "survey": "CESWG_DIS_SB_04_MTE_20230519_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 14378
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1469,
+        "survey": "LM_14_VBO_20230521_CS_5938_5886",
+        "units": "usSurveyFoot",
+        "wetted_cells": 285345
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1501,
+        "survey": "LM_13_OZE_20230522_CS_5724_5658",
+        "units": "usSurveyFoot",
+        "wetted_cells": 281102
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 7958,
+        "survey": "CENWP_DIS_CM_16_WFC_20230523_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 7099
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 13590,
+        "survey": "CESWG_DIS_GR_01_HFB_20230524_CS_0P00_19P40",
+        "units": "usSurveyFoot",
+        "wetted_cells": 3454
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1681,
+        "survey": "CEMVN_DIS_GW_09_P2V_20230525_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 73125
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1681,
+        "survey": "CEMVN_DIS_GW_10_P2V_20230525_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 73125
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1681,
+        "survey": "CEMVN_DIS_GW_11_P2V_20230525_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 73125
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1681,
+        "survey": "CEMVN_DIS_GW_12_VRM_20230525_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75578
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1681,
+        "survey": "CEMVN_DIS_GW_13_FWB_20230525_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75578
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1681,
+        "survey": "CEMVN_DIS_GW_14_F2M_20230525_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75578
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 11033,
+        "survey": "NH_03_COC_20230601_CS_028",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6977
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 70780,
+        "survey": "CESWG_DIS_HS_10_SBT_20230606_CS_1110P77_1266P48",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28935
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 23226,
+        "survey": "CESWL_DIS_AR_02_MIL_20230607_CS_NM50",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5008
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1275,
+        "survey": "MO_10_OML_20230615_CS_561_HWY2",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5215
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 245520,
+        "survey": "LM_15_CVB_20230618_CS_MB_5982_5977",
+        "units": "usSurveyFoot",
+        "wetted_cells": 22780
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 903,
+        "survey": "OH_LD_MKL_20230620_CS_454_457_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 55527
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 744,
+        "survey": "MS_29_PTM_20230622_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 62100
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 712,
+        "survey": "LM_12_EYB_20230629_CS_5530_5502",
+        "units": "usSurveyFoot",
+        "wetted_cells": 128635
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1305,
+        "survey": "OH_LD_JTMX_20230629_CS_796_799_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 62046
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1480,
+        "survey": "LM_11_YBS_20230704_CS_5368_5326",
+        "units": "usSurveyFoot",
+        "wetted_cells": 296991
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1295,
+        "survey": "LM_10_SSL_20230706_CS_5268_5234",
+        "units": "usSurveyFoot",
+        "wetted_cells": 238338
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1902,
+        "survey": "MD_48_FRV_20230713_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 34524
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 400,
+        "survey": "OH_LD_NBG_20230713_CS_721_722_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 7143
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2070,
+        "survey": "MD_92_BU2X_20230720_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 185211
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2070,
+        "survey": "MD_93_BVPX_20230720_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 185211
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5111,
+        "survey": "LM_24_CARX_20230721_CS_871_869_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 79444
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4145,
+        "survey": "LM_22_RANX_20230722_CS_771_769_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 73122
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1492,
+        "survey": "LM_09_LPM_20230724_CS_5180_5116",
+        "units": "usSurveyFoot",
+        "wetted_cells": 453725
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 451,
+        "survey": "LM_08_MVF_20230725_CS_4800_4786",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75815
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 88525,
+        "survey": "LM_17_CLDX_20230802_CS_620_621_SORT_LWRP",
+        "units": "usSurveyFoot",
+        "wetted_cells": 81213
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1046,
+        "survey": "LM_06_MBV_20230808_CS_4414_4384",
+        "units": "usSurveyFoot",
+        "wetted_cells": 190619
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1538,
+        "survey": "LM_07_FMB_20230809_CS_4786_4724",
+        "units": "usSurveyFoot",
+        "wetted_cells": 259083
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2707,
+        "survey": "MO_11_OMM_20230809_CS_631",
+        "units": "usSurveyFoot",
+        "wetted_cells": 11389
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2527,
+        "survey": "OH_LD_OLM_20230815_CS_924_927_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 81034
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2391,
+        "survey": "CENWP_DIS_CL_33_LDY_20230821_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 42446
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3172,
+        "survey": "CENWP_DIS_CL_37_FAS_20230822_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 51358
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2417,
+        "survey": "LM_04_GGK_20230823_CS_4076_4012",
+        "units": "usSurveyFoot",
+        "wetted_cells": 461237
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3688,
+        "survey": "CENWP_DIS_CL_40_BON_20230825_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 11350
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 140,
+        "survey": "LM_05_VGG_20230826_CS_4080_4076",
+        "units": "usSurveyFoot",
+        "wetted_cells": 7458
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 932,
+        "survey": "LM_03_KGC_20230827_CS_3688_3660",
+        "units": "usSurveyFoot",
+        "wetted_cells": 104628
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2237,
+        "survey": "CENWP_DIS_CL_34_WSH_20230828_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 39203
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2451,
+        "survey": "CENWP_DIS_CL_38_MLT_20230828_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 42728
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2485,
+        "survey": "CENWP_DIS_CL_32_GOV_20230829_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 41696
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2347,
+        "survey": "CENWP_DIS_CL_35_RED_20230829_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 37929
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5615,
+        "survey": "OH_LD_SMT_20230829_CS_869_877_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 321482
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2189,
+        "survey": "CENWP_DIS_CL_31_AIR_20230830_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 36694
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 8221,
+        "survey": "CESWG_DIS_BU_01_HTB_20230830_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2327
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 17205,
+        "survey": "CESWG_DIS_BU_02_SLB_20230830_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6113
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 15965,
+        "survey": "CESWG_DIS_BU_04_LBJ_20230830_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6258
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3608,
+        "survey": "CENWP_DIS_CL_30_VUP_20230831_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 62005
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1469,
+        "survey": "CEMVP_DIS_UM_SP_P5A_20230901_CS_7320_7330",
+        "units": "internationalFoot",
+        "wetted_cells": 13572
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 501,
+        "survey": "LM_02_GCG_20230907_CS_3470_3454",
+        "units": "usSurveyFoot",
+        "wetted_cells": 44013
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5761,
+        "survey": "LM_25_MADX_20230907_CS_917_915_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 88749
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1698,
+        "survey": "CEMVP_DIS_UM_SP_P06_20230908_CS_7150_7160",
+        "units": "internationalFoot",
+        "wetted_cells": 15630
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 48467,
+        "survey": "CESWG_DIS_HS_07_BGB_20230908_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28375
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 54521,
+        "survey": "CESWG_DIS_HS_08_GHB_20230911_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 19284
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5518,
+        "survey": "LM_23_OSCX_20230913_CS_792_789_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 84905
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4777,
+        "survey": "LM_16_OVLX_20230917_CS_603_606_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 88227
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1360,
+        "survey": "CEMVP_DIS_UM_SP_P04_20230918_CS_7610_7620",
+        "units": "internationalFoot",
+        "wetted_cells": 12439
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4268,
+        "survey": "CENWP_DIS_WR_01_WR1_20230918_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 76070
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4778,
+        "survey": "CENWP_DIS_WR_02_WR2_20230919_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 86740
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 69947,
+        "survey": "CESWG_DIS_HS_09_HSB_20230919_CS_1008P00_1110P77",
+        "units": "usSurveyFoot",
+        "wetted_cells": 21089
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 24046,
+        "survey": "CESWG_DIS_HS_9A_TPC_20230919_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5996
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2224,
+        "survey": "MS_11_SM3X_20230919_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 198046
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 736,
+        "survey": "LM_01_GCB_20230920_CS_3240_3200",
+        "units": "usSurveyFoot",
+        "wetted_cells": 116356
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3670,
+        "survey": "LM_19_MEMX_20230920_CS_743_735_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 208847
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1867,
+        "survey": "CENAO_DIS_BD_01_BDC_20230921_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 3106
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5499,
+        "survey": "CENWP_DIS_WR_03_WR3_20230921_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 99430
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4264,
+        "survey": "LM_18_FRIX_20230926_CS_703_705_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 66496
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 9271,
+        "survey": "PB_01_FTB_20230927_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 8032
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 7767,
+        "survey": "PS_08_BUL_20230927_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 26126
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2014,
+        "survey": "CEMVP_DIS_UM_SP_P08_20230928_CS_6960_6970",
+        "units": "internationalFoot",
+        "wetted_cells": 18481
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1662,
+        "survey": "CEMVP_DIS_UM_SP_P09_20231002_CS_6680_6690",
+        "units": "internationalFoot",
+        "wetted_cells": 15232
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 13225,
+        "survey": "MO_12_OMU_20231005_CS_674_681",
+        "units": "usSurveyFoot",
+        "wetted_cells": 59403
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4083,
+        "survey": "CENWP_DIS_CL_02_UDS_20231010_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 80064
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 31069,
+        "survey": "CESWG_DIS_GI_13_CRC_20231017_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 3567
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5299,
+        "survey": "CENWP_DIS_CL_01_LDS_20231018_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 111475
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 15069,
+        "survey": "CESWG_DIS_CO_05_GZT_20231018_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6224
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 56,
+        "survey": "CENWK_DIS_MO_05_LMR_20231018_CS_440_7_440_9_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 1216
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1178,
+        "survey": "CEMVP_DIS_UM_SP_P02_20231024_CS_8230_8240",
+        "units": "internationalFoot",
+        "wetted_cells": 10862
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 81727,
+        "survey": "CESWG_DIS_HS_06_CBB_20231025_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 50705
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1646,
+        "survey": "CEMVP_DIS_UM_SP_P05_20231026_CS_7500_7510",
+        "units": "internationalFoot",
+        "wetted_cells": 15111
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1293,
+        "survey": "CEMVP_DIS_UM_SP_P03_20231030_CS_8070_8080",
+        "units": "internationalFoot",
+        "wetted_cells": 11908
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 220,
+        "survey": "CENWK_DIS_MO_03_LMR_20231101_CS_286_5_287_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 5490
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4550,
+        "survey": "CENWP_DIS_CL_04_USN_20231102_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 84320
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 14586,
+        "survey": "CESWG_DIS_CO_08_GTF_20231106_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6137
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1257,
+        "survey": "MS_09_SM1X_20231106_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 149910
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1363,
+        "survey": "MS_10_SM2X_20231106_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 145377
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2838,
+        "survey": "MS_07_OLDX_20231107_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 256753
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2098,
+        "survey": "MS_08_FARX_20231107_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 210217
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 10377,
+        "survey": "PS_16_BIL_20231109_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 34734
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 296,
+        "survey": "CENWK_DIS_MO_04_LMR_20231113_CS_319_3_320_0_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 7367
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 359,
+        "survey": "CENWK_DIS_MO_01_LMR_20231113_CS_52_0_52_5_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9170
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1140,
+        "survey": "MS_24_BYSX_20231114_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 153555
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4887,
+        "survey": "CENWP_DIS_CL_11_WAN_20231120_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 95992
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 582,
+        "survey": "CENWK_DIS_MO_02_LMR_20231120_CS_109_4_110_6_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 14799
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2066,
+        "survey": "CEMVP_DIS_UM_SP_P10_20231121_CS_6250_6260",
+        "units": "internationalFoot",
+        "wetted_cells": 19090
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5120,
+        "survey": "CENWP_DIS_CL_03_FLV_20231121_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 97476
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4399,
+        "survey": "CENWP_DIS_CL_15_STL_20231121_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 85871
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3723,
+        "survey": "CENWP_DIS_CL_27_MGN_20231121_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 68558
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3418,
+        "survey": "CEMVM_DIS_LM_26_HIKX_20231121_CS_929_925_SORT_ACTUALDEPTHS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 152137
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2064,
+        "survey": "CEMVP_DIS_UM_SP_P07_20231122_CS_7100_7110",
+        "units": "internationalFoot",
+        "wetted_cells": 19126
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2239,
+        "survey": "CESWL_DIS_AR_10_DAR_20231128_CS_NM242",
+        "units": "usSurveyFoot",
+        "wetted_cells": 4180
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4757,
+        "survey": "CENWP_DIS_CL_06_MLN_20231129_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 88618
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4273,
+        "survey": "CENWP_DIS_CL_14_GUL_20231130_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 75994
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5856,
+        "survey": "CENWP_DIS_CM_11_CBY_20231130_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 53407
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4825,
+        "survey": "CENWP_DIS_CL_10_PGT_20231204_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 92213
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4960,
+        "survey": "CENWP_DIS_CL_12_WST_20231204_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 98965
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5967,
+        "survey": "CESWL_DIS_AR_05_MAY_20231204_CS_NM108",
+        "units": "usSurveyFoot",
+        "wetted_cells": 2383
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4527,
+        "survey": "CENWP_DIS_CL_07_PIL_20231205_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 85065
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4532,
+        "survey": "CENWP_DIS_CL_05_TNG_20231206_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 87402
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4303,
+        "survey": "CENWP_DIS_CL_13_EUR_20231206_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 82806
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3773,
+        "survey": "CENWP_DIS_CL_23_STH_20231206_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 71867
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3234,
+        "survey": "CENWP_DIS_CL_18_LDB_20231211_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 58984
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5269,
+        "survey": "CESWL_DIS_AR_13_TR1_20231211_CS_NM296",
+        "units": "usSurveyFoot",
+        "wetted_cells": 9984
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1796,
+        "survey": "MD_29_RIB_20231211_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 31536
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2158,
+        "survey": "MD_30_BEL_20231211_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 39205
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3105,
+        "survey": "CENWP_DIS_CL_19_UDB_20231212_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 58802
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 27473,
+        "survey": "CESWG_DIS_HS_11_HTB_20231212_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 6397
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1215,
+        "survey": "MD_16_ALH_20231212_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 22653
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 924,
+        "survey": "MD_19_PHP_20231212_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 16062
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1450,
+        "survey": "MD_21_81P_20231212_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28879
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1606,
+        "survey": "MD_22_SMB_20231212_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 28177
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3279,
+        "survey": "CENWP_DIS_CL_24_WAR_20231213_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 63639
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 862,
+        "survey": "MD_06_SDP_20231213_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 13746
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 779,
+        "survey": "MD_08_MED_20231213_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 12305
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1131,
+        "survey": "MD_10_GRA_20231213_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 18806
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 756,
+        "survey": "MD_13_GOU_20231213_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 11946
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1851,
+        "survey": "MD_01_BRF_20231214_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 33513
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 995,
+        "survey": "MD_04_RED_20231214_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 16212
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1325,
+        "survey": "MR_54_NO1_20231214_CS_3X3",
+        "units": "usSurveyFoot",
+        "wetted_cells": 42246
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 5407,
+        "survey": "CENWP_DIS_CL_01_DESX_20231219_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 1043737
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4785,
+        "survey": "CENWP_DIS_CL_08_BKW_20231219_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 92733
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4908,
+        "survey": "CENWP_DIS_CL_17_SLG_20231219_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 94618
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4039,
+        "survey": "CENWP_DIS_CL_25_HEN_20231219_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 77114
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 14024,
+        "survey": "CESWG_DIS_HS_12_UTB_20231219_CS_M0P32_13P50",
+        "units": "usSurveyFoot",
+        "wetted_cells": 1774
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4893,
+        "survey": "CENWP_DIS_CL_09_SKM_20231220_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 94241
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3888,
+        "survey": "CENWP_DIS_CL_22_UMT_20231220_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 71609
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1770,
+        "survey": "MD_02_AR1X_20231220_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 160768
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1770,
+        "survey": "MD_03_AR2X_20231220_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 160768
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1094,
+        "survey": "MS_39_WILX_20231220_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 125848
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1787,
+        "survey": "SW_00_PTA_20231220_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 155334
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1859,
+        "survey": "SW_04_SWP_20231220_CS_B2B",
+        "units": "usSurveyFoot",
+        "wetted_cells": 160582
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4635,
+        "survey": "CENWP_DIS_CL_20_KLM_20231221_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 88143
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4235,
+        "survey": "CENWP_DIS_CL_26_WLW_20231221_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 78366
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4269,
+        "survey": "CENWP_DIS_CL_21_LMT_20231226_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 78932
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 2455,
+        "survey": "CENWP_DIS_CL_29_VTB_20231226_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 49846
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 912,
+        "survey": "SW_03_SWP_20231226_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 78160
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 3974,
+        "survey": "CENWP_DIS_CL_16_WLK_20231227_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 78820
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 4397,
+        "survey": "OH_LD_CAI_20231227_CS_967_976_SORT",
+        "units": "usSurveyFoot",
+        "wetted_cells": 193056
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 6077,
+        "survey": "CENWP_DIS_CL_28_VBR_20231228_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 119859
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1161,
+        "survey": "SW_01_SWP_20231228_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 101256
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1144,
+        "survey": "SW_02_SWP_20231228_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 90245
+      },
+      {
+        "empty_geometry": 0,
+        "footprint_repaired": false,
+        "null_depth": 0,
+        "points_read": 1305,
+        "survey": "SW_05_SWP_20231229_CS",
+        "units": "usSurveyFoot",
+        "wetted_cells": 116493
+      }
+    ],
+    "points_read": 3866682,
+    "surveys_by_unit": {
+      "internationalFoot": 11,
+      "usSurveyFoot": 418,
+      "usSuveryFoot": 1
+    },
+    "without_wetted_cells": []
+  },
+  "training_sites": 4879
+}
