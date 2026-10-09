@@ -264,7 +264,11 @@ EXPECTED: dict[str, dict[str, Any]] = {
             "max_rounds": 2000,
             "early_stopping_rounds": 100,
         },
-        "baselines": {"m0_min_division_sites": 30, "m1_floor_quantile": 0.001},
+        "baselines": {
+            "m0_min_division_sites": 30,
+            "m1_floor_quantile": 0.001,
+            "m1_max_depth": [4, 6, 8],
+        },
     },
     "solver": {  # 4.2 (P3-12)
         "tau_l": 1e-10,
