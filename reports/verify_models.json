@@ -1,0 +1,2814 @@
+{
+ "checks": [
+  {
+   "limit": "<= 1e-18",
+   "name": "reference: u-form vs tau-form max rel",
+   "passed": true,
+   "section": "quad",
+   "source": "proofs 2.5",
+   "value": 4.1143392023470374e-21
+  },
+  {
+   "limit": "<= 1e-09",
+   "name": "params rule (level 6, trunc 4.0) max rel error",
+   "passed": true,
+   "section": "quad",
+   "source": "P6-D3 (a); solver.tau_q / 10",
+   "value": 4.13011198984367e-15
+  },
+  {
+   "limit": "<= 1e-09",
+   "name": "Prop 2.4 closed forms (r = 1/2, 1, 2) max rel",
+   "passed": true,
+   "section": "quad",
+   "source": "Prop 2.4",
+   "value": 1.929292680723645e-15
+  },
+  {
+   "limit": "0.70117 +/- 1e-05",
+   "name": "E1 wide-channel depth",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 0.7011691975201952
+  },
+  {
+   "limit": "0.70323 +/- 1e-05",
+   "name": "E1 dbar*",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 0.7032314864858472
+  },
+  {
+   "limit": "0.99268 +/- 1e-05",
+   "name": "E1 kappa*",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 0.992684644606876
+  },
+  {
+   "limit": "<= 1e-10",
+   "name": "E1 |ell - ell_mp| (params solver)",
+   "passed": true,
+   "section": "hand",
+   "source": "Prop 3.2",
+   "value": 1.9405799444133762e-14
+  },
+  {
+   "limit": "<= 1e-13",
+   "name": "E1 |ell - ell_mp| (tight solver)",
+   "passed": true,
+   "section": "hand",
+   "source": "Prop 3.2",
+   "value": 2.310348680647764e-17
+  },
+  {
+   "limit": "0.298513 +/- 1e-06",
+   "name": "E2 wide-channel depth",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 0.298512995129362
+  },
+  {
+   "limit": "0.30796 +/- 1e-05",
+   "name": "E2 dbar*",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 0.3079617710092826
+  },
+  {
+   "limit": "0.92505 +/- 1e-05",
+   "name": "E2 kappa*",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 0.9250518663678925
+  },
+  {
+   "limit": "<= 1e-10",
+   "name": "E2 |ell - ell_mp| (params solver)",
+   "passed": true,
+   "section": "hand",
+   "source": "Prop 3.2",
+   "value": 3.7279166853835246e-12
+  },
+  {
+   "limit": "<= 1e-13",
+   "name": "E2 |ell - ell_mp| (tight solver)",
+   "passed": true,
+   "section": "hand",
+   "source": "Prop 3.2",
+   "value": 6.759471119493463e-16
+  },
+  {
+   "limit": "1.05485 +/- 1e-05",
+   "name": "E1 d_max",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 1.054847229728771
+  },
+  {
+   "limit": "14.0646 +/- 0.0001",
+   "name": "E1 A",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 14.064629729716945
+  },
+  {
+   "limit": "0.71101 +/- 1e-05",
+   "name": "E1 V",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 0.7110034314569372
+  },
+  {
+   "limit": "1.03497 +/- 1e-05",
+   "name": "E3 F(delta = 0.1, r = 0.5)",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 1.0349697916150686
+  },
+  {
+   "limit": "1.01980 +/- 1e-05",
+   "name": "E3 F(delta = 0.1, r = 1.0)",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 1.019803902718557
+  },
+  {
+   "limit": "1.02606 +/- 1e-05",
+   "name": "E3 F(delta = 0.1, r = 2.0)",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2",
+   "value": 1.0260606304268445
+  },
+  {
+   "limit": "true",
+   "name": "E5 lambda_L^3 = 0.028316846592 exactly",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2 E5",
+   "value": true
+  },
+  {
+   "limit": "1.48592 +/- 1e-05",
+   "name": "E5 k_US",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2 E5",
+   "value": 1.4859185774962607
+  },
+  {
+   "limit": "1.26822 +/- 1e-05",
+   "name": "E5 k_US^(3/5)",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2 E5",
+   "value": 1.2682270367271147
+  },
+  {
+   "limit": "2.30042 +/- 1e-05",
+   "name": "E11 dbar (ft)",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2 E11",
+   "value": 2.3004238763785922
+  },
+  {
+   "limit": "0.701169 +/- 1e-06",
+   "name": "E11 dbar (ft -> m)",
+   "passed": true,
+   "section": "hand",
+   "source": "proofs 10.2 E11",
+   "value": 0.7011691975201949
+  },
+  {
+   "limit": "<= 1e-08",
+   "name": "max |IFT - central FD| (h = 1e-5, tight solver)",
+   "passed": true,
+   "section": "grad",
+   "source": "Prop 3.3",
+   "value": 2.447633207225408e-10
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "max |IFT - one-step surrogate|",
+   "passed": true,
+   "section": "grad",
+   "source": "P6-D2 (b)",
+   "value": 4.440892098500626e-16
+  },
+  {
+   "limit": "true",
+   "name": "d ell/dq in [3/5, 1) (invariant 6)",
+   "passed": true,
+   "section": "grad",
+   "source": "Thm 4.1 #6; Prop 3.3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "d ell/dnu == d ell/dq",
+   "passed": true,
+   "section": "grad",
+   "source": "Prop 3.3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "d ell/dw in (-5/3, -3/5]",
+   "passed": true,
+   "section": "grad",
+   "source": "Prop 3.3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "d ell/ds == -(1/2) d ell/dq",
+   "passed": true,
+   "section": "grad",
+   "source": "Prop 3.3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "|d ell/dr| <= 2(2r+1)/(3r(r+1))",
+   "passed": true,
+   "section": "grad",
+   "source": "Prop 3.6",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "non-convergence raises (E2, K_max = 2)",
+   "passed": true,
+   "section": "grad",
+   "source": "Algorithm Phi",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "ln A == w + ell (invariant 1)",
+   "passed": true,
+   "section": "phi",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "ln V == q - ln A (invariant 2)",
+   "passed": true,
+   "section": "phi",
+   "source": "Thm 4.1 #2",
+   "value": true
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "max |rho| (invariant 3)",
+   "passed": true,
+   "section": "phi",
+   "source": "Thm 4.1 #3",
+   "value": 9.995027028253389e-11
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "d_max / dbar vs 1 + 1/r, max rel (invariant 4)",
+   "passed": true,
+   "section": "phi",
+   "source": "Thm 4.1 #4",
+   "value": 9.992007221626409e-16
+  },
+  {
+   "limit": "<= 40",
+   "name": "Picard iterations in 1..K_max",
+   "passed": true,
+   "section": "phi",
+   "source": "3.3",
+   "value": 28
+  },
+  {
+   "limit": "true",
+   "name": "permutation invariance, outputs (bit-identical)",
+   "passed": true,
+   "section": "phi",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "permutation invariance, IFT gradients (bit-identical)",
+   "passed": true,
+   "section": "phi",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "subset invariance (bit-identical)",
+   "passed": true,
+   "section": "phi",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "unit equivariance (ft units) max abs",
+   "passed": true,
+   "section": "phi",
+   "source": "3.5",
+   "value": 7.549516567451064e-15
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M2-MLP: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M2-MLP: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 0.0
+  },
+  {
+   "limit": "true",
+   "name": "M3: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M3: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M3: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M3: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M3: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M3: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M3: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M3: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 4.440892098500626e-16
+  },
+  {
+   "limit": "true",
+   "name": "M4: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M4: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M4: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M4: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 3.3306690738754696e-16
+  },
+  {
+   "limit": "true",
+   "name": "M4: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M5: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M5: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M5: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 1.6653345369377348e-16
+  },
+  {
+   "limit": "true",
+   "name": "M5: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M5: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 0.0
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M5: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.904477238364962e-11
+  },
+  {
+   "limit": "true",
+   "name": "M5: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M6-NN: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M6-NN: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 4.440892098500626e-16
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: d g_nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: d g_nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M6-NN: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 5.551115123125783e-17
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M6-NN: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.933331934774969e-11
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M5_A1: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M5_A1: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 1.6653345369377348e-16
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M5_A1: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 0.0
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M5_A1: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 1.1102230246251565e-15
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M5_A2: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M5_A2: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 1.6653345369377348e-16
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M5_A2: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 0.0
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M5_A2: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.904477238364962e-11
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M5_A3-SP: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M5_A3-SP: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 1.6653345369377348e-16
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M5_A3-SP: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 0.0
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M5_A3-SP: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.904477238364962e-11
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M5_A3-SR: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M5_A3-SR: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 4.440892098500626e-16
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M5_A3-SR: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 0.0
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M5_A3-SR: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.906320208585839e-11
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M5_wA1: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M5_wA1: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 1.6653345369377348e-16
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M5_wA1: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 0.0
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M5_wA1: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.904477238364962e-11
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP_A4: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP_A4: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP_A4: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP_A4: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP_A4: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP_A4: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M2-MLP_A4: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP_A4: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M2-MLP_A4: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 0.0
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M4_A4: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M4_A4: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 1.6653345369377348e-16
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4_A4: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: sigma finite and >= sigma_min",
+   "passed": true,
+   "section": "rungs",
+   "source": "proofs 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M5_A4: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M5_A4: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 4.440892098500626e-16
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: d nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: d nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M5_A4: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 0.0
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M5_A4: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.81322800797102e-11
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: V_E not a feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: x_blind_idx = I_blind",
+   "passed": true,
+   "section": "rungs",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: get_num_trainable_params",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 3",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: mu (B, 4) float64 CPU finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: objective finite",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "none missing",
+   "name": "M6-NN_A4: finite non-zero grad on every parameter",
+   "passed": true,
+   "section": "rungs",
+   "source": "Step 5",
+   "value": "all"
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: permutation invariance (bit-identical)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M6-NN_A4: subset invariance, 4 rows (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Prop 3.4",
+   "value": 9.71445146547012e-17
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: d g_nu/d x == 0 for Q_E, S, F_S",
+   "passed": true,
+   "section": "rungs",
+   "source": "prompt item 4; protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: d g_nu/d x != 0 for some I_blind feature",
+   "passed": true,
+   "section": "rungs",
+   "source": "P6-D4 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: ln A == w + ell",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #1",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-14",
+   "name": "M6-NN_A4: t = ln(1 + 1/r) (max abs)",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #4",
+   "value": 2.7755575615628914e-17
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "M6-NN_A4: max |rho|",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #3",
+   "value": 9.868451888994656e-11
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN_A4: nu and r inside the closed bands",
+   "passed": true,
+   "section": "rungs",
+   "source": "Thm 4.1 #7",
+   "value": true
+  },
+  {
+   "limit": "< 5.19169",
+   "name": "M2-MLP epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.15243932951527767
+  },
+  {
+   "limit": "< 2.83652",
+   "name": "M2-MLP epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.9403321576616939
+  },
+  {
+   "limit": "< 2.14809",
+   "name": "M3 epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.01948163721422809
+  },
+  {
+   "limit": "< 9.20812",
+   "name": "M4 epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.2152939199830208
+  },
+  {
+   "limit": "< 40.7423",
+   "name": "M4 epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.4640550811260532
+  },
+  {
+   "limit": "< 11.7409",
+   "name": "M5 epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.22542431053180428
+  },
+  {
+   "limit": "< 7.75162",
+   "name": "M5 epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.6339279966066091
+  },
+  {
+   "limit": "< 22.6721",
+   "name": "M6-NN epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.6762899886230566
+  },
+  {
+   "limit": "< 5.92729",
+   "name": "M5_A1 epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.17893387151777482
+  },
+  {
+   "limit": "< 3.53047",
+   "name": "M5_A1 epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.7038146164646679
+  },
+  {
+   "limit": "< 11.6758",
+   "name": "M5_A2 epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.18573274353559405
+  },
+  {
+   "limit": "< 7.93446",
+   "name": "M5_A2 epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.4004566097445884
+  },
+  {
+   "limit": "< 14.5333",
+   "name": "M5_A3-SP epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.29312712066695346
+  },
+  {
+   "limit": "< 10.544",
+   "name": "M5_A3-SP epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.5789940231678253
+  },
+  {
+   "limit": "< 7.59544",
+   "name": "M5_A3-SR epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.27937255317758664
+  },
+  {
+   "limit": "< 4.84652",
+   "name": "M5_A3-SR epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.6081388097949012
+  },
+  {
+   "limit": "< 14.4353",
+   "name": "M5_wA1 epoch 0: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": 0.40414835497149776
+  },
+  {
+   "limit": "< 9.09966",
+   "name": "M5_wA1 epoch 20: objective decreases over 50 steps",
+   "passed": true,
+   "section": "losses",
+   "source": "Step 5",
+   "value": -0.8522820480658944
+  },
+  {
+   "limit": "true",
+   "name": "gradient bounds with sigma floor (beta_N = 0.0)",
+   "passed": true,
+   "section": "losses",
+   "source": "Prop 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "gradient bounds with sigma floor (beta_N = 0.5)",
+   "passed": true,
+   "section": "losses",
+   "source": "Prop 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "per-point NLL >= ln sigma_min",
+   "passed": true,
+   "section": "losses",
+   "source": "Prop 8.5 (ii)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "Q_0.05 inside the bracket",
+   "passed": true,
+   "section": "ensemble",
+   "source": "proofs 9.3",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-10",
+   "name": "|Psi(Q_0.05) - 0.05|",
+   "passed": true,
+   "section": "ensemble",
+   "source": "proofs 9.3",
+   "value": 9.41753619532193e-13
+  },
+  {
+   "limit": "true",
+   "name": "Q_0.5 inside the bracket",
+   "passed": true,
+   "section": "ensemble",
+   "source": "proofs 9.3",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-10",
+   "name": "|Psi(Q_0.5) - 0.5|",
+   "passed": true,
+   "section": "ensemble",
+   "source": "proofs 9.3",
+   "value": 5.950795411990839e-13
+  },
+  {
+   "limit": "true",
+   "name": "Q_0.95 inside the bracket",
+   "passed": true,
+   "section": "ensemble",
+   "source": "proofs 9.3",
+   "value": true
+  },
+  {
+   "limit": "<= 1e-10",
+   "name": "|Psi(Q_0.95) - 0.95|",
+   "passed": true,
+   "section": "ensemble",
+   "source": "proofs 9.3",
+   "value": 9.752199048307375e-13
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "law of total variance max abs",
+   "passed": true,
+   "section": "ensemble",
+   "source": "9.2",
+   "value": 8.881784197001252e-16
+  },
+  {
+   "limit": "<= 1e-12",
+   "name": "M = 1: Q_0.95 = mu + z sigma",
+   "passed": true,
+   "section": "ensemble",
+   "source": "proofs 9.3",
+   "value": 4.440892098500626e-16
+  },
+  {
+   "limit": "<= 1.67e-10",
+   "name": "Phi^-1 recovers nu (max abs)",
+   "passed": true,
+   "section": "ensemble",
+   "source": "Prop 6.2",
+   "value": 9.82267600591058e-11
+  },
+  {
+   "limit": "False False",
+   "name": "baselines/registry/runner/utils import neither torch nor xgboost",
+   "passed": true,
+   "section": "isolation",
+   "source": "P6-D7 (a); ADL-051",
+   "value": "False False"
+  },
+  {
+   "limit": "False",
+   "name": "torch rungs do not import xgboost",
+   "passed": true,
+   "section": "isolation",
+   "source": "P6-D7 (a); ADL-051",
+   "value": "False"
+  },
+  {
+   "limit": "[] False",
+   "name": "src.models imports no submodule",
+   "passed": true,
+   "section": "isolation",
+   "source": "P6-D7 (a); ADL-051",
+   "value": "[] False"
+  },
+  {
+   "limit": "False",
+   "name": "XGB worker entry point is torch-free",
+   "passed": true,
+   "section": "isolation",
+   "source": "P6-D7 (a); ADL-051",
+   "value": "False"
+  },
+  {
+   "limit": "== 12",
+   "name": "M2-MLP: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M2-MLP: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M2-MLP: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M3: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M3: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M3: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M3: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M3: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M4: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M4: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M4: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M4: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M5: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M5: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M5: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M6-NN: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M6-NN: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M6-NN: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M5_A1: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M5_A1: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A1: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M5_A2: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M5_A2: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A2: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M5_A3-SP: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M5_A3-SP: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SP: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M5_A3-SR: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M5_A3-SR: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A3-SR: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M5_wA1: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M5_wA1: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_wA1: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M5_A4: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "model.json, normstats.json, run.json, state.npz",
+   "name": "M5_A4: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "model.json, normstats.json, run.json, state.npz"
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: finite epoch history",
+   "passed": true,
+   "section": "e2e",
+   "source": "Step 5",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: best epoch after the warm start",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D5 (i)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: no-pickle round trip (hash and predictions)",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M5_A4: load refuses a different params_sha256",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": true
+  },
+  {
+   "limit": "== 12",
+   "name": "M6-XGB: outer-test rows blanked",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D1 (a)",
+   "value": 12
+  },
+  {
+   "limit": "booster_nu.json, booster_t.json, booster_w.json, run.json",
+   "name": "M6-XGB: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "booster_nu.json, booster_t.json, booster_w.json, run.json"
+  },
+  {
+   "limit": "False True",
+   "name": "M1, M2-XGB: CLI fits ran without torch",
+   "passed": true,
+   "section": "e2e",
+   "source": "ADL-051; P6-D7 (a)",
+   "value": "False True"
+  },
+  {
+   "limit": "booster_W.json, booster_dbar.json, run.json",
+   "name": "M1: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "booster_W.json, booster_dbar.json, run.json"
+  },
+  {
+   "limit": "booster_A.json, booster_W.json, booster_dbar.json, booster_dmax.json, run.json",
+   "name": "M2-XGB: artefact set",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "booster_A.json, booster_W.json, booster_dbar.json, booster_dmax.json, run.json"
+  },
+  {
+   "limit": "true",
+   "name": "M-null: finite predictions",
+   "passed": true,
+   "section": "e2e",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "A_J: available rows = rows with V_E, finite there",
+   "passed": true,
+   "section": "e2e",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "true",
+   "name": "M0: finite, ln A = ln W + ln dbar",
+   "passed": true,
+   "section": "e2e",
+   "source": "protocol 4.1",
+   "value": true
+  },
+  {
+   "limit": "none",
+   "name": "no pickle-type artefact",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a); ADL-076",
+   "value": "none"
+  },
+  {
+   "limit": "all",
+   "name": "every .npz/.npy loads with allow_pickle=False",
+   "passed": true,
+   "section": "e2e",
+   "source": "P6-D6 (a)",
+   "value": "89 files scanned"
+  }
+ ],
+ "header": {
+  "git": {
+   "commit": "55a3b5fec9c088fac827d43a1b6f21ba2a0ba3bd",
+   "dirty": false
+  },
+  "packages": {
+   "numpy": "2.5.3",
+   "pandas": "3.0.6",
+   "pydantic": "2.14.0",
+   "torch": "2.14.1",
+   "xgboost": "3.4.1"
+  },
+  "params_sha256": "4652c11b0fc3a5622e8d1dd6e92a7495293ab57745371849cc8e3d44ba6c4b98",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "quick": false,
+  "script": "scripts/verify_models.py",
+  "sections": [
+   "quad",
+   "hand",
+   "grad",
+   "phi",
+   "rungs",
+   "losses",
+   "ensemble",
+   "isolation",
+   "e2e"
+  ],
+  "torch_threads": 1
+ },
+ "info": {
+  "e2e_params_sha256": "6bb42a05c437d0cd940674b08bb37e62ceac548f0e23d5496bf5e2ddb1c475c9",
+  "loss_first_last": {
+   "M2-MLP epoch 0": {
+    "first": 5.1916892677314,
+    "last": 0.15243932951527767
+   },
+   "M2-MLP epoch 20": {
+    "first": 2.8365231751543845,
+    "last": -0.9403321576616939
+   },
+   "M3 epoch 0": {
+    "first": 2.148093678890843,
+    "last": 0.01948163721422809
+   },
+   "M4 epoch 0": {
+    "first": 9.208122365628105,
+    "last": 0.2152939199830208
+   },
+   "M4 epoch 20": {
+    "first": 40.74234118754816,
+    "last": -0.4640550811260532
+   },
+   "M5 epoch 0": {
+    "first": 11.740926689114332,
+    "last": 0.22542431053180428
+   },
+   "M5 epoch 20": {
+    "first": 7.7516245866359,
+    "last": -0.6339279966066091
+   },
+   "M5_A1 epoch 0": {
+    "first": 5.927294537701275,
+    "last": 0.17893387151777482
+   },
+   "M5_A1 epoch 20": {
+    "first": 3.5304745587291064,
+    "last": -0.7038146164646679
+   },
+   "M5_A2 epoch 0": {
+    "first": 11.675770109357499,
+    "last": 0.18573274353559405
+   },
+   "M5_A2 epoch 20": {
+    "first": 7.934460718400507,
+    "last": -0.4004566097445884
+   },
+   "M5_A3-SP epoch 0": {
+    "first": 14.533252229875128,
+    "last": 0.29312712066695346
+   },
+   "M5_A3-SP epoch 20": {
+    "first": 10.543950127396698,
+    "last": -0.5789940231678253
+   },
+   "M5_A3-SR epoch 0": {
+    "first": 7.5954436838545965,
+    "last": 0.27937255317758664
+   },
+   "M5_A3-SR epoch 20": {
+    "first": 4.846519999072435,
+    "last": -0.6081388097949012
+   },
+   "M5_wA1 epoch 0": {
+    "first": 14.435253090787917,
+    "last": 0.40414835497149776
+   },
+   "M5_wA1 epoch 20": {
+    "first": 9.099663570574993,
+    "last": -0.8522820480658944
+   },
+   "M6-NN epoch 0": {
+    "first": 22.67207925853809,
+    "last": 0.6762899886230566
+   }
+  },
+  "n_trainable_params": {
+   "M2-MLP": 37768,
+   "M2-MLP_A4": 37512,
+   "M3": 36865,
+   "M4": 73991,
+   "M4_A4": 73479,
+   "M5": 73862,
+   "M5_A1": 73862,
+   "M5_A2": 73862,
+   "M5_A3-SP": 73862,
+   "M5_A3-SR": 73862,
+   "M5_A4": 73350,
+   "M5_wA1": 73862,
+   "M6-NN": 73475,
+   "M6-NN_A4": 72963
+  },
+  "phi_iterations": {
+   "max": 28,
+   "mean": 10.3786,
+   "p99": 27.0,
+   "rows": 20000
+  },
+  "phi_timing_ms_1_thread": {
+   "B1024_forward_backward_ms": 21.524052100721747,
+   "B1024_forward_ms": 21.834368747659028,
+   "B256_forward_backward_ms": 7.018641650211066,
+   "B256_forward_ms": 6.992864597123116
+  },
+  "quad_grid_points": 575,
+  "quad_level_study_max_rel": {
+   "L4_T3.0": 8.981867827153032e-05,
+   "L4_T3.5": 8.981488086517002e-05,
+   "L4_T4.0": 8.981488086517002e-05,
+   "L4_T4.5": 8.981488086517002e-05,
+   "L5_T3.0": 8.100064203863959e-07,
+   "L5_T3.5": 1.4616350984531335e-08,
+   "L5_T4.0": 1.4616350984531335e-08,
+   "L5_T4.5": 1.4616350812564754e-08,
+   "L6_T3.0": 1.0641915593534354e-06,
+   "L6_T3.5": 4.13011198984367e-15,
+   "L6_T4.0": 4.13011198984367e-15,
+   "L6_T4.5": 4.13011198984367e-15,
+   "L7_T3.0": 1.2094210251747316e-06,
+   "L7_T3.5": 4.0387372717318285e-15,
+   "L7_T4.0": 3.943996352019239e-15,
+   "L7_T4.5": 4.0387372717318285e-15
+  },
+  "quad_min_passing_level_at_params_trunc": 6
+ },
+ "seconds": {
+  "e2e": 4.912255291012116,
+  "ensemble": 0.08661179197952151,
+  "grad": 0.12911591702140868,
+  "hand": 0.17083662492223084,
+  "isolation": 1.447980083990842,
+  "losses": 5.186448207939975,
+  "phi": 1.8295015830080956,
+  "quad": 39.686447874992155,
+  "rungs": 0.7132201669737697
+ },
+ "summary": {
+  "n_checks": 330,
+  "n_failed": 0
+ }
+}
