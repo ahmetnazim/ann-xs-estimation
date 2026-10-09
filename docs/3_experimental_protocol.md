@@ -966,3 +966,39 @@ Written after the P6-D10 format inspection of the 483 acquired surveys. Only fie
 - **Expected counts (from metadata).** 430 water, 30 geodetic, 23 unresolved, so 53 of 483 surveys (11.0 %) are excluded, below the 50 % STOP.
   - 18 of the 25 rivers keep at least one survey.
   - `ind_prepare` recomputes these counts and reports any mismatch. Nothing is tuned to the counts.
+
+## 12. Phase 7 amendments (append-only)
+
+### 12.1 Floating-point tolerances of the verification harness (docs/2 Theorem 4.1: "Phase 7 sets the tolerances") [ADL-101, ADL-103]
+
+The tolerances of P7-D5 (c), applied by `tests/physics/` and `tests/unit/`:
+
+| Check | Tolerance |
+|---|---|
+| Invariant 1 | `ln A` bit-equal to `w + ℓ`; linear space relative ≤ 1e-13 |
+| Invariant 2 | `ln V` bit-equal to `(q − w) − ℓ`; ≤ 1e-14 absolute vs `q − ln A`; linear space relative ≤ 1e-13 |
+| Invariant 3 | \|ρ\| ≤ (5/3)·τ_ℓ; ≤ (5/3)·1e-14 with τ_ℓ = 1e-14 (ρ evaluated in mpmath); A1: ℓ bit-equal to the closed form |
+| Invariant 4 | d_max/d̄ = 1 + 1/r to relative 1e-14, strictly > 1 |
+| Invariant 5 | finite and > 0 |
+| Invariant 6 | ∈ [3/5, 1); closed end only under O5 |
+| Invariant 7 | §12.2 |
+| exp(μ*) (Prop 9.2) | ≤ 1e-14 absolute in log space |
+| E1, E2, E3, E5, E11 | tiers 1–2 ≤ τ_Q vs mpmath; tier 3 one unit in the last printed digit (ADL-080) |
+| Props 3.5, 1.3 | relative ≤ 1e-12 |
+| Prop 3.4 | Φ bit-identical; whole model ≤ 1e-12 |
+
+### 12.2 Invariant 7 in floating point (P7-Q3 (a)) [ADL-103]
+
+- In log space, inside the transform's own band: ν ∈ [ν_min, ν_min + Δ_n] and ln r ∈ [ln r_min, ln r_min + Δ_r] exactly (logistic maps of docs/2 §7.6 and the projection Π).
+- Against the params bounds (`n_bounds`, `r_bounds`), applied to n = e^ν, to Π/clamp outputs and to M6's r = r(t): within 2 ulp (`np.nextafter` applied twice to each bound). Test messages report the excess in ulp.
+- Reason: `ν_min + Δ_n` and `exp(ν)` round, e.g. ν(z = +40) = −0.5108256237659905 vs ln 0.6 = −0.5108256237659907, exp(ν) = 0.6000000000000001, and M6 r(t = ln 3) = 0.4999999999999999. No `src/` change.
+
+### 12.3 Operationalizations of docs/2 statements in floating point [ADL-103]
+
+- **O1 Sampled domain.** docs/2 §1.3 bounds r, n and S from below only. Hypothesis samples W ∈ [0.1, 5000] m and Q_E ∈ [1e-4, 1e5] m³/s log-uniformly, and S ∈ [S_floor, 0.1], with the P7-D6 atoms (r = ½ and 10 exactly; s = `np.log(S_floor)` exactly; logits ±40).
+- **O2 Contraction (Prop 3.2 (2)).** The observed increments satisfy |Δ_m| ≤ (2/5)|Δ_{m−1}| + 4ε·max(1, |ℓ_m|, |ℓ_{m−1}|, |ℓ_{m−2}|). The second term is the float64 representation error of the three iterates (ε = 2⁻⁵²). Bracket, monotone iterates and the a-posteriori bound are checked without allowance.
+- **O3 M3 Jarrett rows.** On in-band Jarrett rows ρ(ℓ; ν_J) = ρ_J(ℓ), and the Jarrett stopping rule gives |ℓ − ℓ*| ≤ τ_ℓ with ∂ρ_J/∂ℓ ≤ 5/3 − b_J. Their invariant 3 bound is therefore (5/3 − b_J)·τ_ℓ. Strickler and projected rows (through Φ) keep (5/3)·τ_ℓ.
+- **O4 "Up to rounding".** For A1 n* = exp(ν̄) (Prop 9.2) and the A1 Prop 6.2 round trip: |error| ≤ c·ε·Σ|terms| (c = 16 and 8 respectively), the standard summation error bound.
+- **O5 Closed end of η (P7-A1 (a), P7-A2 (a), P7-A3 (a)).** Prop 2.7 gives η < 1 in exact arithmetic. At extreme aspect ratios (β ≳ 1e7) the exact 1 − η falls to the order of the float64 epsilon ε = 2⁻⁵². The computed η = βF_β/F (two 513-node sums, log1p, one division) then rounds to 1 or slightly above, so D = 5/3 − (2/3)η and ∂ℓ/∂q = 1/D reach the closed end. Rule (two-sided, row by row): every row with float η ≥ 1 − 4ε must satisfy |η_float − η_mp| ≤ 4ε (8.9e-16), with η_mp the mpmath η at the row's β. Those rows, and only those, may show η ∈ [1, 1 + 4ε], D ∈ [1 − (8/3)ε, 1], ∂ℓ/∂q ∈ [1, 1/(1 − 3ε)] (∂ln V/∂q correspondingly at or just below 0). Every other row keeps the strict bounds of Theorem 4.1 and Props 2.7, 3.1. Measured worst case (363 rows, 11 values of r × β ∈ [1e4, 1e12]): |η_float − η_mp| = 2ε; 39 rows give η ∈ (1, 1 + 2ε]; min D = 1 − ε > 0, so the gradient stays finite. Reproducers (r = ½, n = 0.6, S = S_floor): W = 1 m, Q_E = e¹¹ (β = 1.1e8, 1 − η = 2.6e-17, computed η = 1.0); W = e^−2.28125 m, Q_E = e⁴ (1 − η = 1.65e-16, computed η = 1.0, 0.74ε from exact); W = e^−2.25 m, Q_E = e⁶ (1 − η = 3.6e-18, computed η = 1 + ε). No `src/` change. This mirrors docs/2 Theorem 4.1 invariant 7 (open in exact arithmetic, closed in floating point).
+- **O6 Ensemble roughness (Prop 9.2, full κ).** Members satisfy ν_m = (5/3)ℓ_m + w_m + (2/3)k_m + s/2 − q − ρ_m with |ρ_m| ≤ (5/3)τ_ℓ. The checked bound is |ν* − ν̄| ≤ (2/3)·ln(1 + 2δ_max) + (5/3)·τ_ℓ + 16ε·Σ|terms|, where δ_max is the largest d_max/W over the members and the mean member.
+- **O7 Exact mixture quantile (§9.3).** The bisection stops at width tol·(1 + |x|) with tol = 1e-12. Ψ is Lipschitz with constant ≤ 1/(√(2π)·σ_min), so |Ψ(Q_p) − p| ≤ tol·(1 + |Q_p|)/(√(2π)·σ_min) + 4ε, with Ψ evaluated by SciPy as the independent oracle.
