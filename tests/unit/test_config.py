@@ -272,6 +272,8 @@ EXPECTED: dict[str, dict[str, Any]] = {
         "tau_q": 1e-8,
         "stopping": "per_row",
         "quadrature": "tanh_sinh",
+        "quad_level": 6,  # P6-D3
+        "quad_trunc": 4.0,  # P6-D3
     },
     "uq": {  # 4.2 (P3-13), 4.6
         "ensemble_m": 10,
