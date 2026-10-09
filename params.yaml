@@ -268,6 +268,23 @@ splits:                                         # 1.5; 3.2-3.4
   tail_order_min: 7                             # 3.2: S-TAIL-SO test on stream order >= 7
   ind_dedupe_m: 1000                            # 3.5 L8: eHydro dedupe radius, 1 km (EPSG:5070)
 
+ehydro:                                         # 11.3 (P6-D10): eHydro re-derivation and S-IND
+  catalogue: https://services7.arcgis.com/n1YM8pTrFmm7L4hs/arcgis/rest/services/eHydro_Survey_Data/FeatureServer/0
+  rivers: [Ohio River, Arkansas River, Monongahela River, Illinois River, Missouri River,
+           Colorado River, Kaskaskia River, Tombigbee River, Vermilion River, Allegheny River,
+           Choptank River, Mississippi River, Kanawha River, San Bernard River, Broad Creek,
+           James River, Buffalo Bayou, Columbia River, Arroyo Colorado, Green River,
+           Delaware River, Cocheco River, Willamette River, Alabama River, Mackeys Creek]   # E-R1
+  date_start: "2017-01-01"                      # E-R2 (iii); quoted: DVC rejects YAML dates
+  date_end: "2023-12-31"                        # E-R2 (iii), inclusive
+  cell_m: 5.0                                   # E-R5 (ii): binning and surface cell (EPSG:5070)
+  coverage_min: 0.8                             # E-R7: flowline share within the footprint zone
+  buffer_m: 100.0                               # E-R7: footprint buffer
+  loc_length_km: 10.0                           # E-R8: location length
+  min_locations: 30                             # E-R10: below this, S-IND is descriptive only
+  min_rivers: 10                                # E-R10
+  size_cap_gb: 20.0                             # E-R4: STOP above this total download
+
 audit:                                          # 1.5; 3.6 (diagnostic only)
   knn_k: 8                                      # 3.6.2: weights W1, k nearest neighbours
   idw_band_km: 100                              # 3.6.2: weights W2, inverse distance band

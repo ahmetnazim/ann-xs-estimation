@@ -188,13 +188,21 @@ def test_srnd_is_a_seeded_75_25_row_split_on_u() -> None:
 
 # ----------------------------------------------------------------------------- ind_prepare (L8)
 def test_dedupe_l8_drops_comid_overlap_and_near_locations() -> None:
+    import shapely
+
     train = pd.DataFrame({"site_no": ["00000001"], "comid": [5], "x5070": [0.0], "y5070": [0.0]})
+    line = shapely.linestrings
     locs = pd.DataFrame(
         {
-            "loc_id": ["a", "a", "b", "c"],
-            "comid": [7, 5, 8, 9],  # a: member COMID 5 is a training COMID
-            "x5070": [50_000.0, 50_000.0, 900.0, 5_000.0],  # b within 1 km; c beyond
-            "y5070": [0.0, 0.0, 0.0, 0.0],
+            "loc_id": ["a", "a", "b", "b", "c"],
+            "comid": [7, 5, 8, 10, 9],  # a: member COMID 5 is a training COMID
+            "geometry": [
+                line([[50_000.0, 0.0], [51_000.0, 0.0]]),
+                line([[51_000.0, 0.0], [52_000.0, 0.0]]),
+                line([[5_000.0, 0.0], [3_000.0, 0.0]]),
+                line([[3_000.0, 0.0], [900.0, 0.0]]),  # b: second member ends 900 m away
+                line([[5_000.0, 0.0], [6_000.0, 0.0]]),  # c: beyond 1 km
+            ],
         }
     )
     kept, counts = dedupe_l8(locs, train, 1000.0)
@@ -203,5 +211,5 @@ def test_dedupe_l8_drops_comid_overlap_and_near_locations() -> None:
 
 
 def test_ind_prepare_stage_is_pending() -> None:
-    with pytest.raises(NotImplementedError, match="P5-D8"):
+    with pytest.raises(NotImplementedError, match="P6-D10 step 5"):
         ind_main([])

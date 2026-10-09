@@ -63,7 +63,8 @@ stages:
     metrics: [{reports/split_summary.json: {cache: false}}]
   ind_prepare:
     cmd: python -m src.data.ind_prepare
-    deps: [src/data/ind_prepare.py, data/raw/ehydro, data/raw/ehydro_author, data/raw/zarrabi_product,
-           data/processed/site_table.parquet]
-    params: [splits.ind_dedupe_m]
+    deps: [src/data/ind_prepare.py, src/data/ehydro.py, data/raw/ehydro, data/raw/nhdplusv21,
+           data/raw/zarrabi_product, data/processed/site_table.parquet]
+    params: [splits.ind_dedupe_m, ehydro]
     outs: [data/processed/ind/ehydro_ind.parquet]
+    metrics: [{reports/ind_prepare.json: {cache: false}}]

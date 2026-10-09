@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+from datetime import date
 from itertools import pairwise
 from pathlib import Path
 from typing import Annotated, Final, Literal, Self
@@ -268,6 +269,35 @@ class SplitsParams(_Frozen):
         if len(set(value)) != len(value):
             raise ValueError("tail_deciles must be unique")
         return value
+
+
+class EhydroParams(_Frozen):
+    """eHydro re-derivation and S-IND rules E-R1 to E-R10 (docs/3 section 11.3; P6-D10)."""
+
+    catalogue: HttpUrl
+    rivers: tuple[str, ...] = Field(min_length=1)
+    date_start: date
+    date_end: date
+    cell_m: PosFloat
+    coverage_min: UnitInterval
+    buffer_m: NonNegFloat
+    loc_length_km: PosFloat
+    min_locations: PosInt
+    min_rivers: PosInt
+    size_cap_gb: PosFloat
+
+    @field_validator("rivers")
+    @classmethod
+    def _unique_rivers(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if len(set(value)) != len(value):
+            raise ValueError("ehydro.rivers must be unique")
+        return value
+
+    @model_validator(mode="after")
+    def _window(self) -> Self:
+        if self.date_end <= self.date_start:
+            raise ValueError("ehydro.date_end must be after ehydro.date_start")
+        return self
 
 
 class AuditParams(_Frozen):
@@ -545,6 +575,7 @@ class ProtocolParams(_Frozen):
     transforms: TransformsParams
     domain: DomainParams
     splits: SplitsParams
+    ehydro: EhydroParams
     audit: AuditParams
     audit_rules: AuditRulesParams
     model: ModelParams
