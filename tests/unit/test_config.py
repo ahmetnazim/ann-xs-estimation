@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import math
 import subprocess
 import sys
@@ -105,6 +106,12 @@ _PHYSIO = "631405bbd34e36012efa304e"
 _FIGSHARE = "https://ndownloader.figshare.com/files/{}"
 
 
+#: Tracked output of ``python -m src.data.ehydro select`` (docs/3 11.3 E-R2 to E-R4).
+_EHYDRO_SELECTION: dict[str, Any] = json.loads(
+    (REPO_ROOT / "reports" / "ehydro_selection.json").read_text(encoding="utf-8")
+)
+
+
 def _acq(urls: list[str], md5: list[str] | None = None) -> dict[str, Any]:
     return {"urls": urls, "md5": md5, "sha256_pinned": None}
 
@@ -135,7 +142,8 @@ EXPECTED_ACQUIRE: dict[str, dict[str, Any]] = {  # 1.1, 1.5; ADL-055 (P5-D2, D3)
         [_SB.format(_PHYSIO, "physio_shp.zip"), _SB.format(_PHYSIO, "physio.xml")],
         ["ba126a4526fb75ab5e13100e692613df", "1868489eb8f734eddbef4a4a954401cb"],
     ),
-    "ehydro": _UNIT,  # T5: pending the eHydro rules (P5-D8)
+    # T5: the docs/3 11.3 E-R3 selection, read from the tracked report (lineage check, P6-D10)
+    "ehydro": _acq([s["url"] for s in _EHYDRO_SELECTION["selected"]]),
     "ehydro_author": _UNIT,  # 1.5 item 4: inbox file; SHA-256 pinned on arrival
     "zarrabi_product": _acq(
         [_ZENODO.format(13883263, "Bankfull_Meanflow_CONUS.txt")],
