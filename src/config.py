@@ -379,6 +379,8 @@ class BaselineParams(_Frozen):
 
     m0_min_division_sites: PosInt
     m1_floor_quantile: OpenUnit
+    #: M1 ``max_depth`` grid (P6-D8, Q-C2 (b): the shared grid; protocol 4.1, 11.1).
+    m1_max_depth: tuple[PosInt, ...] = Field(min_length=1)
 
 
 class ModelParams(_Frozen):

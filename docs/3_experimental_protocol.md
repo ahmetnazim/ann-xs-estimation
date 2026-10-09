@@ -905,3 +905,19 @@ Pixel centres are used (`all_touched=False`). A catchment with no pixel centre i
 - No global scaler exists. Each fit saves one `NormStats` JSON (`float.hex`, no pickle), fitted on the rows of its training part only.
 - The JSON records the analysis, the fold block, the part and index, and the SHA-256 of the site and fold tables.
 - Saving fails if this provenance is missing or names a non-training part.
+
+## 11. Phase 6 amendments (append-only)
+
+### 11.1 M1 target scale and grid (§4.1, §4.2) [ADL-085]
+
+- Target scale: raw metres for W and d̄, as in the Zarrabi notebooks at commit `a30f1f5` (`mean_depth_va_mf` after `HYDRoSWOTUnitsConvertor`; read as text only). This resolves the §4.1 ⚠️ item.
+- Features: the 19 "Model 2" predictors of the §4.1 list. "Model 1", which uses measured discharge, is excluded.
+- Grid: `model.baselines.m1_max_depth` = {4, 6, 8}, the shared §4.2 values, × the shared `eta` and `min_child_weight`.
+  - The notebooks load pickled boosters (never opened), so no hyperparameter can be read from their text.
+  - The value 12 in the Phase 5 carry-over could not be verified, so the §4.1 rule "centred on the values read from their notebooks" falls back to the shared grid.
+- Non-positive predictions are floored at the 0.1th training percentile; counts are reported.
+
+### 11.2 M6 stage-3 shape projection (§4.1 M6 row) [ADL-084]
+
+- At stage 3, ĝ_t is clamped to [t(r_max), t(r_min)] = [ln 1.1, ln 3] before r̂ = r(t̂). This mirrors the label rule for F_tout rows.
+- The projected t̂ is reported, so d_max = d̄(1 + 1/r̂) holds exactly. The share of projected rows is reported.

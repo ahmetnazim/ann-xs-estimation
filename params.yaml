@@ -324,6 +324,7 @@ model:                                          # 4.1; 4.2
   baselines:                                    # 4.1
     m0_min_division_sites: 30                   # M0: < 30 training sites -> pooled national curve
     m1_floor_quantile: 0.001                    # M1: negative predictions floored at the 0.1th percentile
+    m1_max_depth: [4, 6, 8]                     # P6-D8 / Q-C2 (b): M1 max_depth grid = shared (docs/3 11.1)
 
 solver:                                         # 4.2 P3-12; Props 3.3-3.6
   tau_l: 1.0e-10                                # stopping tolerance (log units)
