@@ -942,3 +942,27 @@ Committed before any eHydro survey record, footprint or file was read. Only the 
 - **E-R10 Realised size.** S-IND uses the realised set; the counts 76 / 25 in §1.1 and §3.2 are Zarrabi's reference values. If fewer than `ehydro.min_locations` locations or fewer than `ehydro.min_rivers` rivers remain after L8, S-IND is descriptive only. The §4.3 cluster bootstrap runs over the realised rivers.
 - **E-R11 Author table.** The re-derived set is primary. The author request was not sent (PI, 2026-10-08), so `acquire@ehydro_author` stays pending under a renewed waiver. An author table, if ever received, is compared descriptively (at COMID level where possible) and never replaces the frozen S-IND. Frozen means the `ind_prepare` output is recorded in `dvc.lock` at the Phase 6 gate. Erratum to §1.5: `data/raw/ehydro_author` is removed from the `ind_prepare` deps, and `params` gains `ehydro`.
 - **E-R12 Report.** `reports/ind_prepare.json` records the count after every rule (catalogue, eligible, selected, bytes, excluded by datum, COMIDs, dropped by coverage, locations, L8 drops), per-river counts and the DA distribution. It contains no model predictions.
+
+### 11.4 E-R5 (i) survey reader and reference plane (clarifies §11.3; [ADL-092])
+
+Written after the P6-D10 format inspection of the 483 acquired surveys. Only field names, datum metadata and the sign relation between `Z_depth` and `surveyPointElev` were inspected. No depth, W or d̄ statistic was computed.
+
+- **E-R5a Source.** Points come from the `SurveyPoint` layer of the survey's file geodatabase, which every survey has. `SurveyPoint_HD`, the XYZ files and the TIN are not used, and the §11.3 XYZ fallback is never triggered.
+- **E-R5b Depth.** depth = `Z_depth` × `FT_TO_M`, positive downward ("depth corrected for draft, squat and chart datum").
+  - `elevationUOM` must be a foot (US survey or international; `usSuveryFoot` is read as US survey). Any other unit means STOP.
+  - The 2 ppm difference between the US survey foot and `FT_TO_M` is not corrected, because E-R5 (i) prescribes `FT_TO_M`.
+  - Points with a null `Z_depth` or an empty geometry are dropped and counted.
+  - Points are reprojected from the layer CRS to EPSG:5070.
+- **E-R5c Reference plane.** Each survey is classed as *water* and kept, or as *geodetic* or *unresolved* and excluded. Three sources are read in a fixed order:
+  - **S1** is the first "Vertical [Reference] Datum [Name]:" statement in the survey's `.XML`, then `.MET`, then `.GEN`. It is read up to the first ". " or " - " followed by a capital letter, or up to a tag end. If no statement exists, S1 is the XML `<depthdn>`, then `<altdatum>`. If S1 gets a class, that class decides.
+  - **S2** is the XML `elevationDatum` domain value (`<edomv>`); **S3** is the distinct values of `SurveyPoint.elevationDatum`. They are used only when S1 gives no class. If S2 ∪ S3 yields exactly one class, it is used. Two classes, or none, give *unresolved*.
+  - **Text classes.** The water list is tested before the geodetic list. A text matching neither list gets no class.
+    - Water: LWRP or low water reference plane; MLLW or mean lower low water; MLG or mean low gulf; CRD or Columbia River Datum; LWD or low water datum; pool (normal, flat, minimum); "<name> River Datum" or ORD/MRD/BRD/MND; "water surface at the time/date"; "depths on the date of survey"; LSF or low steady flow.
+    - Geodetic: NAVD, NGVD, "National Geodetic", "North American Vertical", MSL 1912, IGLD or Great Lakes Datum, "bottom elevation".
+  - Because the water list is tested first, a water plane stated relative to a geodetic datum is water (e.g. "Low Water Datum of 569.2 ft IGLD 1985").
+  - Depths below a geodetic datum (e.g. "depths below NGVD 29") are geodetic.
+- **E-R5d Footprint.** The E-R5 (iii) and E-R7 footprint is the `SurveyJob` polygon of the delivered geodatabase, which is DVC-tracked. It is reprojected to EPSG:5070 and repaired with `make_valid`; the number of repairs is reported. The catalogue footprint remains the E-R2 eligibility geometry only.
+- **E-R5e Pooling order (E-R6).** Surveys are ordered by `surveydatestart`, then `surveyjobidpk`, as listed in `reports/ehydro_selection.json`. This file becomes an `ind_prepare` dependency.
+- **Expected counts (from metadata).** 430 water, 30 geodetic, 23 unresolved, so 53 of 483 surveys (11.0 %) are excluded, below the 50 % STOP.
+  - 18 of the 25 rivers keep at least one survey.
+  - `ind_prepare` recomputes these counts and reports any mismatch. Nothing is tuned to the counts.
