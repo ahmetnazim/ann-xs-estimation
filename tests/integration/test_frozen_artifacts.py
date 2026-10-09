@@ -192,6 +192,28 @@ def test_l4_feature_sets_exist_and_exclude_banned_predictors(site_table: pd.Data
         assert not banned, f"{spec.name}: banned predictors {sorted(banned)} (L4)"
 
 
+#: docs/3 12.5: StreamCat watershed (Ws) metrics joined on COMID.
+STREAMCAT_WS_REGIONAL = ("runoffws", "bfiws")
+#: StreamCat channel-geometry metric prefixes (EPA variable_info): never acquired, never a column.
+STREAMCAT_GEOMETRY = ("bankfull", "thalweg")
+
+
+def test_l4_streamcat_runoff_and_bfi_are_comid_level(site_table: pd.DataFrame) -> None:
+    """docs/3 3.5 L4 and 12.5: ``runoffws`` and ``bfiws`` are StreamCat watershed metrics joined
+    on COMID (Hill et al. 2016, doi:10.1111/1752-1688.12372), so each takes one value per COMID
+    and cannot carry a site's own HYDROSWOT measurement; no StreamCat channel-geometry metric
+    (``bankfull*``, ``thalweg*``) is a site-table column.
+    """
+    per_comid = site_table.groupby("comid")[list(STREAMCAT_WS_REGIONAL)].nunique(dropna=False)
+    for col in STREAMCAT_WS_REGIONAL:
+        varying = set(per_comid.index[per_comid[col] > 1])
+        assert not varying, (
+            f"{col} varies within {len(varying)} COMIDs, e.g. {_examples(varying)} (L4, 12.5)"
+        )
+    geometry = sorted(c for c in site_table.columns if c.lower().startswith(STREAMCAT_GEOMETRY))
+    assert not geometry, f"StreamCat channel-geometry columns in the site table: {geometry} (L4)"
+
+
 # ----------------------------------------------------------------------------- L8
 def test_l8_kept_locations_are_independent_of_training_sites(site_table: pd.DataFrame) -> None:
     """docs/3 3.5 L8 and 11.3 E-R9: no kept S-IND location has a member COMID that is a COMID of
