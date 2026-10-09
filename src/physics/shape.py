@@ -18,7 +18,7 @@ from dataclasses import dataclass
 
 import torch
 from torch import Tensor
-from torch.autograd.function import FunctionCtx
+from torch.autograd.function import FunctionCtx, once_differentiable
 
 from src.physics.quadrature import perimeter_integrals
 
@@ -100,7 +100,10 @@ def section_terms(ell: Tensor, w: Tensor, r: Tensor, *, level: int, trunc: float
 
 
 class _LogKappa(torch.autograd.Function):
-    """``k(e^(ell - w), r)`` with the analytic partials ``(-eta, +eta, k_r)`` (Props 2.7, 2.8)."""
+    """``k(e^(ell - w), r)`` with the analytic partials ``(-eta, +eta, k_r)`` (Props 2.7, 2.8).
+
+    First order only (``once_differentiable``, P7-Q1): a double backward raises.
+    """
 
     @staticmethod
     def forward(
@@ -113,6 +116,7 @@ class _LogKappa(torch.autograd.Function):
         return terms.k
 
     @staticmethod
+    @once_differentiable
     def backward(ctx: FunctionCtx, grad: Tensor) -> tuple[Tensor, Tensor, Tensor, None, None]:
         """Chain rule with ``dk/d ln a = -eta`` and ``dk/dr|_a = k_r``."""
         eta, k_r = ctx.saved_tensors  # type: ignore[attr-defined]

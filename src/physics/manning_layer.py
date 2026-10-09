@@ -23,6 +23,10 @@ per-row freezing; its backward applies Algorithm Phi at the converged ``ell``::
 within ``K_max`` raises :class:`PhiConvergenceError`; it is never returned silently.
 :func:`phi_one_step` is the P6-D2 (b) surrogate, kept as a cross-check.
 
+The backward is first order only (``once_differentiable``, P7-Q1): ``eta`` and ``k_r`` are saved
+as constants, so a double backward would omit ``d(1/D)/dtheta``; it raises instead of returning
+a wrong Hessian. No model or loss in this project uses second derivatives.
+
 Torch-only, float64, CPU. Owning phase: 6.
 """
 
@@ -34,7 +38,7 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 from torch import Tensor
-from torch.autograd.function import FunctionCtx
+from torch.autograd.function import FunctionCtx, once_differentiable
 
 from src.config import JarrettParams, SolverParams
 from src.physics.quadrature import perimeter_fm1
@@ -214,6 +218,7 @@ class ManningPhi(torch.autograd.Function):
         return ell, iters
 
     @staticmethod
+    @once_differentiable
     def backward(
         ctx: FunctionCtx, g: Tensor, _g_iters: Tensor | None
     ) -> tuple[Tensor, Tensor, Tensor, Tensor, Tensor, None]:
