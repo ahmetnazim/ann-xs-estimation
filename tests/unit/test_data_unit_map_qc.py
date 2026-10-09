@@ -1,4 +1,8 @@
-"""Unit tests for src/data/unit_map.py and src/data/qc.py (Phase 5, Batch C). Synthetic only."""
+"""Unit tests for src/data/unit_map.py and src/data/qc.py (Phase 5, Batch C). Synthetic only.
+
+Sources: docs/2 1.2 (lambda_L = 0.3048 m/ft); docs/3 2.1 (unit map),
+2.2 (bounds), 2.3 (datum, physiography), 2.4 (QC rules R1-R11), 10.5 (QC interpretations).
+"""
 
 from __future__ import annotations
 

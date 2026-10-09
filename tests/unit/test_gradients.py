@@ -34,11 +34,14 @@ from domain_strategies import (
     BLIND_IDX,
     LN_S_FLOOR,
     PROTOCOL,
+    QUAD_FORMS,
     SOLVER,
     SPOT_ROWS,
     STATS,
     TAU_Q,
     Rows,
+    fixed_rows,
+    in_form,
     phi_rows,
     require,
     require_le,
@@ -99,6 +102,22 @@ def test_gradcheck_phi_full_output(rows: Rows) -> None:
         return phi(w, torch.exp(ln_r), nu, q, s, TIGHT).out
 
     assert torch.autograd.gradcheck(fn, _log_r_rows(rows), **GC), "gradcheck (docs/2 Prop 3.3)"
+
+
+@pytest.mark.parametrize("form", sorted(QUAD_FORMS))
+def test_gradcheck_phi_each_quadrature_form(form: str) -> None:
+    """P7-D7 (a) gradcheck of Phi's (B, 4) output on each quadrature form (docs/2 3.5: u-form
+    r >= 1, tau-form r < 1; PHASE_07 refinement 1), the form's r atoms in rows 0-1 (P7-D6).
+    """
+    rows = fixed_rows(4, form, seed=7)
+    side = in_form(rows.r, form)
+    require(side, (rows.r - 1.0).abs(), f"{form}-form side", "fixture r", "docs/2 3.5", rows)
+
+    def fn(w: Tensor, nu: Tensor, ln_r: Tensor, q: Tensor, s: Tensor) -> Tensor:
+        return phi(w, torch.exp(ln_r), nu, q, s, TIGHT).out
+
+    ok = torch.autograd.gradcheck(fn, _log_r_rows(rows), **GC)
+    assert ok, f"gradcheck on the {form}-form at {GC} (docs/2 Prop 3.3); rows {rows.describe(0)}"
 
 
 @given(rows=phi_rows(max_size=4))

@@ -62,6 +62,8 @@ pytestmark = pytest.mark.physics
 PHI = PhiConfig.from_solver(SOLVER)
 NU_HI = TR.nu_min + TR.delta_n
 MP_EXAMPLES = max(10, settings.default.max_examples // 8)
+#: Fast-suite budget of the trimmed Prop 3.6 D_nat test; the full budget runs under ``slow``.
+FAST_EXAMPLES = max(10, settings.default.max_examples // 4)
 P36 = "docs/2 Prop 3.6"
 
 
@@ -109,8 +111,7 @@ def nat_rows(draw: st.DrawFn) -> Rows:
     return Rows(w=cols[0], r=cols[1], nu=cols[2], q=cols[3], s=cols[4])
 
 
-@given(rows=nat_rows())
-def test_prop_3_6_uniform_bounds_on_d_nat(rows: Rows) -> None:
+def check_prop_3_6_d_nat(rows: Rows) -> None:
     """Prop 3.6 on D_nat and the Prop 3.3 ranges: |d ell/dq| = |d ell/dnu| < 1, |d ell/ds| < 1/2,
     |d ell/dw| < 5/3, |d ell/dr| <= 2(2r + 1)/(3r(r + 1)); 1/D in [3/5, 1), d ell/dw in
     (-5/3, -3/5]. O5 rows use the O8 closed-end bounds (docs/3 section 12).
@@ -127,6 +128,22 @@ def test_prop_3_6_uniform_bounds_on_d_nat(rows: Rows) -> None:
     require(w_ok, torch.maximum(gw + 0.6, -5 / 3 - gw), "(-5/3, -3/5] (O8)", "d ell/dw", P36, rows)
     b_r = 2.0 * (2.0 * r + 1.0) / (3.0 * r * (r + 1.0))
     require(gr.abs() <= b_r, gr.abs() - b_r, "<= 2(2r+1)/(3r(r+1))", "|d ell/dr|", P36, rows)
+
+
+@given(rows=nat_rows())
+@settings(max_examples=FAST_EXAMPLES)
+def test_prop_3_6_uniform_bounds_on_d_nat(rows: Rows) -> None:
+    """Prop 3.6 / Prop 3.3 bounds on D_nat (docs/2; O5/O8 of docs/3 section 12); fast budget."""
+    check_prop_3_6_d_nat(rows)
+
+
+@pytest.mark.slow
+@given(rows=nat_rows())
+def test_prop_3_6_uniform_bounds_on_d_nat_full_budget(rows: Rows) -> None:
+    """Prop 3.6 / Prop 3.3 bounds on D_nat at the full profile budget (ci 200, thorough 5000;
+    P7-D6).
+    """
+    check_prop_3_6_d_nat(rows)
 
 
 @given(rows=phi_rows(max_size=4))
@@ -382,7 +399,8 @@ def test_models_reject_out_of_domain_batches(rows: Rows, kind: str, model: str, 
 def test_phi_convergence_error_when_k_max_is_forced_small(rows: Rows) -> None:
     """Prop 3.2 stopping rule and Prop 3.4 (c): with K_max = max iterations - 1 the solver raises
     PhiConvergenceError (never a silent result); with K_max = max iterations the output is
-    bit-identical to the params run (per-row freezing does not depend on K_max).
+    bit-identical to the params run (per-row freezing does not depend on K_max). Source:
+    docs/2 Props 3.2 and 3.4.
     """
     full = phi(*rows.args(), PHI)
     m = int(full.iterations.max())

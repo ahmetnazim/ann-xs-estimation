@@ -21,18 +21,22 @@ import math
 
 import pytest
 import torch
-from hypothesis import given
+from hypothesis import given, settings
 from torch import Tensor
 
 from domain_strategies import (
+    BATCH_SIZES,
     O8_DW_MAX,
     O8_DZN_MAX,
     O8_LNA_MAX,
+    QUAD_FORMS,
     R_MIN,
     SOLVER,
     TR,
     LogitRows,
     closed_end_rows,
+    fixed_logit_rows,
+    in_form,
     logit_rows,
     require,
     saturated,
@@ -50,6 +54,8 @@ JF2_BOUND = 1.0 + 25.0 / 9.0 + DN**2 / 16.0 + DR**2 / 9.0 + DR**2 / (16.0 * (1.0
 JF2_BOUND_O8 = (
     1.0 + O8_DW_MAX**2 + O8_DZN_MAX**2 + DR**2 / 9.0 + DR**2 / (16.0 * (1.0 + R_MIN) ** 2)
 )
+#: Fast-suite budget of the trimmed Corollary 8.3 test; the full budget runs under ``slow``.
+FAST_EXAMPLES = max(10, settings.default.max_examples // 4)
 
 
 def jacobian(lr: LogitRows) -> dict[str, Tensor]:
@@ -62,9 +68,10 @@ def jacobian(lr: LogitRows) -> dict[str, Tensor]:
     g_ell = torch.autograd.grad(ell.sum(), (z_w, z_n, z_r), retain_graph=True)
     g_t = torch.autograd.grad(t.sum(), (z_w, z_n, z_r), retain_graph=True, allow_unused=True)
     (g_a,) = torch.autograd.grad(ln_a.sum(), z_w)
-    assert g_t[0] is None, "J[2, 0] must be structurally 0 (Theorem 8.2)"
-    assert g_t[1] is None, "J[2, 1] must be structurally 0 (Theorem 8.2)"
-    assert g_t[2] is not None
+    structural = "t = t(r(z_r)) depends on z_r only (docs/2 Theorem 8.2, J of (w, ell, t))"
+    assert g_t[0] is None, f"J[2, 0] = d t/d z_W is not structurally 0: {structural}"
+    assert g_t[1] is None, f"J[2, 1] = d t/d z_n is not structurally 0: {structural}"
+    assert g_t[2] is not None, f"J[2, 2] = d t/d z_r is missing from the graph: {structural}"
     return {
         "ell": ell.detach(),
         "dw": g_ell[0],
@@ -128,12 +135,12 @@ def check_theorem_8_2(lr: LogitRows) -> None:
 
 @given(lr=logit_rows())
 def test_theorem_8_2_bounds(lr: LogitRows) -> None:
-    """Theorem 8.2 on hypothesis rows of D in logit coordinates (atoms z = +/-40)."""
+    """docs/2 Theorem 8.2 on hypothesis rows of D in logit coordinates (atoms z = +/-40)."""
     check_theorem_8_2(lr)
 
 
 def test_theorem_8_2_uniform_over_aspect_ratio() -> None:
-    """Theorem 8.2 is uniform in W, Q_E, S and the aspect ratio: a deterministic sweep.
+    """docs/2 Theorem 8.2 is uniform in W, Q_E, S and the aspect ratio: deterministic sweep.
 
     q from ln 1e-4 to 11.5 (13 points) at W in {0.1, 1, 5000} m, S in {S_floor, 0.1} and the
     logit atoms z in {-40, 0, 40}; beta spans the wide-channel limit to the O5 closed end.
@@ -150,8 +157,20 @@ def test_theorem_8_2_uniform_over_aspect_ratio() -> None:
         check_theorem_8_2(LogitRows(*chunk.unbind(1)))
 
 
-@given(lr=logit_rows(max_size=16))
-def test_corollary_8_3_bounded_gradient(lr: LogitRows) -> None:
+@pytest.mark.parametrize("form", sorted(QUAD_FORMS))
+@pytest.mark.parametrize("b", BATCH_SIZES)
+def test_theorem_8_2_batch_sizes_and_quadrature_forms(b: int, form: str) -> None:
+    """Theorem 8.2 for B in {1, 16, 64, 256} on each quadrature form (docs/2 3.5: u-form
+    r >= 1, tau-form r < 1), logit atoms in the first rows (PHASE_07 refinement 1; P7-D6).
+    """
+    lr = fixed_logit_rows(b, form, seed=3000 + b)
+    rows = lr.rows()
+    side = in_form(rows.r, form)
+    require(side, (rows.r - 1.0).abs(), f"{form}-form side", "fixture r", "docs/2 3.5", rows)
+    check_theorem_8_2(lr)
+
+
+def check_corollary_8_3(lr: LogitRows) -> None:
     """Corollary 8.3 (Omega = I): ||grad_z L_i|| <= C_Phi ||e_i|| for L_i = |e_i|^2.
 
     ``e_i = (w - y_w, ell - y_ell, t - y_t)`` with seeded targets; ``C_Phi = 2 ||J||_F bound``.
@@ -170,3 +189,17 @@ def test_corollary_8_3_bounded_gradient(lr: LogitRows) -> None:
     c_phi = 2.0 * torch.where(at_end, math.sqrt(JF2_BOUND_O8), math.sqrt(JF2_BOUND))
     bound = c_phi * e.detach().norm(dim=1)
     require(norm <= bound, norm - bound, "<= C_Phi ||e||", "||grad_z L||", "docs/2 Cor 8.3", rows)
+
+
+@given(lr=logit_rows(max_size=16))
+@settings(max_examples=FAST_EXAMPLES)
+def test_corollary_8_3_bounded_gradient(lr: LogitRows) -> None:
+    """Corollary 8.3 bounded gradient (docs/2 section 8); fast-suite budget."""
+    check_corollary_8_3(lr)
+
+
+@pytest.mark.slow
+@given(lr=logit_rows(max_size=16))
+def test_corollary_8_3_bounded_gradient_full_budget(lr: LogitRows) -> None:
+    """docs/2 Corollary 8.3 at the full profile budget (ci 200, thorough 5000; P7-D6)."""
+    check_corollary_8_3(lr)

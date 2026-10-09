@@ -1,4 +1,8 @@
-"""Unit tests for src/data/folds.py, normstats.py and dataset.py (Phase 5, Batch E). Synthetic."""
+"""Unit tests for src/data/folds.py, normstats.py and dataset.py (Phase 5, Batch E). Synthetic.
+
+Sources: docs/3 3.3 (frozen fold table), 3.4 (split-then-scale,
+nested selection), 3.5 L5, 4.1 (information routing), 4.2, 10.8-10.10; ADL-051.
+"""
 
 from __future__ import annotations
 

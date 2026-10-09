@@ -19,6 +19,11 @@ This module is importable because ``pyproject.toml`` sets ``pythonpath = ["tests
 
 Also shared here: the closed-end rule O5 (``closed_end_rows``) with its O8 bounds (P7-A3 (a),
 P7-B1 (a)) and the saturated-logistic rule O9 (``saturated``, P7-B2 (a)); docs/3 section 12.
+
+Fixed batches (PHASE_07 refinement item 1): ``fixed_rows`` / ``fixed_logit_rows`` give seeded
+batches of exactly ``B`` rows (``BATCH_SIZES``, PHASE_07 requirement 3) on one quadrature form
+(docs/2 3.5 and ``src.physics.quadrature``: u-form for ``r >= 1``, tau-form for ``r < 1``),
+with the P7-D6 atoms in the first rows.
 """
 
 from __future__ import annotations
@@ -188,6 +193,45 @@ def phi_rows(draw: st.DrawFn, min_size: int = 1, max_size: int = MAX_ROWS) -> Ro
     return Rows(w=cols[0], r=cols[1], nu=cols[2], q=cols[3], s=cols[4])
 
 
+#: PHASE_07 requirement 3 and refinement item 1.
+BATCH_SIZES: tuple[int, ...] = (1, 16, 64, 256)
+#: docs/2 3.5: the u-form serves ``r >= 1`` (closed at 1), the tau-form ``r < 1``.
+QUAD_FORMS: dict[str, tuple[float, float]] = {"u": (1.0, R_MAX), "tau": (R_MIN, 1.0)}
+
+
+def in_form(r: Tensor, form: str) -> Tensor:
+    """Rows whose ``r`` selects quadrature ``form`` (docs/2 3.5; ``r >= 1`` is the u-form)."""
+    return r >= 1.0 if form == "u" else r < 1.0
+
+
+def fixed_rows(b: int, form: str, seed: int) -> Rows:
+    """Seeded batch of exactly ``b`` rows of D on one quadrature form (docs/2 1.3, 3.5).
+
+    Row 0 carries the lower ``r`` atom of the form (``r = 1`` for the u-form, ``r = 1/2`` for
+    the tau-form), ``S = S_floor`` and ``z_n = -40``; row 1 (if ``b >= 2``) the upper ``r`` atom
+    (``r = 10``; the largest float below 1), ``S = S_floor`` and ``z_n = +40`` (P7-D6). Other
+    rows: ``W``, ``Q_E``, ``S`` log-uniform on the O1 ranges, ``r`` uniform on the form's range,
+    ``nu`` through a uniform logit in [-40, 40] (docs/2 7.6).
+    """
+    rng = np.random.default_rng(seed)
+    lo, hi = QUAD_FORMS[form]
+    w = rng.uniform(math.log(W_RANGE[0]), math.log(W_RANGE[1]), b)
+    q = rng.uniform(math.log(Q_RANGE[0]), math.log(Q_RANGE[1]), b)
+    s = rng.uniform(LN_S_FLOOR, math.log(S_MAX), b)
+    r = rng.uniform(lo, hi, b)  # half-open [lo, hi): r < 1 on the tau-form
+    z = rng.uniform(-LOGIT_ATOM, LOGIT_ATOM, b)
+    r_atoms = (lo, hi) if form == "u" else (lo, float(np.nextafter(1.0, 0.0)))
+    for i in range(min(b, 2)):
+        r[i], s[i], z[i] = r_atoms[i], LN_S_FLOOR, (-LOGIT_ATOM, LOGIT_ATOM)[i]
+    return Rows(
+        w=torch.from_numpy(w),
+        r=torch.from_numpy(r),
+        nu=TR.nu(torch.from_numpy(z)),
+        q=torch.from_numpy(q),
+        s=torch.from_numpy(s),
+    )
+
+
 @dataclass(frozen=True)
 class LogitRows:
     """Rows in network coordinates ``(z_W, z_n, z_r, q, s)`` (docs/2 7.6, Theorem 8.2)."""
@@ -215,6 +259,29 @@ def logit_rows(draw: st.DrawFn, max_size: int = MAX_ROWS) -> LogitRows:
     )
     cols = [torch.tensor(c, dtype=torch.float64) for c in zip(*table, strict=True)]
     return LogitRows(z_w=cols[0], z_n=cols[1], z_r=cols[2], q=cols[3], s=cols[4])
+
+
+def fixed_logit_rows(b: int, form: str, seed: int) -> LogitRows:
+    """Seeded batch of ``b`` rows in logit coordinates on one quadrature form (docs/2 3.5, 7.6).
+
+    ``z_r`` is uniform on the form's side of ``z_1`` (``sigma(z_1) = -ln r_min / Delta_r``, i.e.
+    ``r = 1``) with a 1e-6 margin, and row 0 is the form's logit atom (``z_r = +40`` gives
+    ``r -> 10``, ``z_r = -40`` gives ``r -> 1/2``); ``z_n`` atoms -40 and +40 on rows 0 and 1;
+    ``S = S_floor`` on row 0 (P7-D6). ``W``, ``Q_E``, ``S`` as in :func:`fixed_rows`.
+    """
+    rng = np.random.default_rng(seed)
+    p1 = -TR.ln_r_min / TR.delta_r
+    z1 = math.log(p1 / (1.0 - p1))
+    lo, hi = (z1 + 1e-6, LOGIT_ATOM) if form == "u" else (-LOGIT_ATOM, z1 - 1e-6)
+    z_r = rng.uniform(lo, hi, b)
+    z_r[0] = hi if form == "u" else lo
+    z_n = rng.uniform(-LOGIT_ATOM, LOGIT_ATOM, b)
+    z_n[: min(b, 2)] = (-LOGIT_ATOM, LOGIT_ATOM)[: min(b, 2)]
+    w = rng.uniform(math.log(W_RANGE[0]), math.log(W_RANGE[1]), b)
+    q = rng.uniform(math.log(Q_RANGE[0]), math.log(Q_RANGE[1]), b)
+    s = rng.uniform(LN_S_FLOOR, math.log(S_MAX), b)
+    s[0] = LN_S_FLOOR
+    return LogitRows(*(torch.from_numpy(c) for c in (w, z_n, z_r, q, s)))
 
 
 def closed_end_rows(ell: Tensor, w: Tensor, r: Tensor, rows: Rows) -> Tensor:

@@ -2,6 +2,9 @@
 
 Synthetic only: no internet. HTTP is replaced by an in-memory fake, and one test runs the
 real ``requests`` client against a loopback server (127.0.0.1) to exercise resume.
+
+Sources: docs/3 1.1 (manifest), 1.2 (checksums, immutability), 1.5 item 4 and
+10.3 (acquisition manifest clarifications); ADL-058.
 """
 
 from __future__ import annotations

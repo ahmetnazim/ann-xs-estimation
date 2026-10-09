@@ -8,6 +8,11 @@ Covered: Phi directly; M5 and its ablations (A1, A2, A3-SP, A3-SR, w_A = 1); M3 
 through Phi; the ensemble point prediction ``exp(mu*)`` (Proposition 9.2); Propositions 2.3, 2.7,
 3.2 and 6.2; the section 9 mixture (moments, exact quantiles). M4 and M2-MLP are not claimed to
 satisfy Theorem 4.1 (docs/2 section 7.7 and 9.1); their documented status is tested instead.
+
+PHASE_07 refinement: explicit parametrization over B in {1, 16, 64, 256}, every M5 ablation
+switch and both quadrature forms (docs/2 3.5: u-form r >= 1, tau-form r < 1); the Phi property
+test runs at a quarter budget in the fast suite and at the full profile budget under ``slow``
+(P7-D6; ``thorough`` = 5000 examples at the gate).
 """
 
 from __future__ import annotations
@@ -25,6 +30,7 @@ from torch import Tensor
 
 import reference_oracles as ro
 from domain_strategies import (
+    BATCH_SIZES,
     BLIND_IDX,
     D_MIN,
     EPS,
@@ -35,6 +41,7 @@ from domain_strategies import (
     N_MAX,
     N_MIN,
     PROTOCOL,
+    QUAD_FORMS,
     R_MAX,
     R_MIN,
     SLOPE_MAX,
@@ -44,6 +51,8 @@ from domain_strategies import (
     TR,
     Rows,
     closed_end_rows,
+    fixed_rows,
+    in_form,
     model_batch,
     phi_rows,
     require,
@@ -78,6 +87,8 @@ REL_LIN = 1e-13  # P7-D5: invariants 1-2 in linear space (relative)
 REL_INV4 = 1e-14  # P7-D5: invariant 4
 MODEL_EXAMPLES = max(10, settings.default.max_examples // 8)
 SLOW_EXAMPLES = max(10, settings.default.max_examples // 4)
+#: Fast-suite budget of the trimmed Phi property test; the full budget runs under ``slow``.
+FAST_EXAMPLES = max(10, settings.default.max_examples // 4)
 NU_HI = TR.nu_min + TR.delta_n
 LN_R_HI = TR.ln_r_min + TR.delta_r
 
@@ -166,10 +177,14 @@ def dl_dq(rows: Rows, cfg: PhiConfig) -> tuple[Tensor, Tensor]:
 
 
 # ----------------------------------------------------------------------------- Phi
-@given(rows=phi_rows())
-def test_phi_theorem_4_1(rows: Rows) -> None:
+def check_phi_theorem_4_1(rows: Rows) -> None:
     """Theorem 4.1 invariants 1-7 on Phi itself, plus its own (B, 4) columns (docs/2 3.1)."""
     out, g = dl_dq(rows, PHI)
+    shape_ok = tuple(out.shape) == (rows.n, 4) and out.dtype == torch.float64
+    assert shape_ok, (
+        f"Phi out {tuple(out.shape)} {out.dtype} != ({rows.n}, 4) float64 "
+        "[ell, ln d_max, ln A, ln V] (docs/2 3.1; PHASE_07 requirement 3)"
+    )
     ell, ln_dmax, ln_a, ln_v = out.unbind(1)
     w, q = rows.w, rows.q
     ref = "docs/2 section 3.1, Theorem 4.1"
@@ -193,6 +208,32 @@ def test_phi_theorem_4_1(rows: Rows) -> None:
         ref,
         rows,
     )
+
+
+@given(rows=phi_rows())
+@settings(max_examples=FAST_EXAMPLES)
+def test_phi_theorem_4_1(rows: Rows) -> None:
+    """Theorem 4.1 invariants 1-7 on Phi (docs/2 3.1, Theorem 4.1); fast-suite budget."""
+    check_phi_theorem_4_1(rows)
+
+
+@pytest.mark.slow
+@given(rows=phi_rows())
+def test_phi_theorem_4_1_full_budget(rows: Rows) -> None:
+    """Theorem 4.1 on Phi at the full profile budget (ci 200, thorough 5000; P7-D6)."""
+    check_phi_theorem_4_1(rows)
+
+
+@pytest.mark.parametrize("form", sorted(QUAD_FORMS))
+@pytest.mark.parametrize("b", BATCH_SIZES)
+def test_phi_theorem_4_1_batch_sizes_and_quadrature_forms(b: int, form: str) -> None:
+    """Theorem 4.1 on Phi for B in {1, 16, 64, 256} on each quadrature form (docs/2 3.5:
+    u-form r >= 1, tau-form r < 1), P7-D6 atoms in the first rows (PHASE_07 refinement 1).
+    """
+    rows = fixed_rows(b, form, seed=b)
+    side = in_form(rows.r, form)
+    require(side, (rows.r - 1.0).abs(), f"{form}-form side", "fixture r", "docs/2 3.5", rows)
+    check_phi_theorem_4_1(rows)
 
 
 @given(rows=phi_rows())
@@ -252,9 +293,17 @@ def test_o5_reproducer_rows() -> None:
     out, g = dl_dq(rows, PHI)
     allowed = closed_end_rows(out[:, 0], rows.w, rows.r, rows)
     want = [True, True, True, False]
-    assert allowed.tolist() == want, f"O5 rows {allowed.tolist()} != {want}"
-    assert bool(((g[:3] >= 1.0) & (g[:3] <= SLOPE_MAX)).all()), f"closed-end slopes {g[:3]}"
-    assert float(g[3]) < 1.0, f"q = 8: slope {float(g[3])!r} must be < 1 (docs/2 inv. 6)"
+    wrong = [i for i, (a, b) in enumerate(zip(allowed.tolist(), want, strict=True)) if a != b]
+    assert not wrong, (
+        f"O5 classification {allowed.tolist()} != {want} (docs/3 section 12, O5); "
+        + "; ".join(rows.describe(i) for i in wrong)
+    )
+    p_inv6 = "docs/2 Theorem 4.1 inv. 6; docs/3 section 12 O5"
+    ok_end = (g >= 1.0) & (g <= SLOPE_MAX)
+    mag_end = torch.maximum(1.0 - g, g - SLOPE_MAX)
+    ok = torch.where(torch.arange(4) < 3, ok_end, g < 1.0)
+    mag = torch.where(torch.arange(4) < 3, mag_end, g - 1.0)
+    require(ok, mag, f"rows 0-2 in [1, {SLOPE_MAX!r}], row 3 < 1", "d ell/dq", p_inv6, rows)
 
 
 def _picard_history(rows: Rows, cfg: PhiConfig) -> list[Tensor]:
@@ -316,7 +365,7 @@ def test_prop_3_2_bracket_contraction_monotone(rows: Rows) -> None:
 
 @given(rows=phi_rows())
 def test_prop_6_2_round_trip(rows: Rows) -> None:
-    """Prop 6.2: Phi^-1(Phi(nu)) = nu to (5/3) tau_l (the residual identity nu - Phi^-1 = -rho)."""
+    """docs/2 Prop 6.2: Phi^-1(Phi(nu)) = nu to (5/3) tau_l (identity nu - Phi^-1 = -rho)."""
     ell = phi(*rows.args(), PHI).ell
     nu_back = phi_inverse_nu(ell, rows.w, rows.r, rows.q, rows.s, PHI)
     require_le((nu_back - rows.nu).abs(), RHO_BOUND, "round trip", "docs/2 Prop 6.2", rows)
@@ -408,6 +457,16 @@ def test_m5_theorem_4_1(variant: str, rows: Rows, seed: int) -> None:
     check_m5(variant, build_m5(variant, seed % 7), rows, seed)
 
 
+@pytest.mark.parametrize("b", BATCH_SIZES)
+@pytest.mark.parametrize("variant", sorted(M5_VARIANTS))
+def test_m5_theorem_4_1_batch_sizes(variant: str, b: int) -> None:
+    """Theorem 4.1 for M5 and every ablation switch (docs/2 7.10) at B in {1, 16, 64, 256}
+    (PHASE_07 refinement 1). ``q, s`` come from :func:`fixed_rows` (S_floor atom included);
+    ``(w, r, nu)`` come from M5's own heads, so the quadrature form is the network's choice.
+    """
+    check_m5(variant, build_m5(variant, b % 7), fixed_rows(b, "u", seed=1000 + b), b)
+
+
 @pytest.mark.parametrize("variant", ["primary", "A1"])
 @pytest.mark.parametrize(
     ("z_r", "z_n"), [(-40.0, -40.0), (-40.0, 40.0), (40.0, -40.0), (40.0, 40.0)]
@@ -450,8 +509,12 @@ def test_m4_documented_status() -> None:
     require_in(nu, TR.nu_min, NU_HI, "inv. 7 nu band", ref, rows_m)
     require_in(r, R_MIN, R_MAX, "inv. 7 r", ref, rows_m, ulps=2)
     r_m = out.extras["R_M"].detach()
-    assert bool(torch.isfinite(r_m).all()), "M4 R_M must be finite (docs/2 7.7)"
-    assert float(r_m.abs().max()) > RHO_BOUND, "untrained M4 is not Manning-exact (not claimed)"
+    require(torch.isfinite(r_m), r_m.abs(), "finite", "M4 R_M", ref, rows_m)
+    worst = float(r_m.abs().max())
+    assert worst > RHO_BOUND, (
+        f"untrained M4: max |R_M| = {worst:.3e} <= (5/3) tau_l = {RHO_BOUND:.3e}; invariant 3 is "
+        "not claimed for M4 (docs/2 7.7), so a Manning-exact untrained M4 is unexpected"
+    )
 
 
 def test_m2_documented_status() -> None:
@@ -463,24 +526,16 @@ def test_m2_documented_status() -> None:
     mu, nat = out.mu.detach(), out.extras["mu_native"].detach()
     require_equal(mu[:, 2], nat[:, 2] - nat[:, 1], "t = m_dmax - m_dbar", "M2 canonical", rows)
     gap = (mu[:, 3] - (mu[:, 0] + mu[:, 1])).abs()
-    assert float(gap.max()) > 0.0, "M2 has an independent A head: closure is not claimed"
+    assert float(gap.max()) > 0.0, (
+        f"M2: max |mu_A - (mu_W + mu_dbar)| = {float(gap.max()):.3e}, expected > 0 (independent "
+        f"A head, closure not claimed; docs/2 9.1); {rows.describe(0)}"
+    )
 
 
 # ----------------------------------------------------------------------------- M3, M6 via Phi
-@given(
-    rows=phi_rows(max_size=16),
-    ln_d50=st.lists(st.floats(math.log(1e-7), math.log(4.0)), min_size=16, max_size=16),
-    r_bar=st.sampled_from([R_MIN, R_MAX]) | st.floats(R_MIN, R_MAX),
-)
-@settings(max_examples=MODEL_EXAMPLES)
-def test_m3_through_phi(rows: Rows, ln_d50: list[float], r_bar: float) -> None:
-    """M3 (docs/2 7.9): Theorem 4.1 on Strickler / projected rows (through Phi).
-
-    Jarrett in-band rows solve rho_J = 0 (Prop 7.5); since rho(ell; nu_J) = rho_J(ell), their
-    bound is (5/3 - b_J) tau_l (docs/3 section 12, O3).
-    """
+def check_m3(rows: Rows, d50: Tensor, r_bar: float) -> None:
+    """M3 (docs/2 7.9) on ``rows`` (``w, q, s``) with ``ln D50 = d50`` and ``r = r_bar``."""
     cfg = M3Config.from_protocol(PROTOCOL, r_bar=r_bar)
-    d50 = torch.tensor(ln_d50[: rows.n], dtype=torch.float64)
     out = m3_physics(rows.w, d50, rows.phys(), cfg)
     mu, nu = out.mu, out.extras["nu"]
     r = torch.full_like(nu, r_bar)
@@ -496,6 +551,34 @@ def test_m3_through_phi(rows: Rows, ln_d50: list[float], r_bar: float) -> None:
     )
 
 
+def check_m6(rows: Rows, gt: Tensor, gn: Tensor) -> Rows:
+    """M6 stage 3 (docs/2 7.8) on ``rows`` with ``g_t = gt``, ``g_nu = gn``; returns its rows."""
+    cfg = M6Config.from_protocol(PROTOCOL)
+    out = m6_stage3(rows.w, gt, gn, rows.phys(), cfg)
+    mu, nu, r = out.mu, out.extras["nu"], out.extras["r"]
+    rows_m = Rows(w=rows.w, r=r, nu=nu, q=rows.q, s=rows.s)
+    check_theorem_4_1(
+        "M6 stage 3", rows_m, w=mu[:, 0], ell=mu[:, 1], t=mu[:, 2], ln_a=mu[:, 3], nu=nu, r=r,
+        cfg=cfg.phi,
+    )  # fmt: skip
+    return rows_m
+
+
+@given(
+    rows=phi_rows(max_size=16),
+    ln_d50=st.lists(st.floats(math.log(1e-7), math.log(4.0)), min_size=16, max_size=16),
+    r_bar=st.sampled_from([R_MIN, R_MAX]) | st.floats(R_MIN, R_MAX),
+)
+@settings(max_examples=MODEL_EXAMPLES)
+def test_m3_through_phi(rows: Rows, ln_d50: list[float], r_bar: float) -> None:
+    """M3 (docs/2 7.9): Theorem 4.1 on Strickler / projected rows (through Phi).
+
+    Jarrett in-band rows solve rho_J = 0 (Prop 7.5); since rho(ell; nu_J) = rho_J(ell), their
+    bound is (5/3 - b_J) tau_l (docs/3 section 12, O3).
+    """
+    check_m3(rows, torch.tensor(ln_d50[: rows.n], dtype=torch.float64), r_bar)
+
+
 @given(
     rows=phi_rows(max_size=16),
     g_t=st.lists(st.floats(0.01, 2.0), min_size=16, max_size=16),
@@ -504,23 +587,43 @@ def test_m3_through_phi(rows: Rows, ln_d50: list[float], r_bar: float) -> None:
 @settings(max_examples=MODEL_EXAMPLES)
 def test_m6_stage3_through_phi(rows: Rows, g_t: list[float], g_nu: list[float]) -> None:
     """M6 stage 3 (docs/2 7.8): Pi(g_nu), Pi_t(g_t), ell = Phi; Theorem 4.1 at full tolerance."""
-    cfg = M6Config.from_protocol(PROTOCOL)
     gt = torch.tensor(g_t[: rows.n], dtype=torch.float64)
     gn = torch.tensor(g_nu[: rows.n], dtype=torch.float64)
-    out = m6_stage3(rows.w, gt, gn, rows.phys(), cfg)
-    mu, nu, r = out.mu, out.extras["nu"], out.extras["r"]
-    rows_m = Rows(w=rows.w, r=r, nu=nu, q=rows.q, s=rows.s)
-    check_theorem_4_1(
-        "M6 stage 3", rows_m, w=mu[:, 0], ell=mu[:, 1], t=mu[:, 2], ln_a=mu[:, 3], nu=nu, r=r,
-        cfg=cfg.phi,
-    )  # fmt: skip
+    check_m6(rows, gt, gn)
+
+
+#: Per quadrature form: M3's r_bar (the form's lower atom) and M6's g_t range inside the t band
+#: [ln 1.1, ln 3]. t = ln(1 + 1/r) (docs/2 2.1), so r >= 1 iff t <= ln 2; the 1e-9 margin keeps
+#: rounding on the form's side.
+M3_R_BAR = {"u": 1.0, "tau": R_MIN}
+M6_T_RANGE = {
+    "u": (math.log(1.1), math.log(2.0) - 1e-9),
+    "tau": (math.log(2.0) + 1e-9, math.log(3.0)),
+}
+
+
+@pytest.mark.parametrize("form", sorted(QUAD_FORMS))
+@pytest.mark.parametrize("b", BATCH_SIZES)
+def test_m3_m6_through_phi_batch_sizes_and_quadrature_forms(b: int, form: str) -> None:
+    """M3 (docs/2 7.9) and M6 stage 3 (docs/2 7.8) through Phi for B in {1, 16, 64, 256} on
+    each quadrature form (docs/2 3.5); Theorem 4.1 as in the hypothesis tests above.
+    """
+    rows = fixed_rows(b, form, seed=2000 + b)
+    g = torch.Generator().manual_seed(b)
+    d50 = torch.empty(b, dtype=torch.float64).uniform_(math.log(1e-7), math.log(4.0), generator=g)
+    check_m3(rows, d50, M3_R_BAR[form])
+    gt = torch.empty(b, dtype=torch.float64).uniform_(*M6_T_RANGE[form], generator=g)
+    gn = torch.empty(b, dtype=torch.float64).uniform_(math.log(1e-3), math.log(2.0), generator=g)
+    rows_m6 = check_m6(rows, gt, gn)
+    side = in_form(rows_m6.r, form)
+    require(side, (rows_m6.r - 1.0).abs(), f"{form}-form side", "M6 r", "docs/2 3.5", rows_m6)
 
 
 # ----------------------------------------------------------------------------- ensemble (9.2)
 @given(rows=phi_rows(max_size=8), seed=st.integers(0, 2**16))
 @settings(max_examples=MODEL_EXAMPLES)
 def test_ensemble_point_prediction_prop_9_2(rows: Rows, seed: int) -> None:
-    """Prop 9.2: mu*_A = mu*_W + mu*_dbar (<= 1e-14), mu*_V = q - mu*_A; n* bounds.
+    """docs/2 Prop 9.2: mu*_A = mu*_W + mu*_dbar (<= 1e-14), mu*_V = q - mu*_A; n* bounds.
 
     Full kappa: |nu* - nu_bar| <= (2/3) ln(1 + 2 delta_max). A1: nu* = nu_bar to rounding (O4).
     """
@@ -570,16 +673,25 @@ def test_mixture_quantile_solves_psi(m: int, b: int, p: float, seed: int) -> Non
     slope = 1.0 / (math.sqrt(2 * math.pi) * float(sigma.min()))
     bound = slope * 1e-12 * (1.0 + np.abs(qp.numpy())) + 4 * EPS
     gap = np.abs(psi - p)
+    where = f"(m, B, p, seed) = ({m}, {b}, {p!r}, {seed})"
+    k = np.unravel_index(gap.argmax(), gap.shape)
     assert bool((gap <= bound).all()), (
-        f"Psi(Q_p) - p = {gap.max():.3e} > {bound[np.unravel_index(gap.argmax(), gap.shape)]:.3e}"
-        f" at p = {p!r} (docs/2 9.3)"
+        f"|Psi(Q_p) - p| = {gap.max():.3e} > {bound[k]:.3e} at (row, target) {tuple(map(int, k))},"
+        f" {where} (docs/2 9.3; scipy.stats.norm oracle)"
     )
     z = float(norm.ppf(p))
     ends = mu + z * sigma
-    assert bool((qp >= ends.min(0).values - 1e-12 * (1 + qp.abs())).all()), "below bracket (9.3)"
-    assert bool((qp <= ends.max(0).values + 1e-12 * (1 + qp.abs())).all()), "above bracket (9.3)"
+    tol = 1e-12 * (1 + qp.abs())
+    below = (ends.min(0).values - tol - qp).max()
+    above = (qp - ends.max(0).values - tol).max()
+    assert float(below) <= 0, f"Q_p below the bracket by {float(below):.3e}, {where} (docs/2 9.3)"
+    assert float(above) <= 0, f"Q_p above the bracket by {float(above):.3e}, {where} (docs/2 9.3)"
     if p < 0.99:
-        assert bool((mixture_quantile(p + 0.005, mu, sigma) > qp).all()), "Q_p not increasing"
+        step = (mixture_quantile(p + 0.005, mu, sigma) - qp).min()
+        assert float(step) > 0, (
+            f"min Q_(p+0.005) - Q_p = {float(step):.3e}, required > 0 (increasing), {where} "
+            "(docs/2 9.3)"
+        )
 
 
 def test_mixture_variance_against_mpmath() -> None:
@@ -601,5 +713,13 @@ def test_mixture_variance_against_mpmath() -> None:
         var = mp.quad(lambda x: (x - mean) ** 2 * pdf(x), pts)
     got_mean = float(mix.mu_star[0, 0])
     got_var = float(mix.sigma_star[0, 0]) ** 2
-    assert ro.rel(got_mean, mean) <= 1e-12, f"mu* rel err {ro.rel(got_mean, mean):.3e} (9.2)"
-    assert ro.rel(got_var, var) <= 1e-12, f"sigma*^2 rel err {ro.rel(got_var, var):.3e} (9.2)"
+    where = "components (mu, sigma) = (0.3, 0.5), (-1.1, 1.7), (2.4, 0.05)"
+    e_mean, e_var = ro.rel(got_mean, mean), ro.rel(got_var, var)
+    assert e_mean <= 1e-12, (
+        f"mu* = {got_mean!r} vs mpmath {mp.nstr(mean, 17)}: rel {e_mean:.3e} > 1e-12 "
+        f"(docs/2 9.2); {where}"
+    )
+    assert e_var <= 1e-12, (
+        f"sigma*^2 = {got_var!r} vs mpmath {mp.nstr(var, 17)}: rel {e_var:.3e} > 1e-12 "
+        f"(docs/2 9.2); {where}"
+    )

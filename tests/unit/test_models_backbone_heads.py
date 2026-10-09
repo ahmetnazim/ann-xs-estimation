@@ -1,4 +1,8 @@
-"""Smoke tests for src/models/{backbone,heads}.py (Phase 6, Batch B). Synthetic; no data."""
+"""Smoke tests for src/models/{backbone,heads}.py (Phase 6, Batch B). Synthetic; no data.
+
+Sources: docs/3 4.1 (routing I_blind), 4.2 (backbone, sigma_min);
+docs/2 7.5 (A3-SR prior), 7.6 (bounded transforms), 8.5 (sigma floor).
+"""
 
 from __future__ import annotations
 

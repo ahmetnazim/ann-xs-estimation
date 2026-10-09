@@ -1,4 +1,8 @@
-"""Unit tests for src/data/validate_raw.py (Phase 5, Batch C). Synthetic only."""
+"""Unit tests for src/data/validate_raw.py (Phase 5, Batch C). Synthetic only.
+
+Sources: docs/3 1.1 (manifest, publisher checksums), 2.3 (raw schemas),
+2.7; ADL-058.
+"""
 
 from __future__ import annotations
 

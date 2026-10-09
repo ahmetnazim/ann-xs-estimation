@@ -1,4 +1,8 @@
-"""Unit tests for src/data/io.py and src/data/readers.py (Phase 5, Batch C). Synthetic only."""
+"""Unit tests for src/data/io.py and src/data/readers.py (Phase 5, Batch C). Synthetic only.
+
+Sources: docs/3 1.2 (Parquet artefacts), 2.1 (unit map), 2.3 (raw schemas),
+2.7 (missing values are never imputed); ADL-051.
+"""
 
 from __future__ import annotations
 

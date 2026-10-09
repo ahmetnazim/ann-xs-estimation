@@ -72,7 +72,7 @@ def test_prop_3_4_permutation_subset_and_composition(
 ) -> None:
     """Prop 3.4 (a), (c): Phi_N(Pi Z) = Pi Phi_N(Z), Phi on a subset = subset of Phi, and the
     outputs do not depend on the other rows of the batch (bit-identical, per-row freezing).
-    Prop 3.3 partials follow the rows in the same way.
+    Prop 3.3 partials follow the rows in the same way. Source: docs/2 Props 3.3 and 3.4.
     """
     perm = data.draw(st.permutations(range(rows.n)), label="perm")
     sub = data.draw(st.lists(st.integers(0, rows.n - 1), min_size=1, unique=True), label="subset")
@@ -91,7 +91,7 @@ def test_prop_3_4_permutation_subset_and_composition(
 
 @given(rows=phi_rows(min_size=2, max_size=6))
 def test_prop_3_4_block_diagonal_jacobian(rows: Rows) -> None:
-    """Prop 3.4 (b): d Phi_N(Z)_i / d Z_j = 0 exactly for i != j (all four outputs, five inputs)."""
+    """docs/2 Prop 3.4 (b): d Phi_N(Z)_i / d Z_j = 0 exactly for i != j (4 outputs, 5 inputs)."""
 
     def f(*args: Tensor) -> Tensor:
         return phi(*args, PHI).out
@@ -162,7 +162,8 @@ shift_values = st.one_of(
 def test_prop_3_5_unit_equivariance(rows: Rows, ln_chi_l: float, ln_chi_t: float) -> None:
     """Prop 3.5: w + ln chi_L, nu - ln chi_L/3 + ln chi_T, q + 3 ln chi_L - ln chi_T, s, r give
     ell, ln d_max + ln chi_L, ln A + 2 ln chi_L, ln V + ln chi_L - ln chi_T; a, eta, k, D and the
-    Prop 3.3 partials are invariant. Tolerance 1e-12 (absolute in log space).
+    Prop 3.3 partials are invariant. Tolerance 1e-12 (absolute in log space). Source:
+    docs/2 Prop 3.5.
     """
     lx, lt = ln_chi_l, ln_chi_t
     moved = Rows(
@@ -187,7 +188,7 @@ def test_prop_3_5_unit_equivariance(rows: Rows, ln_chi_l: float, ln_chi_t: float
 # ----------------------------------------------------------------------------- Prop 1.3
 @given(rows=phi_rows())
 def test_prop_1_3_si_us_commutation(rows: Rows) -> None:
-    """Prop 1.3: Phi_SI o U = U o Phi_US with k_US = lambda_L^(-1/3) (Prop 1.2).
+    """docs/2 Prop 1.3: Phi_SI o U = U o Phi_US with k_US = lambda_L^(-1/3) (Prop 1.2).
 
     ``rows`` are read in ft-based units (W in ft, Q_E in cfs; n keeps its SI value). Phi_US is
     the US Manning form Q = k_US n^-1 A R^(2/3) S^(1/2), i.e. Phi with nu - ln k_US. U maps

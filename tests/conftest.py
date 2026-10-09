@@ -1,11 +1,9 @@
 """Shared pytest configuration for the Phase 7 harness (P7-D4 (a), P7-D6 (a); ADL-101).
 
-- Hypothesis storage lives outside the Drive-synced tree: ``HYPOTHESIS_STORAGE_DIRECTORY``
-  defaults to ``~/.cache/hypothesis/ANN_XS_Estimation`` (P4-D2 (a) cache rule). Hypothesis
-  resolves its home directory lazily, so setting it here precedes any storage access.
-- Profiles: ``ci`` (default; derandomized, no example database, 200 examples, no deadline) and
-  ``thorough`` (5000 examples, database under the same cache directory; for ``-m slow`` runs).
-  Select with ``HYPOTHESIS_PROFILE=thorough``.
+- Hypothesis profiles and storage live in ``tests/hypothesis_profiles.py``: ``ci`` (default;
+  derandomized, no example database, 200 examples, no deadline) and ``thorough`` (5000
+  examples, database outside the Drive-synced tree). Select with ``HYPOTHESIS_PROFILE``;
+  ``thorough`` is refused unless the run is ``-m slow`` (P7-D6: "used only by slow tests").
 - Session-wide torch determinism: ``use_deterministic_algorithms(True)`` and one intra-op
   thread, restored at session end (torch is imported lazily, inside the fixture).
 
@@ -15,38 +13,21 @@ Strategies and oracles live in ``tests/domain_strategies.py`` and ``tests/refere
 
 from __future__ import annotations
 
-import os
 from collections.abc import Iterator
-from pathlib import Path
 
 import pytest
-from hypothesis import configuration, settings
-from hypothesis.database import DirectoryBasedExampleDatabase
+from hypothesis import settings
 
-HYPOTHESIS_HOME = Path(
-    os.environ.setdefault(
-        "HYPOTHESIS_STORAGE_DIRECTORY",
-        str(Path.home() / ".cache" / "hypothesis" / "ANN_XS_Estimation"),
-    )
-)
-configuration.set_hypothesis_home_dir(HYPOTHESIS_HOME)
+import hypothesis_profiles as hp
 
-settings.register_profile(
-    "ci",
-    derandomize=True,
-    database=None,
-    max_examples=200,
-    deadline=None,
-    print_blob=True,
-)
-settings.register_profile(
-    "thorough",
-    max_examples=5000,
-    deadline=None,
-    print_blob=True,
-    database=DirectoryBasedExampleDatabase(HYPOTHESIS_HOME / "examples"),
-)
-settings.load_profile(os.environ.get("HYPOTHESIS_PROFILE", "ci"))
+settings.load_profile(hp.selected_profile())
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Refuse an unknown profile, or ``thorough`` outside ``-m slow`` (P7-D6 (a))."""
+    error = hp.check_profile_selection(hp.selected_profile(), str(config.getoption("markexpr")))
+    if error is not None:
+        raise pytest.UsageError(error)
 
 
 @pytest.fixture(scope="session", autouse=True)

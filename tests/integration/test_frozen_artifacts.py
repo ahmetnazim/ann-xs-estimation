@@ -115,7 +115,7 @@ def test_frozen_sha256(name: str) -> None:
 
 @pytest.mark.parametrize("name", sorted(SCHEMAS))
 def test_pandera_schema(name: str) -> None:
-    """P4-D6: each frozen table validates against its Pandera model (lazy: all failures)."""
+    """P4-D6, docs/3 2.3: each frozen table validates against its Pandera model (lazy)."""
     path, model = SCHEMAS[name]
     model.validate(pd.read_parquet(_need(path)), lazy=True)
 

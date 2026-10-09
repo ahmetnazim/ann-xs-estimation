@@ -9,7 +9,9 @@ The "Manning back-check" lines of E1/E2 are replaced by the invariant 3 bound (A
 
 Quadrature: ``F - 1``, ``F_beta``, ``F_r`` against the Proposition 2.2 u-integral over a fast
 6 x 6 sub-grid (with the beta atoms 1e-8 and 1e3) and, under ``slow``, the 25 r x 23 beta grid
-of the P6-D3 level study.
+of the P6-D3 level study; both are parametrized by quadrature form (docs/2 3.5: u-form
+``r >= 1``, tau-form ``r < 1``; PHASE_07 refinement 1). Messages carry the input row
+``(w, nu, ln r, q, s)`` or ``(r, beta)`` (PHASE_07 refinement 3).
 """
 
 from __future__ import annotations
@@ -21,7 +23,7 @@ import pytest
 import torch
 
 import reference_oracles as ro
-from domain_strategies import SOLVER, TAU_L, TAU_Q, Rows, t64
+from domain_strategies import QUAD_FORMS, SOLVER, TAU_L, TAU_Q, Rows, t64
 from src.config import FT_TO_M
 from src.data.unit_map import CFS_TO_CMS, FT2_TO_M2
 from src.physics import quadrature as qd
@@ -48,14 +50,28 @@ R_FAST = (0.5, 0.7, 1.0, 1.01, 2.0, 10.0)
 B_FAST = (1e-8, 1e-4, 1e-2, 1.0, 1e2, 1e3)
 
 
-def check_tier3(name: str, got: float, printed: str, ref: str) -> None:
+def by_form(rs: tuple[float, ...]) -> dict[str, tuple[float, ...]]:
+    """Split an r grid by quadrature form (docs/2 3.5: u-form r >= 1, tau-form r < 1)."""
+    return {"u": tuple(r for r in rs if r >= 1.0), "tau": tuple(r for r in rs if r < 1.0)}
+
+
+def row_of(example: tuple[float, ...]) -> str:
+    """Offending-row report of an SI example ``(W, r, n, Q_E, S)`` as ``(w, nu, ln r, q, s)``."""
+    return Rows.from_si([example]).describe(0)
+
+
+def check_tier3(name: str, got: float, printed: str, ref: str, row: str = "") -> None:
     ok, err, unit = ro.tier3(got, printed)
-    assert ok, f"{name}: |{got!r} - {printed}| = {err:.3e} > one unit {unit:g} ({ref}, tier 3)"
+    where = f"; {row}" if row else ""
+    assert ok, (
+        f"{name}: |{got!r} - {printed}| = {err:.3e} > one unit {unit:g} ({ref}, tier 3){where}"
+    )
 
 
-def check_rel(name: str, got: float, want: object, tol: float, ref: str) -> None:
+def check_rel(name: str, got: float, want: object, tol: float, ref: str, row: str = "") -> None:
     err = ro.rel(got, want)
-    assert err <= tol, f"{name}: relative error {err:.3e} > {tol:.1e} vs mpmath ({ref})"
+    where = f"; {row}" if row else ""
+    assert err <= tol, f"{name}: relative error {err:.3e} > {tol:.1e} vs mpmath ({ref}){where}"
 
 
 def code_iterates(rows: Rows, m: int) -> list[float]:
@@ -121,16 +137,16 @@ def mp_example(example: tuple[float, ...]) -> dict[str, object]:
 def test_e1_e2_tier1_against_mpmath(name: str, example: tuple[float, ...]) -> None:
     """Tier 1 (docs/2 10.2 E1, E2): Phi outputs and section terms vs an mpmath Algorithm Phi."""
     got, want = solved(example), mp_example(example)
-    ref = f"docs/2 10.2 {name}"
+    ref, row = f"docs/2 10.2 {name}", row_of(example)
     for key in ("dbar", "dmax", "A", "V", "fm1", "kappa", "eta", "slope"):
-        check_rel(f"{name} {key}", got[key], want[key], TAU_Q, ref)
+        check_rel(f"{name} {key}", got[key], want[key], TAU_Q, ref, row)
     assert abs(got["ell"] - float(want["ell"])) <= TAU_L, (
-        f"{name}: |ell - ell*_mp| = {abs(got['ell'] - float(want['ell'])):.3e} > tau_l "
-        f"(docs/2 Prop 3.2 stopping rule)"
+        f"{name}: |ell - ell*_mp| = {abs(got['ell'] - float(want['ell'])):.3e} > tau_l = "
+        f"{TAU_L:.1e} (docs/2 Prop 3.2 stopping rule); {row}"
     )
     iters = code_iterates(Rows.from_si([example]), 4)
     for m, (a, b) in enumerate(zip(iters, want["iterates"], strict=True)):  # type: ignore[call-overload]
-        check_rel(f"{name} iterate {m}", a, b, TAU_Q, f"{ref}, docs/2 Prop 3.2 (2)")
+        check_rel(f"{name} iterate {m}", a, b, TAU_Q, f"{ref}, docs/2 Prop 3.2 (2)", row)
 
 
 def test_e1_tier3_printed() -> None:
@@ -153,7 +169,7 @@ def test_e1_tier3_printed() -> None:
         ("L = (2/5) eta", 0.4 * got["eta"], "0.00581"),
         ("d ln dbar / d ln Q", got["slope"], "0.60351"),
     ]:
-        check_tier3(f"E1 {name}", val, printed, ref)
+        check_tier3(f"E1 {name}", val, printed, ref, row_of(E1))
 
 
 def test_e2_tier3_printed() -> None:
@@ -166,7 +182,11 @@ def test_e2_tier3_printed() -> None:
     beta0 = 2.0 * (rows.r + 1.0) * torch.exp(l0 - rows.w)
     k0 = float(torch.log1p(perimeter_fm1(beta0, rows.r, level=LEVEL, trunc=TRUNC))[0])
     lo, hi = math.exp(float(l0[0]) + 0.4 * k0), math.exp(float(l0[0]) + (2.0 / 3.0) * k0)
-    assert lo <= got["dbar"] <= hi, f"E2 dbar* {got['dbar']!r} outside [{lo!r}, {hi!r}] (Prop 3.2)"
+    out_by = max(lo - got["dbar"], got["dbar"] - hi)
+    assert out_by <= 0, (
+        f"E2 dbar* = {got['dbar']!r} outside the bracket [{lo!r}, {hi!r}] by {out_by:.3e} "
+        f"(docs/2 Prop 3.2 (1)); {row_of(E2)}"
+    )
     for name, val, printed in [
         ("dbar_kappa=1", it[0], "0.298513"),
         ("iterate 1", it[1], "0.307423"),
@@ -183,8 +203,12 @@ def test_e2_tier3_printed() -> None:
         ("d ln dbar / d ln Q", got["slope"], "0.63675"),
         ("A1 factor kappa^(-2/3)", got["kappa"] ** (-2.0 / 3.0), "1.0533"),
     ]:
-        check_tier3(f"E2 {name}", val, printed, ref)
-    assert got["kappa"] > E2[0] / (E2[0] + 2.0 * got["dmax"]), "E2 kappa above bound (Prop 2.3)"
+        check_tier3(f"E2 {name}", val, printed, ref, row_of(E2))
+    kappa_lo = E2[0] / (E2[0] + 2.0 * got["dmax"])
+    assert got["kappa"] > kappa_lo, (
+        f"E2 kappa* = {got['kappa']!r} <= W/(W + 2 d_max) = {kappa_lo!r} (margin "
+        f"{got['kappa'] - kappa_lo:.3e}, required > 0; docs/2 Prop 2.3); {row_of(E2)}"
+    )
 
 
 # ----------------------------------------------------------------------------- E3, E5, E11
@@ -193,23 +217,36 @@ def test_e3_closed_forms_at_delta_0_1(r: float, printed: str) -> None:
     """docs/2 10.2 E3: F at delta = 0.1 (beta = 2 r delta); tier 2 vs Prop 2.4 and tier 3."""
     beta = 2.0 * r * 0.1
     fm1 = float(perimeter_fm1(t64(beta), t64(r), level=LEVEL, trunc=TRUNC)[0])
+    at = f"(r, beta) = ({r!r}, {beta!r})"
     with mp.workdps(ro.MP_DPS):
-        check_rel(f"E3 F-1 r={r}", fm1, ro.f_closed(mp.mpf(beta), r) - 1, TAU_Q, "docs/2 Prop 2.4")
-    check_tier3(f"E3 F r={r}", 1.0 + fm1, printed, "docs/2 10.2 E3")
-    assert 1.0 <= 1.0 + fm1 <= 1.2, "E3: F outside [1, 1.2] (docs/2 10.2)"
+        want = ro.f_closed(mp.mpf(beta), r) - 1
+        check_rel(f"E3 F-1 r={r}", fm1, want, TAU_Q, "docs/2 Prop 2.4", at)
+    check_tier3(f"E3 F r={r}", 1.0 + fm1, printed, "docs/2 10.2 E3", at)
+    assert 1.0 <= 1.0 + fm1 <= 1.2, f"E3: F = {1.0 + fm1!r} outside [1, 1.2] (docs/2 10.2 E3); {at}"
 
 
 def test_e5_unit_constants() -> None:
     """docs/2 10.2 E5 and 1.2: lambda_L^3 exact; k_US = 0.3048^(-1/3); k_US^(3/5) (tier 3)."""
     with mp.workdps(ro.MP_DPS):
         lam = mp.mpf("0.3048")
-        assert lam**3 == mp.mpf("0.028316846592"), "lambda_L^3 is exact (docs/2 10.2 E5)"
+        cube = lam**3
+        assert cube == mp.mpf("0.028316846592"), (
+            f"lambda_L^3 = {cube} != 0.028316846592 exactly (docs/2 10.2 E5)"
+        )
         k_us = lam ** (-mp.mpf(1) / 3)
         check_tier3("E5 k_US", float(k_us), "1.48592", "docs/2 10.2 E5")
         check_tier3("E5 k_US^(3/5)", float(k_us ** (mp.mpf(3) / 5)), "1.26822", "docs/2 10.2 E5")
-    assert FT_TO_M == LAMBDA_L == 0.3048, "lambda_L = 0.3048 m/ft exactly (docs/2 1.2)"
-    assert float(mp.mpf("0.028316846592")) == CFS_TO_CMS, "CFS_TO_CMS = lambda_L^3 (docs/2 1.2)"
-    assert float(mp.mpf("0.09290304")) == FT2_TO_M2, "FT2_TO_M2 = lambda_L^2 (docs/2 1.2)"
+    exact = (
+        ("FT_TO_M", FT_TO_M, 0.3048, "lambda_L"),
+        ("LAMBDA_L", LAMBDA_L, 0.3048, "lambda_L"),
+        ("CFS_TO_CMS", CFS_TO_CMS, float(mp.mpf("0.028316846592")), "lambda_L^3"),
+        ("FT2_TO_M2", FT2_TO_M2, float(mp.mpf("0.09290304")), "lambda_L^2"),
+    )
+    for name, got, want, what in exact:
+        assert got == want, (
+            f"{name} = {got!r} != {what} = {want!r} (difference {got - want:.3e}, required "
+            "bit-equal; docs/2 1.2, docs/3 2.1)"
+        )
 
 
 def test_e5_mishandled_k_us_depth_factor() -> None:
@@ -221,8 +258,8 @@ def test_e5_mishandled_k_us_depth_factor() -> None:
     base = phi(*rows.args(), PHI_A1).ell
     shifted = phi(rows.w, rows.r, rows.nu + float(ln_k), rows.q, rows.s, PHI_A1).ell
     factor = math.exp(float(shifted[0] - base[0]))
-    check_rel("E5 depth factor", factor, want, 1e-12, "docs/2 D8, E5")
-    check_tier3("E5 depth factor", factor, "1.26822", "docs/2 10.2 E5")
+    check_rel("E5 depth factor", factor, want, 1e-12, "docs/2 D8, E5", row_of(E1))
+    check_tier3("E5 depth factor", factor, "1.26822", "docs/2 10.2 E5", row_of(E1))
 
 
 def test_e11_unit_equivariance_hand_values() -> None:
@@ -264,15 +301,23 @@ def check_quadrature(rs: tuple[float, ...], bs: tuple[float, ...]) -> None:
     )
 
 
-def test_quadrature_fast_subgrid() -> None:
-    """docs/2 Props 2.2, 2.5, 2.8: F - 1, F_beta, F_r <= tau_Q on a 6 x 6 (r, beta) sub-grid."""
-    check_quadrature(R_FAST, B_FAST)
+@pytest.mark.parametrize("form", sorted(QUAD_FORMS))
+def test_quadrature_fast_subgrid(form: str) -> None:
+    """docs/2 Props 2.2, 2.5, 2.8: F - 1, F_beta, F_r <= tau_Q on the 6 x 6 (r, beta) sub-grid,
+    split by quadrature form (docs/2 3.5: u-form r >= 1, tau-form r < 1).
+    """
+    rs = by_form(R_FAST)[form]
+    assert rs, f"no r of {R_FAST} on the {form}-form side (docs/2 3.5)"
+    check_quadrature(rs, B_FAST)
 
 
 @pytest.mark.slow
-def test_quadrature_full_grid() -> None:
-    """The 25 r x 23 beta grid of the P6-D3 level study (docs/2 3.5; protocol 4.2)."""
-    check_quadrature(R_GRID, B_GRID)
+@pytest.mark.parametrize("form", sorted(QUAD_FORMS))
+def test_quadrature_full_grid(form: str) -> None:
+    """The 25 r x 23 beta grid of the P6-D3 level study (docs/2 3.5; protocol 4.2), by form."""
+    rs = by_form(R_GRID)[form]
+    assert rs, f"no r of the P6-D3 grid on the {form}-form side (docs/2 3.5)"
+    check_quadrature(rs, B_GRID)
 
 
 @pytest.mark.parametrize("r", ro.CLOSED_FORM_R)
@@ -302,13 +347,19 @@ def test_oracle_self_consistency() -> None:
         for b in (1e-6, 0.3, 50.0):
             fm1 = ro.f_integrals(b, r)[0]
             with mp.workdps(ro.MP_DPS):
-                assert ro.rel(float(fm1), ro.f_closed(mp.mpf(b), r) - 1) <= 1e-15
+                err = ro.rel(float(fm1), ro.f_closed(mp.mpf(b), r) - 1)
+            assert err <= 1e-15, (
+                f"oracle F - 1 at (r, beta) = ({r}, {b}): rel {err:.3e} > 1e-15 vs docs/2 Prop 2.4"
+            )
         for b in (1e4, 1.1253e8):
             gap = ro.one_minus_eta(b, r)
             with mp.workdps(ro.MP_DPS):
                 want = 1 - ro.eta(mp.mpf(b), r)  # closed form, mp.diff
                 err = abs(gap - want) / abs(want)
-            assert err <= 1e-10, f"1 - eta oracle at (r, beta) = ({r}, {b}): rel {float(err):.2e}"
+            assert err <= 1e-10, (
+                f"1 - eta oracle at (r, beta) = ({r}, {b}): rel {float(err):.2e} > 1e-10 vs the "
+                "Prop 2.4 closed form (docs/2 Prop 2.7; docs/3 section 12 O5)"
+            )
 
 
 def test_seam_at_r_equal_one() -> None:
@@ -319,8 +370,13 @@ def test_seam_at_r_equal_one() -> None:
         near = qd.perimeter_integrals(beta, torch.full((6,), side, dtype=torch.float64),
                                       level=LEVEL, trunc=TRUNC)  # fmt: skip
         for name, a, b in zip(("F-1", "F_beta", "F_r"), near, at, strict=True):
-            err = float(((a - b).abs() / b.abs()).max())
-            assert err <= TAU_Q, f"seam {name} at r = {side!r}: {err:.3e} > tau_Q (docs/2 3.5)"
+            rel = (a - b).abs() / b.abs()
+            k = int(rel.argmax())
+            err = float(rel[k])
+            assert err <= TAU_Q, (
+                f"seam {name}: rel {err:.3e} > tau_Q = {TAU_Q:.1e} at (r, beta) = "
+                f"({side!r}, {float(beta[k])!r}) vs r = 1 (docs/2 3.5)"
+            )
     with mp.workdps(ro.MP_DPS):
         for i, b in enumerate(beta.tolist()):
             check_rel(f"seam F-1 beta={b}", float(at[0][i]), ro.f_closed(mp.mpf(b), 1.0) - 1, TAU_Q,

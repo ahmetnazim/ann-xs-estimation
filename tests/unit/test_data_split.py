@@ -1,4 +1,8 @@
-"""Unit tests for src/data/split.py and ind_prepare.py (Phase 5, Batch D). Synthetic only."""
+"""Unit tests for src/data/split.py and ind_prepare.py (Phase 5, Batch D). Synthetic only.
+
+Sources: docs/3 3.1-3.3 (grouping key, split families, fold table), 3.4,
+3.5 (L1, L2, L8), 11.3 (S-IND rules).
+"""
 
 from __future__ import annotations
 

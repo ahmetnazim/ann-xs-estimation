@@ -2,6 +2,9 @@
 
 Synthetic only: flowlines are shapely lines in EPSG:5070; the aridity raster is a 4 x 4 GeoTIFF
 written to ``tmp_path``.
+
+Sources: docs/3 2.3-2.4 (R12-R14), 2.5 (gage-reach link),
+2.6 (condition extraction), 3.5 L4 (banned predictors), 10.7 (aridity zonal mean).
 """
 
 from __future__ import annotations

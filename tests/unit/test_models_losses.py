@@ -1,4 +1,8 @@
-"""Smoke tests for src/models/losses.py (Phase 6, Batch B). Synthetic; no data."""
+"""Smoke tests for src/models/losses.py (Phase 6, Batch B). Synthetic; no data.
+
+Sources: docs/2 7.0 (site weights), 7.2 (w_A), 7.4-7.5 (priors), 7.7 (M4
+schedule), 8.1 (unit invariance), 8.5 (NLL bounds), 9.1; docs/3 4.2 (P3-06 weights).
+"""
 
 from __future__ import annotations
 
