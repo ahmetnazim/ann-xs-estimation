@@ -1027,3 +1027,15 @@ The tolerances of P7-D5 (c), applied by `tests/physics/` and `tests/unit/`:
   | Theorem 8.2 | strict bounds; O8 on O5 rows; O9 where σ rounds |
   | Corollary 8.3 | ‖J‖_F² ≤ 1 + 25/9 + Δ_n²/16 + Δ_r²/9 + Δ_r²/(16(1 + r_min)²) at the params bands (E8's 2.349 uses the provisional bands of docs/2 §1.3); O8 variant on O5 rows |
   | 100-pass sweep (every torch ladder member, 14 configurations) | finite objective, finite gradients, global gradient norm > 0 |
+
+### 12.5 L4 audit note: StreamCat `runoffws` and `bfiws` (§3.5 L4; Phase 5 carry-over) [ADL-112]
+
+- **Question.** L4 bans predictors that carry the target or the site's own measurement (measured discharge, `drain_area_va`, `chan_mat_cd`, HYDROSWOT velocity). Two StreamCat predictors in the NN feature set (`params.yaml` `transforms.features`) describe flow: `runoffws` (log) and `bfiws` (identity).
+- **Sources** (EPA StreamCat API `variable_info`, read 2026-10-09). Both are `Ws` metrics, i.e. means over the full upstream watershed of a COMID [@Hill_2016_StreamCat]. `runoff` is "Mean runoff (mm)", taken from the modelled runoff of McCabe & Wolock (2011; doi:10.1029/2011WR010630). `bfi` is the base-flow index (base flow / total flow, %), taken from a 1 km grid that Wolock (2003; doi:10.3133/ofr03263) interpolated from BFI values estimated at USGS streamgages.
+- **Finding: not L4 leakage.**
+  1. Both are joined on COMID from the StreamCat API (`acquire.streamcat`, `aoi=ws`), not from HYDROSWOT. In the frozen site table (`8d186b07…`) each takes exactly one value per COMID: 4,851 COMIDs, 13,289 rows, no missing value.
+  2. Neither carries a measured discharge, a velocity, the drainage area recorded with the measurement, or any channel geometry. Runoff is a depth per unit area; BFI is a dimensionless ratio.
+  3. They are regional long-term estimates, the same kind of input as the EROM `Q_E` that L4 already admits.
+- **Disclosed caveat.** The BFI grid was built from streamgage records, and some of those gauges may also be HYDROSWOT sites. What enters the model is a long-term flow-partition ratio, interpolated to 1 km and averaged over the watershed. It is not the ADCP measurement, its discharge or its geometry. No action.
+- **Related.** StreamCat also publishes channel-geometry metrics (`bankfullwidth`, `bankfulldepth`, `thalwegdepth`). They are not in the acquired metric list (`params.yaml` `acquire.streamcat`), and no site-table column carries them.
+- **Test.** `tests/integration/test_frozen_artifacts.py::test_l4_streamcat_runoff_and_bfi_are_comid_level`: one value per COMID, and no `bankfull*` or `thalweg*` column.
