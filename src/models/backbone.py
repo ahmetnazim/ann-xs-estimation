@@ -19,7 +19,7 @@ from torch import Tensor, nn
 
 from src.config import BackboneParams
 
-__all__ = ["Backbone", "check_features"]
+__all__ = ["Backbone", "CountedModule", "assert_row_wise", "check_features"]
 
 
 def check_features(x: Tensor, n_features: int, name: str = "x") -> None:
@@ -32,7 +32,22 @@ def check_features(x: Tensor, n_features: int, name: str = "x") -> None:
         raise ValueError(f"non-finite values in {name}")
 
 
-class Backbone(nn.Module):
+class CountedModule(nn.Module):
+    """``nn.Module`` with :meth:`get_num_trainable_params` (Phase 6 prompt, logged in run.json)."""
+
+    def get_num_trainable_params(self) -> int:
+        """Return the number of scalar parameters with ``requires_grad``."""
+        return sum(int(p.numel()) for p in self.parameters() if p.requires_grad)
+
+
+def assert_row_wise(module: nn.Module) -> None:
+    """Raise if ``module`` holds a batch-coupled layer (BatchNorm; Proposition 3.4 scope)."""
+    bad = [n for n, m in module.named_modules() if isinstance(m, nn.modules.batchnorm._BatchNorm)]
+    if bad:
+        raise TypeError(f"batch-coupled layers upstream of Phi are not allowed: {bad}")
+
+
+class Backbone(CountedModule):
     """Row-wise MLP trunk ``R^F -> R^H`` (protocol 4.2; params ``model.backbone``).
 
     Parameters

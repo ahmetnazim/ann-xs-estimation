@@ -27,7 +27,7 @@ from torch.nn import functional as fn
 
 from src.config import BackboneParams, DomainParams
 from src.data.normstats import NormStats
-from src.models.backbone import Backbone, check_features
+from src.models.backbone import Backbone, CountedModule, check_features
 
 __all__ = [
     "Batch",
@@ -137,7 +137,7 @@ def _linear(width: int, n_out: int) -> nn.Linear:
     return nn.Linear(width, n_out, dtype=torch.float64)
 
 
-class RoutedHeads(nn.Module):
+class RoutedHeads(CountedModule):
     """Full trunk -> ``full_outputs``; blind trunk on ``x[:, blind_idx]`` -> ``blind_outputs``.
 
     Parameters
@@ -256,7 +256,7 @@ def check_batch(batch: Batch, n_features: int) -> int:
     return b
 
 
-class LadderNet(nn.Module):
+class LadderNet(CountedModule):
     """Base class of the torch rungs (M2-MLP, M3 W regressor, M4, M5, M6-NN).
 
     Subclasses implement :meth:`forward` (batch -> :class:`ModelOutput`) and
