@@ -5,17 +5,19 @@ any eHydro record was read; section 1.1 (ehydro, O-5 (c)), 3.2 (S-IND), 3.5 (L8)
 (2025) section 2.5: d̄ is the mean of the depth pixels in the NHDPlusV2.1 catchment,
 A = Σ(depth × pixel area) / reach length and W = A / d̄. Reads params ``ehydro``.
 
-This module holds the steps that do not depend on the delivered survey file format:
+This module holds:
 
 - ``python -m src.data.ehydro select``: the catalogue query (attributes and footprints only),
   eligibility (E-R2), selection (E-R3) and the HEAD size pilot (E-R4). It writes
   ``reports/ehydro_selection.json``, and the raw catalogue pages (with SHA-256) under
   ``<dvc_store>/ehydro_catalogue/<UTC>/``, outside the repository and Google Drive.
+- The survey reader (E-R5 (i), docs/3 section 11.4 E-R5a-E-R5d, commit ``708f832``): the
+  reference-plane class from the metadata files, the ``SurveyPoint`` depths and the
+  ``SurveyJob`` footprint of the delivered geodatabase.
 - The depth surface on a fixed grid (E-R5 (ii)-(iv)), pooling (E-R6), reach values (E-R6),
   coverage (E-R7) and locations (E-R8).
 
-Reading sounding points from a delivered survey (E-R5 (i)) is added with ``ind_prepare`` after the
-survey format has been inspected (P6-D10 step 5). Reach values are computed for frame flowlines
+The stage itself is :mod:`src.data.ind_prepare`. Reach values are computed for frame flowlines
 only (E-R1): cells in the catchment of a tributary with another name are not used.
 
 No clamping: the two masks applied (outside the interpolation hull, depth ≤ 0) are the
@@ -49,26 +51,40 @@ if TYPE_CHECKING:
 
 __all__ = [
     "CATALOGUE_FIELDS",
+    "FOOT_UNITS",
+    "GEO_RE",
+    "PLANE_CLASSES",
+    "STATEMENT_RE",
+    "WATER_RE",
     "Cells",
     "EhydroError",
     "EhydroStop",
+    "PlaneDecision",
+    "SurveyPoints",
     "build_locations",
     "catalogue_frame",
     "catalogue_where",
+    "classify_plane_text",
+    "classify_survey",
     "condition_codes",
     "coverage_fraction",
+    "decide_plane",
     "depth_surface",
     "eligible_surveys",
     "head_sizes",
     "main",
+    "plane_statement",
     "pool_cells",
     "query_catalogue",
     "reach_values",
     "read_frame_flowlines",
+    "read_survey",
     "requests_get",
     "requests_head",
     "run_select",
     "select_latest",
+    "survey_field_datums",
+    "survey_gdb",
 ]
 
 LOG = logging.getLogger(__name__)
@@ -381,6 +397,233 @@ def select_latest(eligible: pd.DataFrame) -> pd.DataFrame:
 def head_sizes(urls: Sequence[str], head: Head = requests_head) -> list[int | None]:
     """E-R4: ``Content-Length`` of every selected zip (``None`` if the server sends none)."""
     return [head(url) for url in urls]
+
+
+# ----------------------------------------------------------------------------- E-R5 (i) reader
+#: docs/3 11.4 E-R5c, water list (tested first). Case-insensitive.
+WATER_RE: Final[re.Pattern[str]] = re.compile(
+    r"low\s*water\s*reference\s*plane|\bLWRP|mean\s+lower\s+low\s+water|\bMLLW\b|"
+    r"mean\s+low\s+gulf|\bMLG\b|columbia\s+river\s+datum|\bCRD\b|low\s+water\s+datum|\bLWD\b|"
+    r"\bpool\b|minimum\s*pool|flat\s*pool|normal\s*pool|"
+    r"\b(?:ohio|monongahela|allegheny|kanawha|mississippi|missouri|river)\s+datum|"
+    r"\b(?:ORD|MRD|BRD|MND)\b|"
+    r"water\s+surface\s+(?:at|on)\s+(?:the\s+)?(?:time|date)|"
+    r"depths?\s+on\s+the\s+date\s+of\s+(?:the\s+)?survey|low\s+steady\s+flow|\bLSF\b",
+    re.IGNORECASE,
+)
+#: docs/3 11.4 E-R5c, geodetic list. Case-insensitive.
+GEO_RE: Final[re.Pattern[str]] = re.compile(
+    r"\bNAVD|\bNGVD|national\s+geodetic|north\s+american\s+vertical|\bMSL\s*1912|"
+    r"mean\s+sea\s+level\s+(?:datum\s+)?(?:of\s+)?1912|\bIGLD|great\s+lakes\s+datum|"
+    r"bottom\s+elevation",
+    re.IGNORECASE,
+)
+#: E-R5c S1: "Vertical [Reference] Datum [Name]:" up to ". " or " - " before a capital letter
+#: (case-sensitive lookahead), or up to a tag end.
+STATEMENT_RE: Final[re.Pattern[str]] = re.compile(
+    r"vertical\s+(?:reference\s+)?datum(?:\s+name)?\s*:\s*(.+?)"
+    r"(?:\.\s+(?=(?-i:[A-Z]))|\s+-\s+(?=(?-i:[A-Z]))|</|$)",
+    re.IGNORECASE | re.DOTALL,
+)
+#: E-R5c S1 metadata files, in reading order (top level of the survey folder).
+METADATA_SUFFIXES: Final[tuple[str, ...]] = (".XML", ".MET", ".GEN")
+#: E-R5b: accepted ``elevationUOM`` values (all feet; the misspelling is read as US survey).
+FOOT_UNITS: Final[frozenset[str]] = frozenset({"usSurveyFoot", "internationalFoot", "usSuveryFoot"})
+#: E-R5c classes; only ``water`` surveys are used.
+PLANE_CLASSES: Final[tuple[str, ...]] = ("water", "geodetic", "unresolved")
+
+
+def classify_plane_text(text: str | None) -> str | None:
+    """E-R5c: ``"water"`` if the water list matches, else ``"geodetic"``, else ``None``."""
+    if text is None or not text.strip():
+        return None
+    if WATER_RE.search(text):
+        return "water"
+    if GEO_RE.search(text):
+        return "geodetic"
+    return None
+
+
+@dataclass(frozen=True)
+class PlaneDecision:
+    """E-R5c outcome for one survey: class, deciding source and the evidence read."""
+
+    cls: str
+    source: str  # "S1", "S2", "S3", "S2+S3", "conflict" or "none"
+    statement: str | None
+    edomv: tuple[str, ...]
+    field_values: tuple[str, ...]
+
+
+def _metadata_files(survey_dir: Path) -> list[Path]:
+    files = [
+        p for p in survey_dir.iterdir() if p.is_file() and p.suffix.upper() in METADATA_SUFFIXES
+    ]
+    return sorted(files, key=lambda p: (METADATA_SUFFIXES.index(p.suffix.upper()), p.name))
+
+
+def _read_text(path: Path) -> str:
+    import html
+
+    return html.unescape(path.read_text(encoding="utf-8", errors="replace"))
+
+
+def plane_statement(survey_dir: Path) -> tuple[str | None, tuple[str, ...]]:
+    """E-R5c S1 and S2 from the survey's metadata files.
+
+    Returns the S1 text (the first "Vertical ... Datum ...:" statement in ``.XML``, ``.MET``,
+    ``.GEN``; otherwise the first XML ``<depthdn>``, then ``<altdatum>``, prefixed by the tag) and
+    the S2 ``<edomv>`` values of the XML attribute ``elevationDatum``.
+    """
+    files = _metadata_files(survey_dir)
+    statement: str | None = None
+    for path in files:
+        match = STATEMENT_RE.search(re.sub(r"\s+", " ", _read_text(path)))
+        if match:
+            statement = match.group(1).strip()
+            break
+    xmls = [p for p in files if p.suffix.upper() == ".XML"]
+    xml = _read_text(xmls[0]) if xmls else ""
+    if statement is None:
+        for tag in ("depthdn", "altdatum"):
+            found = re.search(rf"(?is)<{tag}>\s*(.*?)\s*</{tag}>", xml)
+            if found and found.group(1).strip():
+                statement = f"<{tag}> " + re.sub(r"\s+", " ", found.group(1)).strip()
+                break
+    edomv: list[str] = []
+    for attr in re.finditer(r"(?is)<attr>(.*?)</attr>", xml):
+        body = attr.group(1)
+        label = re.search(r"(?is)<attrlabl>\s*(.*?)\s*</attrlabl>", body)
+        if label and label.group(1).strip().lower() == "elevationdatum":
+            edomv += [
+                re.sub(r"\s+", " ", v).strip()
+                for v in re.findall(r"(?is)<edomv>(.*?)</edomv>", body)
+            ]
+    return statement, tuple(edomv)
+
+
+def decide_plane(
+    statement: str | None, edomv: Sequence[str], field_values: Sequence[str]
+) -> PlaneDecision:
+    """E-R5c precedence: S1 decides alone; else one class over S2 ∪ S3, two → unresolved."""
+    evidence = (statement, tuple(edomv), tuple(field_values))
+    s1 = classify_plane_text(statement)
+    if s1 is not None:
+        return PlaneDecision(s1, "S1", *evidence)
+    s2 = {c for c in map(classify_plane_text, edomv) if c is not None}
+    s3 = {c for c in map(classify_plane_text, field_values) if c is not None}
+    both = s2 | s3
+    if len(both) == 1:
+        source = "S2+S3" if s2 and s3 else ("S2" if s2 else "S3")
+        return PlaneDecision(next(iter(both)), source, *evidence)
+    return PlaneDecision("unresolved", "conflict" if both else "none", *evidence)
+
+
+def survey_gdb(survey_dir: Path) -> Path:
+    """The single file geodatabase of a delivered survey (E-R5a)."""
+    found = sorted(survey_dir.rglob("*.gdb"))
+    if len(found) != 1:
+        raise EhydroError(f"E-R5a: {survey_dir.name} has {len(found)} geodatabases, expected 1")
+    return found[0]
+
+
+def _read_layer_quiet(gdb: Path, layer: str, columns: Sequence[str] | None) -> GeoDataFrame:
+    import warnings
+
+    import pyogrio
+
+    with warnings.catch_warnings():
+        # Measured (M) points/lines are read without M (2-D use only); expected and harmless.
+        warnings.filterwarnings("ignore", message="Measured \\(M\\) geometry types")
+        out: GeoDataFrame = pyogrio.read_dataframe(
+            gdb, layer=layer, columns=None if columns is None else list(columns)
+        )
+    return out
+
+
+def survey_field_datums(gdb: Path) -> tuple[str, ...]:
+    """E-R5c S3: distinct non-blank ``SurveyPoint.elevationDatum`` values (sorted)."""
+    import warnings
+
+    import pyogrio
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="Measured \\(M\\) geometry types")
+        frame = pyogrio.read_dataframe(
+            gdb, layer="SurveyPoint", columns=["elevationDatum"], read_geometry=False
+        )
+    values = frame["elevationDatum"].dropna().astype(str).str.strip()
+    return tuple(sorted(set(values[values.str.len() > 0])))
+
+
+def classify_survey(survey_dir: Path) -> PlaneDecision:
+    """E-R5c for one delivered survey (metadata only; no depth value is read)."""
+    statement, edomv = plane_statement(survey_dir)
+    return decide_plane(statement, edomv, survey_field_datums(survey_gdb(survey_dir)))
+
+
+@dataclass(frozen=True)
+class SurveyPoints:
+    """E-R5a/b sounding points of one survey in EPSG:5070 and its E-R5d footprint."""
+
+    x: np.ndarray
+    y: np.ndarray
+    depth_m: np.ndarray
+    footprint: Geometry
+    n_read: int
+    n_null_depth: int
+    n_empty_geometry: int
+    units: tuple[str, ...]
+    footprint_repaired: bool
+
+
+def read_survey(survey_dir: Path) -> SurveyPoints:
+    """E-R5a/b/d: ``SurveyPoint`` depths in metres (positive down) and the ``SurveyJob`` polygon.
+
+    depth = ``Z_depth`` × ``FT_TO_M`` (E-R5b; the 2 ppm US-survey-foot difference is not
+    corrected, as E-R5 (i) prescribes ``FT_TO_M``). Points with a null ``Z_depth`` or an empty
+    geometry are dropped and counted. No other filter: non-positive depths are handled by
+    E-R5 (iv) after interpolation.
+
+    Raises
+    ------
+    EhydroStop
+        If a non-null ``elevationUOM`` is not a foot, or no unit is given (E-R5b).
+    """
+    import shapely
+
+    from src.config import FT_TO_M
+    from src.data.nhdplus import CRS_ALBERS
+
+    gdb = survey_gdb(survey_dir)
+    points = _read_layer_quiet(gdb, "SurveyPoint", ["Z_depth", "elevationUOM"])
+    units = tuple(sorted(set(points["elevationUOM"].dropna().astype(str).str.strip())))
+    if not units or not set(units) <= FOOT_UNITS:
+        raise EhydroStop(f"E-R5b: {survey_dir.name} elevationUOM {units} is not a foot")
+    geoms = points.geometry.to_numpy()
+    empty = shapely.is_missing(geoms) | shapely.is_empty(geoms)
+    z = pd.to_numeric(points["Z_depth"], errors="raise").to_numpy(dtype=np.float64)
+    null_z = np.isnan(z)
+    keep = ~(empty | null_z)
+    kept = points.loc[keep].to_crs(CRS_ALBERS)
+    xy = shapely.get_coordinates(shapely.force_2d(kept.geometry.to_numpy()))
+    job = _read_layer_quiet(gdb, "SurveyJob", []).to_crs(CRS_ALBERS)
+    polygons = job.geometry.to_numpy()
+    invalid = ~shapely.is_valid(polygons)
+    polygons[invalid] = shapely.make_valid(polygons[invalid])
+    footprint = shapely.union_all(polygons)
+    repaired = bool(invalid.any())
+    return SurveyPoints(
+        x=xy[:, 0].astype(np.float64),
+        y=xy[:, 1].astype(np.float64),
+        depth_m=z[keep] * FT_TO_M,
+        footprint=footprint,
+        n_read=len(points),
+        n_null_depth=int(null_z.sum()),
+        n_empty_geometry=int((empty & ~null_z).sum()),
+        units=units,
+        footprint_repaired=repaired,
+    )
 
 
 # ----------------------------------------------------------------------------- E-R5/E-R6 cells

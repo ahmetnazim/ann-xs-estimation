@@ -64,7 +64,8 @@ stages:
   ind_prepare:
     cmd: python -m src.data.ind_prepare
     deps: [src/data/ind_prepare.py, src/data/ehydro.py, data/raw/ehydro, data/raw/nhdplusv21,
-           data/raw/zarrabi_product, data/processed/site_table.parquet]
+           data/raw/zarrabi_product, data/processed/site_table.parquet,
+           reports/ehydro_selection.json]                 # docs/3 11.4 E-R5e
     params: [splits.ind_dedupe_m, ehydro]
     outs: [data/processed/ind/ehydro_ind.parquet]
     metrics: [{reports/ind_prepare.json: {cache: false}}]

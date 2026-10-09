@@ -29,6 +29,7 @@ from pandera.typing.pandas import Series
 
 __all__ = [
     "BANNED_PREDICTORS",
+    "DEDUPE_STATUS",
     "HYDROSWOT_CODE_FIELDS",
     "HYDROSWOT_FLAG_FIELDS",
     "HYDROSWOT_NUMERIC_FIELDS",
@@ -42,6 +43,7 @@ __all__ = [
     "NhdGageLocSI",
     "NhdPlusFlowSI",
     "NhdVaaSI",
+    "EhydroInd",
     "FoldAssignment",
     "SiteTable",
     "SrndAssignment",
@@ -338,3 +340,46 @@ class SrndAssignment(_Closed):
     row_id: Series[np.int64] = pa.Field(unique=True)
     is_test: Series[bool]
     seed: Series[np.int64]
+
+
+# ----------------------------------------------------------------------------- eHydro (S-IND)
+#: L8 outcome per location (docs/3 3.5 L8, 11.3 E-R9).
+DEDUPE_STATUS: Final[tuple[str, ...]] = ("kept", "dropped_comid", "dropped_distance")
+
+
+class EhydroInd(_Closed):
+    """``data/processed/ind/ehydro_ind.parquet`` (protocol 2.3; 11.3 E-R6 to E-R9; 11.4).
+
+    One row per E-R8 location, dropped ones included with their ``dedupe_status``; S-IND uses
+    the ``kept`` rows. ``comids`` lists the member COMIDs upstream to downstream (``;``-joined);
+    ``comid_outlet`` is the most downstream member (smallest ``HydroSeq``) and ``DA_km2`` its
+    ``TotDASqKm`` (missing if the VAA value is a sentinel). ``vpus`` lists the member VPUs.
+    """
+
+    loc_id: Series[str] = pa.Field(unique=True)
+    river: Series[str]
+    vpus: Series[str] = pa.Field(str_matches=r"^\d\d[A-Z]?(;\d\d[A-Z]?)*$")
+    comids: Series[str] = pa.Field(str_matches=r"^\d+(;\d+)*$")
+    comid_outlet: Series[np.int64]
+    n_comids: Series[np.int64] = pa.Field(ge=1)
+    length_km: Series[float] = pa.Field(gt=0.0)
+    W: Series[float] = pa.Field(gt=0.0)
+    dbar: Series[float] = pa.Field(gt=0.0)
+    A: Series[float] = pa.Field(gt=0.0)
+    DA_km2: Series[float] = pa.Field(gt=0.0, nullable=True)
+    dedupe_status: Series[str] = pa.Field(isin=list(DEDUPE_STATUS))
+
+    @pa.dataframe_check
+    @classmethod
+    def area_is_width_times_depth(cls, df: pd.DataFrame) -> bool:
+        """A = W·d̄ by construction (E-R8)."""
+        return bool(np.allclose(df["A"], df["W"] * df["dbar"], rtol=1e-12, atol=0.0))
+
+    @pa.dataframe_check
+    @classmethod
+    def member_count(cls, df: pd.DataFrame) -> bool:
+        """``n_comids`` equals the number of listed COMIDs, the outlet among them."""
+        members = df["comids"].str.split(";")
+        same_n = members.map(len).to_numpy() == df["n_comids"].to_numpy()
+        outlet = [str(o) in m for o, m in zip(df["comid_outlet"], members, strict=True)]
+        return bool(same_n.all() and all(outlet))

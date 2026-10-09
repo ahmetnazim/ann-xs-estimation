@@ -13,7 +13,6 @@ import pytest
 from src.config import load_settings
 from src.data import split
 from src.data.ind_prepare import dedupe_l8
-from src.data.ind_prepare import main as ind_main
 from src.data.io import sha256_file, write_parquet
 
 pytestmark = pytest.mark.unit
@@ -208,8 +207,3 @@ def test_dedupe_l8_drops_comid_overlap_and_near_locations() -> None:
     kept, counts = dedupe_l8(locs, train, 1000.0)
     assert kept["loc_id"].tolist() == ["c"]
     assert counts == {"locations": 3, "dropped_comid": 1, "dropped_distance_only": 1, "kept": 1}
-
-
-def test_ind_prepare_stage_is_pending() -> None:
-    with pytest.raises(NotImplementedError, match="P6-D10 step 5"):
-        ind_main([])
