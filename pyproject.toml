@@ -141,6 +141,7 @@ markers = [
     "unit: fast configuration and schema tests (Phase 4+)",
     "physics: physical-invariant and E1-E5 reference tests (Phase 7)",
     "slow: long-running tests",
+    "integration: read-only checks of the frozen data artefacts; skipped without data (Phase 7)",
 ]
 xfail_strict = true
 filterwarnings = ["error"]
