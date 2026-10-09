@@ -1002,3 +1002,28 @@ The tolerances of P7-D5 (c), applied by `tests/physics/` and `tests/unit/`:
 - **O5 Closed end of η (P7-A1 (a), P7-A2 (a), P7-A3 (a)).** Prop 2.7 gives η < 1 in exact arithmetic. At extreme aspect ratios (β ≳ 1e7) the exact 1 − η falls to the order of the float64 epsilon ε = 2⁻⁵². The computed η = βF_β/F (two 513-node sums, log1p, one division) then rounds to 1 or slightly above, so D = 5/3 − (2/3)η and ∂ℓ/∂q = 1/D reach the closed end. Rule (two-sided, row by row): every row with float η ≥ 1 − 4ε must satisfy |η_float − η_mp| ≤ 4ε (8.9e-16), with η_mp the mpmath η at the row's β. Those rows, and only those, may show η ∈ [1, 1 + 4ε], D ∈ [1 − (8/3)ε, 1], ∂ℓ/∂q ∈ [1, 1/(1 − 3ε)] (∂ln V/∂q correspondingly at or just below 0). Every other row keeps the strict bounds of Theorem 4.1 and Props 2.7, 3.1. Measured worst case (363 rows, 11 values of r × β ∈ [1e4, 1e12]): |η_float − η_mp| = 2ε; 39 rows give η ∈ (1, 1 + 2ε]; min D = 1 − ε > 0, so the gradient stays finite. Reproducers (r = ½, n = 0.6, S = S_floor): W = 1 m, Q_E = e¹¹ (β = 1.1e8, 1 − η = 2.6e-17, computed η = 1.0); W = e^−2.28125 m, Q_E = e⁴ (1 − η = 1.65e-16, computed η = 1.0, 0.74ε from exact); W = e^−2.25 m, Q_E = e⁶ (1 − η = 3.6e-18, computed η = 1 + ε). No `src/` change. This mirrors docs/2 Theorem 4.1 invariant 7 (open in exact arithmetic, closed in floating point).
 - **O6 Ensemble roughness (Prop 9.2, full κ).** Members satisfy ν_m = (5/3)ℓ_m + w_m + (2/3)k_m + s/2 − q − ρ_m with |ρ_m| ≤ (5/3)τ_ℓ. The checked bound is |ν* − ν̄| ≤ (2/3)·ln(1 + 2δ_max) + (5/3)·τ_ℓ + 16ε·Σ|terms|, where δ_max is the largest d_max/W over the members and the mean member.
 - **O7 Exact mixture quantile (§9.3).** The bisection stops at width tol·(1 + |x|) with tol = 1e-12. Ψ is Lipschitz with constant ≤ 1/(√(2π)·σ_min), so |Ψ(Q_p) − p| ≤ tol·(1 + |Q_p|)/(√(2π)·σ_min) + 4ε, with Ψ evaluated by SciPy as the independent oracle.
+
+### 12.4 Gradient verification: operationalizations and acceptance (Batch B) [ADL-104]
+
+- **O8 Closed-end Jacobian bounds (P7-B1 (a)).** Only on O5 rows (§12.3), the η → 1 end of each docs/2 Theorem 8.2 / Prop 3.6 bound is evaluated on the O5 interval η ∈ [1, 1 + 4ε], D ∈ [1 − (8/3)ε, 1] and rounded up with `np.nextafter`: 1/D ≤ 1/(1 − 3ε); |∂ℓ/∂z_W| ≤ (5/3 + (8/3)ε)/(1 − 3ε); ∂ℓ/∂z_n ≤ (Δ_n/4)/(1 − 3ε); |∂ln A/∂z_W| ≤ the z_W bound − 1. The Corollary 8.3 ‖J‖_F² bound uses these values on the same rows. Every other row keeps the strict bounds. Evidence: ∂ℓ/∂z_W = −1.6666666666666667 and |∂ln A/∂z_W| = 0.6666666666666667 occur only on O5 rows. No `src/` change.
+- **O9 Saturated logistic (P7-B2 (a)).** Where float σ(z) rounds to 0 or 1 (z ≳ 36.7 or z ≲ −745), dν/dz_n, ∂ℓ/∂z_n, ∂ℓ/∂z_r and ∂t/∂z_r are exactly 0: finite, never NaN (docs/2 Prop 3.6 table). Elsewhere they are strictly positive (z_n) or non-zero (∂t/∂z_r). Evidence: 826 of 20,000 rows with z ~ U[−40, 40]. Tests use the atoms ±40 and ±1000. No `src/` change.
+- **A3.1 acceptance (P7-B3 (a); docs/2 §3.3).** `test_a31_finite_difference_study` (`slow`; 240-row grid W × r × n × Q_E × S) writes `reports/a31_fd_study.json` (sorted keys, no timestamps, values to 7 significant digits, `params_sha256`). Acceptance:
+  - least-squares log-log slope of the maximum IFT-gradient error against τ_ℓ ∈ {1e-4, …, 1e-12} (reference τ_ℓ = 1e-14, K_max = 400) ≥ 0.95;
+  - per row, err(τ_ℓ) ≤ 1.05·L_g·|ℓ − ℓ*| + 1e-14, with L_g the largest change of the Algorithm Φ backward per unit root offset over δ ∈ ±{1e-4, …, 1e-12};
+  - tight IFT gradient vs central FD (h = 1e-5) ≤ 1e-6;
+  - FD second derivatives of k in (ln a, r) at h = 1e-3 and 5e-4 on ln a ∈ [−12, 4] × r ∈ {½, …, 10}: maxima finite and step-consistent within 1e-4 relative.
+  - Measured: slope 0.9963, C = max err/τ_ℓ = 0.280, L_g = 0.517, FD error 3.6e-10, max |k_aa|, |k_ar|, |k_rr| = 0.494, 0.549, 3.56 with step differences ≤ 1.7e-6 relative. A3.1 holds empirically on this grid (it stays unproven in docs/2).
+- **First-order-only contract (P7-B4 (a), supersedes the mechanism of P7-Q1 (a)).** `once_differentiable` raised only on the `.backward()` route. Under `torch.autograd.grad(..., inputs=...)` with `create_graph=True` it returned silently wrong second derivatives: d²(ℓ²)/dq² = 0 against FD 0.7108 via `phi()`, and d²(ρ²)/dℓ² = 5.235 against ≈ 2D² = 4.93 via M4's R_M. `ManningPhi.backward` and `_LogKappa.backward` now call `forbid_create_graph`, which raises `RuntimeError` ("first order only") whenever grad mode is on inside the backward. First-order values are bit-identical. No model, loss or script uses `create_graph`.
+- **Tolerances added to §12.1:**
+
+  | Check | Tolerance |
+  |---|---|
+  | `gradcheck` (Φ full output wrt (w, ν, ln r, q, s); A1; `log_kappa` wrt (ℓ, w, ln r)) | eps 1e-6, atol 1e-6, rtol 1e-4; τ_ℓ = 1e-14 |
+  | IFT gradient vs one-step surrogate (Prop 8.4) | ≤ τ_Q per row (maximum over the five inputs) |
+  | IFT gradient vs mpmath Prop 3.3 partials at Φ's root | ≤ τ_Q (τ_ℓ = 1e-14) |
+  | r = ½ root vs Prop 2.4 (d) closed form (mpmath) | ≤ τ_Q |
+  | D vs mpmath 1 + (2/3)(1 − η) | ≤ (2/3)·τ_Q |
+  | η → 1 limit (Prop 3.6 table) | (1 − η)_mp > 0 and contracted ≥ 1e3 from q = 2 to 14 at W = 1 m (a witness of the limit; docs/2 gives no rate at finite q) |
+  | Theorem 8.2 | strict bounds; O8 on O5 rows; O9 where σ rounds |
+  | Corollary 8.3 | ‖J‖_F² ≤ 1 + 25/9 + Δ_n²/16 + Δ_r²/9 + Δ_r²/(16(1 + r_min)²) at the params bands (E8's 2.349 uses the provisional bands of docs/2 §1.3); O8 variant on O5 rows |
+  | 100-pass sweep (every torch ladder member, 14 configurations) | finite objective, finite gradients, global gradient norm > 0 |
