@@ -2643,7 +2643,7 @@
  ],
  "header": {
   "git": {
-   "commit": "279a49e63b3d309db8e7b672afcb9311dc58d83b",
+   "commit": "8fe8be54f141b880f75efb566d28a6243851ea65",
    "dirty": false
   },
   "packages": {
@@ -2770,10 +2770,10 @@
    "rows": 20000
   },
   "phi_timing_ms_1_thread": {
-   "B1024_forward_backward_ms": 21.038689598208293,
-   "B1024_forward_ms": 20.9852707979735,
-   "B256_forward_backward_ms": 6.479616655269638,
-   "B256_forward_ms": 6.479408347513527
+   "B1024_forward_backward_ms": 22.14088750188239,
+   "B1024_forward_ms": 21.938074997160584,
+   "B256_forward_backward_ms": 6.787656247615814,
+   "B256_forward_ms": 6.684147950727493
   },
   "quad_grid_points": 575,
   "quad_level_study_max_rel": {
@@ -2797,15 +2797,15 @@
   "quad_min_passing_level_at_params_trunc": 6
  },
  "seconds": {
-  "e2e": 6.031462000100873,
-  "ensemble": 0.08321612502913922,
-  "grad": 0.11963587498757988,
-  "hand": 0.16430366702843457,
-  "isolation": 1.5157209590543061,
-  "losses": 5.041478166938759,
-  "phi": 1.7325142500922084,
-  "quad": 38.84501775004901,
-  "rungs": 0.6700834999792278
+  "e2e": 5.470195541973226,
+  "ensemble": 0.08780366706196219,
+  "grad": 0.12624695803970098,
+  "hand": 0.16790091595612466,
+  "isolation": 1.7368529579835013,
+  "losses": 5.263844333007,
+  "phi": 1.8268724579829723,
+  "quad": 40.158340957947075,
+  "rungs": 0.721925999969244
  },
  "summary": {
   "n_checks": 330,

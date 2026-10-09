@@ -1,0 +1,116 @@
+{
+ "C_max_err_over_tau": 0.2803735,
+ "L_g": 0.5169198,
+ "acceptance": {
+  "fd_tol": 1e-06,
+  "hessian_rel_tol": 0.0001,
+  "row_abs": 1e-14,
+  "row_factor": 1.05,
+  "slope_min": 0.95
+ },
+ "fd_check": {
+  "h": 1e-05,
+  "max_abs_err": 3.626812e-10,
+  "tol": 1e-06
+ },
+ "grid": {
+  "Q_E_m3s": [
+   0.1,
+   10.0,
+   1000.0
+  ],
+  "S": [
+   1e-05,
+   0.001
+  ],
+  "W_m": [
+   1.0,
+   10.0,
+   100.0,
+   1000.0
+  ],
+  "n": [
+   0.02,
+   0.1
+  ],
+  "r": [
+   0.5,
+   1.0,
+   2.0,
+   5.0,
+   10.0
+  ],
+  "rows": 240
+ },
+ "k_second_derivatives": {
+  "grid": {
+   "ln_a": [
+    -12.0,
+    4.0,
+    33
+   ],
+   "r": [
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    10.0
+   ]
+  },
+  "max_abs": {
+   "0.0005": {
+    "k_aa": 0.4935908,
+    "k_ar": 0.549233,
+    "k_rr": 3.555552
+   },
+   "0.001": {
+    "k_aa": 0.4935907,
+    "k_ar": 0.5492333,
+    "k_rr": 3.555558
+   }
+  },
+  "rel_step_diff": {
+   "k_aa": 1.206738e-07,
+   "k_ar": 5.8027e-07,
+   "k_rr": 1.666419e-06
+  }
+ },
+ "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+ "slope_loglog": 0.9962786,
+ "study": "A3.1 finite-difference study (docs/2 3.3; P7-D8 (a), P7-B3 (a))",
+ "tau_sweep": [
+  {
+   "err_over_tau": 0.21388,
+   "max_grad_err": 2.1388e-05,
+   "max_root_offset": 9.667761e-05,
+   "tau_l": 0.0001
+  },
+  {
+   "err_over_tau": 0.2278407,
+   "max_grad_err": 2.278407e-07,
+   "max_root_offset": 9.8993e-07,
+   "tau_l": 1e-06
+  },
+  {
+   "err_over_tau": 0.2249928,
+   "max_grad_err": 2.249928e-09,
+   "max_root_offset": 9.840986e-09,
+   "tau_l": 1e-08
+  },
+  {
+   "err_over_tau": 0.2803735,
+   "max_grad_err": 2.803735e-11,
+   "max_root_offset": 9.859402e-11,
+   "tau_l": 1e-10
+  },
+  {
+   "err_over_tau": 0.2100542,
+   "max_grad_err": 2.100542e-13,
+   "max_root_offset": 9.734435e-13,
+   "tau_l": 1e-12
+  }
+ ]
+}
