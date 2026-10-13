@@ -31,15 +31,26 @@ Implementation choices (ADL-106; PI decisions 2026-10-09):
   ``Q3 + 1.5 IQR`` (``numpy.percentile``, linear).
 
 Torch-free and xgboost-free (import-isolation test). Owning phase: 7 (P7-D1 (a)).
+
+Phase 8 additions (docs/3 13.9, ADL-117; known-answer tests before Event 1):
+- W2 with co-located sites: pairs at ``d_ij = 0`` get weight 0 in W2 and are counted
+  (:func:`colocated_pairs`); W1 is unchanged. This replaces the Phase 7 refusal on ``1/0``.
+- AOA importance (:func:`permutation_importance`): for each M2-XGB member, on its ``es_val``
+  rows, ``AOA_PERMUTATIONS`` permutations per feature drawn from
+  ``default_rng(SeedSequence([member_seed, feature_index]))``; importance = the mean increase in
+  the d-bar log-RMSE, averaged over members, negative values set to 0. The booster enters as a
+  ``predict`` callable, so this module stays xgboost-free.
+- Nested-basin BFS: :func:`nested_status` is unchanged; its inputs from the raw ``nhdplusv21``
+  unit are built by :func:`src.data.nhdplus.network_inputs`.
 """
 
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from itertools import pairwise
-from typing import Literal
+from typing import Final, Literal
 
 import numpy as np
 from esda.moran import Moran_Local
@@ -54,7 +65,9 @@ from scipy.spatial.distance import cdist, pdist
 from src.config import AuditParams, AuditRulesParams
 
 __all__ = [
+    "AOA_PERMUTATIONS",
     "AuditLabel",
+    "ImportanceMember",
     "LisaResult",
     "MoranResult",
     "NestedResult",
@@ -64,6 +77,7 @@ __all__ = [
     "aoa_threshold",
     "audit_label",
     "band_weights",
+    "colocated_pairs",
     "correlogram",
     "dependence_radius",
     "dissimilarity_index",
@@ -77,6 +91,7 @@ __all__ = [
     "moran_global",
     "nearest_distance",
     "nested_status",
+    "permutation_importance",
     "practical_range",
     "select_variogram",
     "training_cv_di",
@@ -88,6 +103,8 @@ BoolArray = NDArray[np.bool_]
 VgmName = Literal["spherical", "exponential", "nugget"]
 QUADRANTS = {1: "HH", 2: "LH", 3: "LL", 4: "HL"}  # esda Moran_Local.q, geoda_quads=False
 VGM_TOL = 1e-12  # least-squares termination tolerances (scipy default 1e-8 is too loose)
+#: docs/3 13.9: permutations per feature and member for the AOA importance.
+AOA_PERMUTATIONS: Final[int] = 10
 
 
 # ----------------------------------------------------------------------------- helpers
@@ -119,16 +136,17 @@ def knn_w(coords_km: ArrayLike, k: int) -> W:
 def idw_weights(coords_km: ArrayLike, band_km: float) -> tuple[sparse.csr_array, NDArray[np.int64]]:
     """W2: ``1/d_ij`` for ``0 < d_ij <= band``, row-standardized; returns ``(W, isolates)``.
 
-    Isolates (no neighbour within the band) keep a zero row (protocol 3.6.2). Raises on
-    coincident sites (``1/0``).
+    Isolates (no neighbour within the band) keep a zero row (protocol 3.6.2). Co-located pairs
+    (``d_ij = 0``) get weight 0 (docs/3 13.9); count them with :func:`colocated_pairs`. A site
+    whose only neighbours within the band are co-located is an isolate.
     """
     xy = _coords(coords_km)
     n = xy.shape[0]
     pairs = cKDTree(xy).query_pairs(r=band_km, output_type="ndarray")
     i, j = pairs[:, 0], pairs[:, 1]
     d = np.linalg.norm(xy[i] - xy[j], axis=1)
-    if bool((d == 0).any()):
-        raise ValueError("coincident sites: inverse-distance weight undefined")
+    pos = d > 0
+    i, j, d = i[pos], j[pos], d[pos]
     rows = np.concatenate([i, j])
     cols = np.concatenate([j, i])
     vals = np.concatenate([1.0 / d, 1.0 / d])
@@ -137,6 +155,12 @@ def idw_weights(coords_km: ArrayLike, band_km: float) -> tuple[sparse.csr_array,
     isolates = np.flatnonzero(rs == 0).astype(np.int64)
     scale = np.divide(1.0, rs, out=np.zeros_like(rs), where=rs > 0)
     return sparse.csr_array(sparse.diags_array(scale) @ mat), isolates
+
+
+def colocated_pairs(coords_km: ArrayLike) -> int:
+    """Count unordered site pairs at distance exactly 0 (weight 0 in W2; docs/3 13.9)."""
+    xy = _coords(coords_km)
+    return int(cKDTree(xy).query_pairs(r=0.0, output_type="ndarray").shape[0])
 
 
 def band_weights(coords_km: ArrayLike, lower_km: float, upper_km: float) -> sparse.csr_array:
@@ -549,3 +573,64 @@ def aoa_threshold(train_di: ArrayLike, rules: AuditRulesParams) -> float:
         raise ValueError("train_di must be a non-empty finite 1-D array")
     q1, q3 = np.percentile(d, [25.0, 75.0])
     return float(q3 + rules.aoa_iqr_mult * (q3 - q1))
+
+
+@dataclass(frozen=True)
+class ImportanceMember:
+    """One M2-XGB member for the AOA importance (docs/3 13.9).
+
+    ``predict`` maps a predictor matrix to log d-bar predictions (the member's d-bar booster);
+    ``x`` and ``y_log`` are the member's ``es_val`` rows; ``seed`` is its ADL-088 member seed.
+    """
+
+    predict: Callable[[FloatArray], FloatArray]
+    x: FloatArray
+    y_log: FloatArray
+    seed: int
+
+
+def _log_rmse(pred: FloatArray, y: FloatArray) -> float:
+    p = np.asarray(pred, dtype=np.float64)
+    if p.shape != y.shape or not bool(np.isfinite(p).all()):
+        raise ValueError("predict must return finite values, one per row")
+    return math.sqrt(float(np.mean((p - y) ** 2)))
+
+
+def permutation_importance(
+    members: Sequence[ImportanceMember], permutations: int = AOA_PERMUTATIONS
+) -> FloatArray:
+    """AOA importance per feature: mean d-bar log-RMSE increase under permutation (3.6.6).
+
+    docs/3 13.9: for member ``m`` and feature ``f`` the generator is
+    ``default_rng(SeedSequence([seed_m, f]))`` and draws ``permutations`` row permutations in
+    turn; feature ``f`` of the ``es_val`` rows is replaced by its permuted copy. The increase over
+    the unpermuted log-RMSE is averaged over permutations, then over members; negative averages
+    are set to 0.
+    """
+    if not members:
+        raise ValueError("need at least one member")
+    if permutations < 1:
+        raise ValueError("permutations must be >= 1")
+    n_feat = -1
+    per_member: list[FloatArray] = []
+    for mem in members:
+        x = np.asarray(mem.x, dtype=np.float64)
+        y = np.asarray(mem.y_log, dtype=np.float64)
+        if x.ndim != 2 or x.shape[0] < 2 or y.shape != (x.shape[0],):
+            raise ValueError("member x must be (N >= 2, F) and y_log (N,)")
+        if not bool(np.isfinite(y).all()):
+            raise ValueError("y_log contains non-finite values")
+        if n_feat not in (-1, x.shape[1]):
+            raise ValueError("members disagree on the number of features")
+        n_feat = x.shape[1]
+        base = _log_rmse(mem.predict(x), y)
+        inc = np.zeros(n_feat)
+        for f in range(n_feat):
+            rng = np.random.default_rng(np.random.SeedSequence([int(mem.seed), f]))
+            for _ in range(permutations):
+                xp = x.copy()
+                xp[:, f] = x[rng.permutation(x.shape[0]), f]
+                inc[f] += _log_rmse(mem.predict(xp), y) - base
+        per_member.append(inc / permutations)
+    out: FloatArray = np.maximum(np.mean(np.stack(per_member), axis=0), 0.0)
+    return out

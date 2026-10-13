@@ -648,8 +648,11 @@ def test_idw_weights_hand_values_and_isolates() -> None:
     assert worst <= TIGHT, f"3.6.2 W2 row 0: max |err| {worst:.3e}; row {dense[0]}"
     assert iso.tolist() == [3], f"3.6.2 isolates {iso.tolist()}"
     assert float(dense[3].sum()) == 0.0
-    with pytest.raises(ValueError, match="coincident"):
-        da.idw_weights(np.array([[0.0, 0.0], [0.0, 0.0]]), 100.0)
+    # docs/3 13.9 (supersedes the Phase 7 refusal): co-located pairs get weight 0 and are counted
+    w2c, isoc = da.idw_weights(np.array([[0.0, 0.0], [0.0, 0.0]]), 100.0)
+    assert w2c.nnz == 0
+    assert isoc.tolist() == [0, 1]
+    assert da.colocated_pairs(np.array([[0.0, 0.0], [0.0, 0.0]])) == 1
 
 
 def test_correlogram_classes_are_lower_open_upper_closed() -> None:
