@@ -192,6 +192,7 @@ def cmd_run(settings: Settings, args: argparse.Namespace, log: logging.Logger) -
     git = git_state(rt.repo_root)
     if git["dirty"] and not args.allow_dirty:
         raise RuntimeError("the git tree is dirty; production fits need a clean tree")
+    needs_srnd = any(f.stage == args.stage and f.family == "S-RND" for f in built.fits)
     ctx = RunContext(
         params_path=str(settings.params_path),
         site_path=str(built.paths["site_table"]),
@@ -201,6 +202,8 @@ def cmd_run(settings: Settings, args: argparse.Namespace, log: logging.Logger) -
         site_sha256=built.hashes["site_table"],
         fold_sha256=built.hashes["fold_table"],
         log_level=rt.log_level,
+        srnd_path=str(built.paths["srnd_frame"]) if needs_srnd else "",
+        srnd_sha256=built.hashes["srnd_frame"] if needs_srnd else "",
     )
     code = 0
     with keep_awake():

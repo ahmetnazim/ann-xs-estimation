@@ -17,7 +17,14 @@ values). Every training and validation part is checked to be disjoint from the t
 
 Importing this module never loads torch or xgboost (ADL-051): the NN and M6-XGB paths import
 torch inside their functions; the M1 / M2-XGB path refuses to run in a process that holds torch.
-Owning phase: 6.
+
+S-RND (docs/3 13.6, Phase 8 Batch C2): :func:`run_srnd_member` trains M1 and M2-XGB members on
+every S-RND training row of the row-level ``srnd_frame`` (unweighted; the test rows are blanked
+first). The table has no inner or ES columns, so the hyperparameters per target are the grid
+point selected most often over the primary S-ID blocks (ties to the lower index) and the number
+of rounds is the median, rounded half up, of ``best_iteration + 1`` over the primary S-ID
+members of the same model and target.
+Owning phase: 6 (S-RND: 8).
 """
 
 from __future__ import annotations
@@ -37,10 +44,18 @@ import pandas as pd
 
 from src.config import ProtocolParams, Settings
 from src.data.folds import ANALYSES, analysis_frame, fit_provenance, get_view
-from src.data.io import sha256_file
+from src.data.io import read_parquet_meta, sha256_file
 from src.data.normstats import NormStats
 from src.evaluation.metrics import rmse_log
-from src.models.baselines import M0PowerLaw, MNull, XgbHyper, blind_features, log_targets
+from src.models.baselines import (
+    LOG_TARGETS,
+    M1_TARGETS,
+    M0PowerLaw,
+    MNull,
+    XgbHyper,
+    blind_features,
+    log_targets,
+)
 from src.models.registry import (
     WARM_START_MODELS,
     FitKind,
@@ -59,13 +74,18 @@ __all__ = [
     "BASELINES",
     "BASELINE_FILE",
     "SELECTION_FILE",
+    "SRND_MODELS",
     "FitRequest",
     "Tables",
     "baseline_dir",
+    "round_half_up",
     "run_baseline",
     "run_fit",
     "run_select",
+    "run_srnd_member",
     "selection_analysis",
+    "srnd_hyper_mode",
+    "srnd_rounds",
 ]
 
 SELECTION_FILE: Final[str] = "selection.json"
@@ -76,6 +96,8 @@ _RUN: Final[str] = "run.json"
 _NN_TARGETS: Final[tuple[str, ...]] = ("W", "dbar", "t", "A")
 _BLANKED: Final[tuple[str, ...]] = ("W", "dbar", "dmax", "A", "t_obs", "Q_E", "Q_C", "S", "V_E")
 _UNSUPPORTED_FAMILIES: Final[frozenset[str]] = frozenset({"S-RND"})
+#: Models trained on S-RND (P8-D8 (b)).
+SRND_MODELS: Final[tuple[str, ...]] = ("M1", "M2-XGB")
 
 
 @dataclass(frozen=True)
@@ -100,7 +122,7 @@ class FitRequest:
         if self.analysis not in ANALYSES:
             raise ValueError(f"unknown analysis {self.analysis!r}")
         if self.family in _UNSUPPORTED_FAMILIES:
-            raise ValueError("S-RND uses its own row-level table; not trained in Phase 6")
+            raise ValueError("S-RND uses its own row-level table (run_srnd_member, docs/3 13.6)")
         if self.kind == "inner" and self.grid is None:
             raise ValueError("inner fits need --grid")
         if self.kind == "inner" and self.spec.ablation is not None:
@@ -111,21 +133,36 @@ class FitRequest:
 
 @dataclass(frozen=True)
 class Tables:
-    """The frozen site and fold tables and their SHA-256 (``folds.fit_provenance``)."""
+    """The frozen site and fold tables and their SHA-256 (``folds.fit_provenance``).
+
+    ``srnd_frame`` (docs/3 13.6) is optional; it is loaded only when an S-RND path is given, and
+    its provenance must name the same ``site_table.parquet``.
+    """
 
     site_table: pd.DataFrame
     folds: pd.DataFrame
     site_sha256: str
     fold_sha256: str
+    srnd_frame: pd.DataFrame | None = None
+    srnd_sha256: str | None = None
 
     @classmethod
-    def load(cls, site_path: Path, fold_path: Path) -> Tables:
-        """Read both parquet files and hash their bytes (``src.data.io.sha256_file``)."""
+    def load(cls, site_path: Path, fold_path: Path, srnd_path: Path | None = None) -> Tables:
+        """Read the parquet files and hash their bytes (``src.data.io.sha256_file``)."""
+        site_sha = sha256_file(site_path)
+        srnd, srnd_sha = None, None
+        if srnd_path is not None:
+            meta = read_parquet_meta(srnd_path)
+            if meta.get("inputs", {}).get("site_table.parquet") != site_sha:
+                raise ValueError("srnd_frame was not built from this site_table")
+            srnd, srnd_sha = pd.read_parquet(srnd_path), sha256_file(srnd_path)
         return cls(
             site_table=pd.read_parquet(site_path),
             folds=pd.read_parquet(fold_path),
-            site_sha256=sha256_file(site_path),
+            site_sha256=site_sha,
             fold_sha256=sha256_file(fold_path),
+            srnd_frame=srnd,
+            srnd_sha256=srnd_sha,
         )
 
 
@@ -688,6 +725,187 @@ def run_baseline(
         "site_table_sha256": tables.site_sha256,
         "fold_table_sha256": tables.fold_sha256,
         "rows": {"train": int(train.size), "test_blanked": int(test.size)},
+        "wall_s": time.perf_counter() - start,
+    }
+    write_json(out_dir / _RUN, doc)
+    return doc
+
+
+# ----------------------------------------------------------------------------- S-RND
+def round_half_up(x: float) -> int:
+    """``floor(x + 1/2)`` (docs/3 13.6: the median of the rounds, rounded half up)."""
+    if not math.isfinite(x):
+        raise ValueError("cannot round a non-finite value")
+    return math.floor(x + 0.5)
+
+
+def srnd_hyper_mode(
+    selections: list[dict[str, Any]], targets: tuple[str, ...]
+) -> dict[str, dict[str, Any]]:
+    """Grid point selected most often per target over the S-ID ``selection.json`` documents.
+
+    Ties go to the lower grid index (docs/3 13.6). Returns ``{target: {"grid", "votes"}}`` with
+    the votes keyed by grid index (as strings, JSON).
+    """
+    if not selections:
+        raise ValueError("no S-ID selections")
+    out: dict[str, dict[str, Any]] = {}
+    for t in targets:
+        votes: dict[int, int] = {}
+        for doc in selections:
+            g = int(doc["targets"][t]["selected"])
+            votes[g] = votes.get(g, 0) + 1
+        best = min(votes, key=lambda g: (-votes[g], g))
+        out[t] = {"grid": best, "votes": {str(g): votes[g] for g in sorted(votes)}}
+    return out
+
+
+def srnd_rounds(
+    members: list[dict[str, Any]], targets: tuple[str, ...]
+) -> dict[str, dict[str, Any]]:
+    """Median of ``best_iteration + 1`` per target over the S-ID members, rounded half up.
+
+    Returns ``{target: {"rounds", "median", "n_members"}}`` (docs/3 13.6).
+    """
+    if not members:
+        raise ValueError("no S-ID members")
+    out: dict[str, dict[str, Any]] = {}
+    for t in targets:
+        n_trees = np.asarray([int(m["fit"][t]["best_iteration"]) + 1 for m in members], dtype=float)
+        median = float(np.median(n_trees))
+        out[t] = {"rounds": round_half_up(median), "median": median, "n_members": len(members)}
+    return out
+
+
+def _srnd_sources(
+    model: str, tables: Tables, settings: Settings, root: Path, targets: tuple[str, ...]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
+    """Primary S-ID selections and members of ``model``, checked against params and tables."""
+    spec = ModelSpec(model)
+    sid = tables.folds.loc[tables.folds["family"].eq("S-ID"), ["repeat", "outer_fold"]]
+    blocks = sorted({(int(r), int(f)) for r, f in sid.itertuples(index=False)})
+    if not blocks:
+        raise ValueError("the fold table has no S-ID block")
+    want = (settings.params_sha256, tables.site_sha256, tables.fold_sha256)
+    selections, members, paths = [], [], []
+    m_total = settings.protocol.uq.ensemble_m
+    for r, f in blocks:
+        sel_path = block_dir(root, spec, "primary", "S-ID", r, f) / SELECTION_FILE
+        if not sel_path.is_file():
+            raise FileNotFoundError(f"S-RND needs {sel_path.relative_to(root)}")
+        sel = read_json(sel_path)
+        got = (sel.get("params_sha256"), sel.get("site_table_sha256"), sel.get("fold_table_sha256"))
+        if sel.get("kind") != "xgb" or got != want or sorted(sel["targets"]) != sorted(targets):
+            raise ValueError(f"{sel_path.relative_to(root)} does not match this run")
+        selections.append(sel)
+        paths.append(sel_path.relative_to(root).as_posix())
+        for m in range(1, m_total + 1):
+            run_path = fit_dir(root, spec, "primary", "S-ID", r, f, "member", m) / _RUN
+            if not run_path.is_file():
+                raise FileNotFoundError(f"S-RND needs {run_path.relative_to(root)}")
+            doc = read_json(run_path)
+            head = doc["header"]
+            got = (head["params_sha256"], doc["site_table_sha256"], doc["fold_table_sha256"])
+            ids = (head["spec"], head["analysis"], head["family"], head["kind"], head["index"])
+            if got != want or ids != (model, "primary", "S-ID", "member", m):
+                raise ValueError(f"{run_path.relative_to(root)} does not match this run")
+            members.append(doc)
+    return selections, members, paths
+
+
+def run_srnd_member(
+    model: str,
+    index: int,
+    tables: Tables,
+    settings: Settings,
+    root: Path,
+    *,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    """Train S-RND member ``index`` of M1 or M2-XGB on every S-RND training row (docs/3 13.6).
+
+    Seed ``fit_seed(seeds, "S-RND", 0, 0, "member", index)``; unweighted; the test rows of the
+    frame are blanked before anything is read. M1 uses raw-metre ``W`` and ``dbar`` (rows missing
+    an M1 predictor dropped), M2-XGB the log targets. Writes ``booster_<target>.json`` and then
+    ``run.json`` under ``<model>/primary/S-RND/r0/f0/member_<index>``.
+    """
+    if model not in SRND_MODELS:
+        raise ValueError(f"S-RND trains {SRND_MODELS} only (P8-D8 (b))")
+    if not 1 <= index <= settings.protocol.uq.ensemble_m:
+        raise ValueError("members are numbered 1..M")
+    if tables.srnd_frame is None or tables.srnd_sha256 is None:
+        raise ValueError("S-RND fits need the srnd_frame table (docs/3 13.3 stage 0b)")
+    start = time.perf_counter()
+    protocol = settings.protocol
+    spec = ModelSpec(model)
+    out_dir = fit_dir(root, spec, "primary", "S-RND", 0, 0, "member", index)
+    _check_overwrite(out_dir, overwrite)
+    targets = M1_TARGETS if model == "M1" else LOG_TARGETS
+    selections, members, sources = _srnd_sources(model, tables, settings, root, targets)
+    mode = srnd_hyper_mode(selections, targets)
+    rounds = srnd_rounds(members, targets)
+    if "torch" in sys.modules:
+        raise RuntimeError("M1 / M2-XGB must run in a process without torch (ADL-051)")
+    from src.models.baselines import fit_booster_rounds
+
+    features = spec.features(protocol)
+    frame = tables.srnd_frame.copy()
+    test = frame["is_test"].astype(bool).to_numpy()
+    cols = sorted({*features, *targets})
+    frame[cols] = frame[cols].astype(np.float64)
+    frame.loc[test, cols] = np.nan  # test rows unreadable from here on (P6-D1)
+    train = np.flatnonzero(~test)
+    extras: dict[str, Any] = {}
+    if model == "M1":  # R14 "M1 only" (protocol 2.3)
+        missing = frame["F_M1_missing"].astype(bool).to_numpy()
+        extras["m1_missing_dropped"] = {"train": int(missing[train].sum())}
+        train = train[~missing[train]]
+    seed = fit_seed(protocol.seeds, "S-RND", 0, 0, "member", index)
+    seed_python_numpy(seed)
+    grid = xgb_grid_for(protocol, model)
+    x_tr = frame.iloc[train][list(features)].to_numpy(dtype=np.float64)
+    boosters: dict[str, Any] = {}
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for name in targets:
+        raw = frame.iloc[train][name].to_numpy(dtype=np.float64)
+        y_tr = raw if model == "M1" else np.log(raw)
+        hyper = grid[mode[name]["grid"]]
+        n_rounds = int(rounds[name]["rounds"])
+        bf = fit_booster_rounds(x_tr, y_tr, hyper, protocol.model.xgb, rounds=n_rounds, seed=seed)
+        (out_dir / f"booster_{name}.json").write_bytes(bf.model_json)
+        boosters[name] = {
+            "hyper": asdict(hyper),
+            "grid": mode[name]["grid"],
+            "rounds": n_rounds,
+            "best_iteration": bf.best_iteration,
+        }
+    ids = {
+        "spec": model,
+        "analysis": "primary",
+        "family": "S-RND",
+        "repeat": 0,
+        "outer_fold": 0,
+        "kind": "member",
+        "index": index,
+        "grid": None,
+    }
+    doc = {
+        "header": run_header(settings.params_sha256, settings.runtime.repo_root, **ids),
+        "site_table_sha256": tables.site_sha256,
+        "fold_table_sha256": tables.fold_sha256,
+        "srnd_frame_sha256": tables.srnd_sha256,
+        "seed": seed,
+        "hyper_source": {
+            "kind": "srnd_mode",
+            "selections": sources,
+            "votes": {t: mode[t]["votes"] for t in targets},
+            "rounds": rounds,
+        },
+        "features": list(features),
+        "rows": {"train": int(train.size), "test_blanked": int(test.sum())},
+        "fit": boosters,
+        "score": None,
+        "extras": extras,
         "wall_s": time.perf_counter() - start,
     }
     write_json(out_dir / _RUN, doc)

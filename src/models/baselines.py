@@ -57,6 +57,7 @@ __all__ = [
     "blind_features",
     "fit_booster",
     "fit_booster_isolated",
+    "fit_booster_rounds",
     "log_targets",
     "m1_floor",
     "m1_grid",
@@ -376,6 +377,40 @@ def fit_booster(
         best_iteration=int(booster.best_iteration),
         best_score=float(booster.best_score),
     )
+
+
+def fit_booster_rounds(
+    x_tr: np.ndarray,
+    y_tr: np.ndarray,
+    hyper: XgbHyper,
+    xgb: XgbParams,
+    *,
+    rounds: int,
+    seed: int,
+    nthread: int = 1,
+) -> BoosterFit:
+    """Fit one booster for exactly ``rounds`` rounds, without a validation set (docs/3 13.6).
+
+    S-RND has no ES columns, so its rounds are fixed in advance (the median over the primary
+    S-ID members). ``best_iteration = rounds - 1`` so :func:`predict_booster` uses every tree;
+    ``best_score`` is NaN (there is no validation score) and is never written to JSON. Same
+    thread rule as :func:`fit_booster`.
+    """
+    import xgboost  # lazy, see fit_booster
+
+    _check_xy(x_tr, y_tr, "train")
+    if not 1 <= rounds <= xgb.max_rounds:
+        raise ValueError(f"rounds must lie in [1, {xgb.max_rounds}], got {rounds}")
+    with xgboost.config_context(nthread=nthread):
+        d_tr = xgboost.DMatrix(x_tr, label=y_tr, nthread=nthread)
+        booster = xgboost.train(
+            _booster_params(hyper, xgb, seed, nthread),
+            d_tr,
+            num_boost_round=rounds,
+            verbose_eval=False,
+        )
+        model_json = bytes(booster.save_raw(raw_format="json"))
+    return BoosterFit(model_json=model_json, best_iteration=rounds - 1, best_score=math.nan)
 
 
 def predict_booster(fit: BoosterFit, x: np.ndarray, *, nthread: int = 1) -> np.ndarray:

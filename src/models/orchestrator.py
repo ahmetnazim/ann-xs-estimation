@@ -44,7 +44,14 @@ from src.config import Settings, load_settings
 from src.evaluation.ledger import Ledger, LedgerError
 from src.models.plan import NN_STAGES, STAGES, PlannedFit, dependency_map
 from src.models.registry import ModelSpec, read_json, write_json
-from src.models.runner import FitRequest, Tables, run_baseline, run_fit, run_select
+from src.models.runner import (
+    FitRequest,
+    Tables,
+    run_baseline,
+    run_fit,
+    run_select,
+    run_srnd_member,
+)
 from src.utils.logging import get_logger, git_state
 from src.utils.seeding import fit_seed
 
@@ -95,7 +102,11 @@ class RunFailureError(RuntimeError):
 
 @dataclass(frozen=True)
 class RunContext:
-    """Everything a worker needs, as plain strings (sent as JSON, never pickled objects)."""
+    """Everything a worker needs, as plain strings (sent as JSON, never pickled objects).
+
+    ``srnd_path`` and ``srnd_sha256`` name the S-RND frame (docs/3 13.6); empty when the stage
+    has no S-RND fit.
+    """
 
     params_path: str
     site_path: str
@@ -105,6 +116,8 @@ class RunContext:
     site_sha256: str
     fold_sha256: str
     log_level: str = "INFO"
+    srnd_path: str = ""
+    srnd_sha256: str = ""
 
     def to_json(self) -> str:
         """JSON string for the worker initializer."""
@@ -225,7 +238,7 @@ def execute_fit(
     if fit.kind == "outer":
         run_baseline(fit.model, fit.family, fit.repeat, fit.fold, tables, settings, run_dir)
     elif fit.family == "S-RND":
-        raise NotImplementedError("S-RND fits need the srnd_frame stage (Batch C)")
+        run_srnd_member(fit.model, fit.index, tables, settings, run_dir)
     elif fit.kind == "select":
         run_select(
             ModelSpec(fit.model), fit.analysis, fit.family, fit.repeat, fit.fold, settings, run_dir
@@ -255,9 +268,13 @@ def _init_worker(ctx_json: str, torch_free: bool, file_log: bool = True) -> None
     settings = load_settings(ctx.params_path)
     if settings.params_sha256 != ctx.params_sha256:
         raise RuntimeError("worker params_sha256 differs from the plan")
-    tables = Tables.load(Path(ctx.site_path), Path(ctx.fold_path))
+    tables = Tables.load(
+        Path(ctx.site_path), Path(ctx.fold_path), Path(ctx.srnd_path) if ctx.srnd_path else None
+    )
     if (tables.site_sha256, tables.fold_sha256) != (ctx.site_sha256, ctx.fold_sha256):
         raise RuntimeError("worker table hashes differ from the plan")
+    if ctx.srnd_path and tables.srnd_sha256 != ctx.srnd_sha256:
+        raise RuntimeError("worker srnd_frame hash differs from the plan")
     run_dir = Path(ctx.run_dir)
     if file_log:  # pool workers: one log file each, nothing on the terminal
         logger = logging.getLogger("annxs.worker")
@@ -305,7 +322,7 @@ class _InlineExecutor(Executor):
 
 
 def _seed_of(fit: PlannedFit, settings: Settings) -> int | None:
-    if fit.kind not in ("inner", "member") or fit.family == "S-RND":
+    if fit.kind not in ("inner", "member"):
         return None
     return fit_seed(settings.protocol.seeds, fit.family, fit.repeat, fit.fold, fit.kind, fit.index)
 

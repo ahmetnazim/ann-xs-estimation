@@ -27,7 +27,9 @@ from typing import Any, Final, Literal
 import pandas as pd
 
 from src.config import ProtocolParams
+from src.data.ind_features import ind_features_path
 from src.data.io import sha256_file
+from src.data.srnd_frame import srnd_frame_path
 from src.models.registry import NN_MODELS, XGB_MODELS, nn_grid, xgb_grid_for
 from src.models.runner import BASELINES
 
@@ -238,8 +240,8 @@ def table_paths(processed_dir: Path) -> dict[str, Path]:
         "fold_table": processed_dir / "splits" / "fold_assignment.parquet",
         "srnd_assignment": processed_dir / "splits" / "srnd_assignment.parquet",
         "ehydro_ind": processed_dir / "ind" / "ehydro_ind.parquet",
-        "ind_features": processed_dir / "ind" / "ehydro_ind_features.parquet",
-        "srnd_frame": processed_dir / "srnd" / "srnd_frame.parquet",
+        "ind_features": ind_features_path(processed_dir),
+        "srnd_frame": srnd_frame_path(processed_dir),
     }
 
 

@@ -184,3 +184,27 @@ def test_fit_booster_rejects_bad_input(tmp_path: Path) -> None:
         bl.fit_booster(x.astype(np.float32), y, x, y, hyper, XGB_FAST, seed=0)
     with pytest.raises(ValueError, match="non-finite"):
         bl.fit_booster_isolated(tmp_path, bad, y, x, y, hyper, XGB_FAST, seed=0)
+
+
+def test_fit_booster_rounds_reproduces_the_early_stopped_booster() -> None:
+    """docs/3 13.6: fixed rounds = best_iteration + 1 regrow the early-stopped booster.
+
+    With the same seed the validation set never affects tree growth, so the trees are identical.
+    """
+    x_tr, y_tr = toy(300, 0)
+    x_va, y_va = toy(100, 1)
+    x_te, _ = toy(50, 2)
+    hyper = bl.XgbHyper(max_depth=3, eta=0.3, min_child_weight=1.0)
+    es = bl.fit_booster(x_tr, y_tr, x_va, y_va, hyper, XGB_FAST, seed=11)
+    fixed = bl.fit_booster_rounds(
+        x_tr, y_tr, hyper, XGB_FAST, rounds=es.best_iteration + 1, seed=11
+    )
+    assert fixed.best_iteration == es.best_iteration
+    assert math.isnan(fixed.best_score)
+    assert np.array_equal(bl.predict_booster(fixed, x_te), bl.predict_booster(es, x_te))
+    with pytest.raises(ValueError, match="rounds must lie"):
+        bl.fit_booster_rounds(x_tr, y_tr, hyper, XGB_FAST, rounds=0, seed=1)
+    with pytest.raises(ValueError, match="rounds must lie"):
+        bl.fit_booster_rounds(x_tr, y_tr, hyper, XGB_FAST, rounds=XGB_FAST.max_rounds + 1, seed=1)
+    with pytest.raises(ValueError, match="float64"):
+        bl.fit_booster_rounds(x_tr.astype(np.float32), y_tr, hyper, XGB_FAST, rounds=2, seed=1)
