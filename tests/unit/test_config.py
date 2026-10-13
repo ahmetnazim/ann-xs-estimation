@@ -587,6 +587,7 @@ def test_runtime_defaults(monkeypatch):
     assert runtime.checkpoint_dir == (REPO_ROOT / "data" / "checkpoints").resolve()
     assert runtime.reports_dir == (REPO_ROOT / "reports").resolve()
     assert runtime.dvc_store == (Path.home() / "dvc_store" / "ANN_XS_Estimation").resolve()
+    assert runtime.run_root == (Path.home() / "dvc_store" / "ANN_XS_Estimation" / "runs").resolve()
 
 
 @pytest.mark.parametrize(
@@ -603,6 +604,7 @@ def test_data_dirs_must_be_inside_repo(tmp_path, field):
         _clean_runtime(**{field: tmp_path / "elsewhere"})
 
 
+@pytest.mark.parametrize("field", ["dvc_store", "run_root"])
 @pytest.mark.parametrize(
     "store",
     [
@@ -610,9 +612,14 @@ def test_data_dirs_must_be_inside_repo(tmp_path, field):
         Path.home() / "Library/CloudStorage/GoogleDrive-x@example.com/My Drive/dvc_store",
     ],
 )
-def test_dvc_store_must_be_outside_repo_and_drive(store):
-    with pytest.raises(ValidationError, match="outside"):
-        _clean_runtime(dvc_store=store)
+def test_external_stores_must_be_outside_repo_and_drive(field, store):
+    with pytest.raises(ValidationError, match=f"{field} must lie outside"):
+        _clean_runtime(**{field: store})
+
+
+def test_run_root_reads_environment(monkeypatch, tmp_path):
+    monkeypatch.setenv("ANNXS_RUN_ROOT", str(tmp_path / "runs"))
+    assert _clean_runtime().run_root == (tmp_path / "runs").resolve()
 
 
 # ----------------------------------------------------------------------------- side effects

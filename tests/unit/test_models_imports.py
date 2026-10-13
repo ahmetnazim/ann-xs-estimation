@@ -66,3 +66,14 @@ def test_xgb_worker_cli_is_torch_free() -> None:
         cwd=REPO_ROOT,
     )
     assert "--xgb-fit" in result.stdout
+
+
+def test_phase8_engine_imports_neither_torch_nor_xgboost() -> None:
+    code = (
+        "import sys, runpy; "
+        "import src.models.orchestrator, src.models.plan, src.models.tracking, "
+        "src.evaluation.ledger; "
+        "runpy.run_path('scripts/run_experiment.py', run_name='not_main'); "
+        "print('torch' in sys.modules, 'xgboost' in sys.modules)"
+    )
+    assert run(code) == "False False"

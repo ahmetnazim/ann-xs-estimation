@@ -40,7 +40,7 @@ from src.data.folds import ANALYSES, analysis_frame, fit_provenance, get_view
 from src.data.io import sha256_file
 from src.data.normstats import NormStats
 from src.evaluation.metrics import rmse_log
-from src.models.baselines import XgbHyper, blind_features
+from src.models.baselines import M0PowerLaw, MNull, XgbHyper, blind_features, log_targets
 from src.models.registry import (
     WARM_START_MODELS,
     FitKind,
@@ -56,15 +56,22 @@ from src.utils.logging import run_header
 from src.utils.seeding import fit_seed, seed_python_numpy
 
 __all__ = [
+    "BASELINES",
+    "BASELINE_FILE",
     "SELECTION_FILE",
     "FitRequest",
     "Tables",
+    "baseline_dir",
+    "run_baseline",
     "run_fit",
     "run_select",
     "selection_analysis",
 ]
 
 SELECTION_FILE: Final[str] = "selection.json"
+#: Baselines fitted per block on the outer training set (docs/3 13.3 stage 1, protocol 3.4).
+BASELINES: Final[tuple[str, ...]] = ("M-null", "A_J", "M0")
+BASELINE_FILE: Final[str] = "params.json"
 _RUN: Final[str] = "run.json"
 _NN_TARGETS: Final[tuple[str, ...]] = ("W", "dbar", "t", "A")
 _BLANKED: Final[tuple[str, ...]] = ("W", "dbar", "dmax", "A", "t_obs", "Q_E", "Q_C", "S", "V_E")
@@ -603,4 +610,85 @@ def run_select(
             per[t] = {**res, "hyper": asdict(xgrid[res["selected"]])}
         doc.update({"kind": "xgb", "targets": per})
     write_json(out, doc)
+    return doc
+
+
+# ----------------------------------------------------------------------------- baselines
+def baseline_dir(root: Path, name: str, family: str, repeat: int, outer_fold: int) -> Path:
+    """``<root>/<baseline>/primary/<family>/r<rep>/f<fold>/outer`` (docs/3 13.3 stage 1)."""
+    if name not in BASELINES:
+        raise ValueError(f"unknown baseline {name!r}; expected {BASELINES}")
+    return root / name / "primary" / family / f"r{repeat}" / f"f{outer_fold}" / "outer"
+
+
+def run_baseline(
+    name: str,
+    family: str,
+    repeat: int,
+    outer_fold: int,
+    tables: Tables,
+    settings: Settings,
+    root: Path,
+    *,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    """Fit one baseline on the outer training set of one block (primary analysis).
+
+    M-null: DA-quintile medians of the log targets; M0: per-division power law with the pooled
+    fallback (``model.baselines.m0_min_division_sites``); A_J: training-free, a record only
+    (protocol 4.1). ``DA_km2`` is NHDPlus ``TotDASqKm``. The outer test rows are blanked before
+    anything is read (P6-D1). Writes ``params.json`` and then ``run.json`` (completion marker).
+    """
+    if family in _UNSUPPORTED_FAMILIES:
+        raise ValueError("S-RND has no baseline fits (docs/3 13.6)")
+    start = time.perf_counter()
+    out_dir = baseline_dir(root, name, family, repeat, outer_fold)
+    _check_overwrite(out_dir, overwrite)
+    frame = analysis_frame(tables.site_table, "primary")
+    view = (frame, tables.folds, family, repeat, outer_fold)
+    test, train = get_view(*view, "test"), get_view(*view, "train")
+    cols = sorted({"DA_km2", *(c for c in _BLANKED if c in frame.columns)})
+    frame = frame.copy()
+    frame[cols] = frame[cols].astype(np.float64)
+    frame.loc[frame.index[test], cols] = np.nan  # P6-D1: test rows unreadable from here on
+    sub = frame.iloc[train]
+    params: dict[str, Any]
+    if name == "M-null":
+        mnull = MNull.fit(sub["DA_km2"].to_numpy(dtype=np.float64), log_targets(sub))
+        params = {"cuts": list(mnull.cuts), "medians": [list(r) for r in mnull.medians]}
+    elif name == "M0":
+        y = log_targets(sub)
+        m0 = M0PowerLaw.fit(
+            sub["division"].to_numpy(),
+            sub["DA_km2"].to_numpy(dtype=np.float64),
+            y[:, 0],
+            y[:, 1],
+            settings.protocol.model.baselines.m0_min_division_sites,
+        )
+        params = {
+            "coef": {g: list(c) for g, c in m0.coef},
+            "pooled": list(m0.pooled),
+            "min_sites": m0.min_sites,
+        }
+    else:
+        params = {"training_free": True, "definition": "ln A_J = ln Q_E - ln V_E"}
+    write_json(out_dir / BASELINE_FILE, {"model": name, **params})
+    ids = {
+        "spec": name,
+        "analysis": "primary",
+        "family": family,
+        "repeat": repeat,
+        "outer_fold": outer_fold,
+        "kind": "outer",
+        "index": 0,
+        "grid": None,
+    }
+    doc = {
+        "header": run_header(settings.params_sha256, settings.runtime.repo_root, **ids),
+        "site_table_sha256": tables.site_sha256,
+        "fold_table_sha256": tables.fold_sha256,
+        "rows": {"train": int(train.size), "test_blanked": int(test.size)},
+        "wall_s": time.perf_counter() - start,
+    }
+    write_json(out_dir / _RUN, doc)
     return doc

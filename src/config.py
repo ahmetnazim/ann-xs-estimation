@@ -615,6 +615,9 @@ class RuntimeSettings(BaseSettings):
     checkpoint_dir: Path = Path("data/checkpoints")
     reports_dir: Path = Path("reports")
     dvc_store: Path = Path("~/dvc_store/ANN_XS_Estimation")
+    #: Phase 8 run root (docs/3 13.2, P8-D3 (a)): ``<run_root>/<run_id>/`` holds the model
+    #: artefacts; outside the repository and outside Google Drive, never hashed.
+    run_root: Path = Path("~/dvc_store/ANN_XS_Estimation/runs")
     #: O-8: every NN model runs on the CPU in float64 (PyTorch MPS has no float64).
     device: Literal["cpu"] = "cpu"
     dtype: Literal["float64"] = "float64"
@@ -642,15 +645,16 @@ class RuntimeSettings(BaseSettings):
             raise ValueError(f"{info.field_name} must lie inside the repository: {path}")
         return path
 
-    @field_validator("dvc_store", mode="after")
+    @field_validator("dvc_store", "run_root", mode="after")
     @classmethod
     def _outside_drive(cls, value: Path, info: ValidationInfo) -> Path:
         store = value.expanduser().resolve()
         root = info.data.get("repo_root")
+        name = info.field_name
         if isinstance(root, Path) and store.is_relative_to(root):
-            raise ValueError("dvc_store must lie outside the repository (P3-D2)")
+            raise ValueError(f"{name} must lie outside the repository (P3-D2; docs/3 13.2)")
         if any(marker in store.as_posix() for marker in _DRIVE_MARKERS):
-            raise ValueError("dvc_store must lie outside Google Drive (P3-D2; O-13)")
+            raise ValueError(f"{name} must lie outside Google Drive (P3-D2; O-13; docs/3 13.2)")
         return store
 
 
