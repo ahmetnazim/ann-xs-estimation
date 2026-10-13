@@ -25,7 +25,7 @@ from scipy import stats
 
 from src.config import load_settings
 from src.data import external as ex
-from src.data.nhdplus import network_inputs
+from src.data.network import network_inputs
 from src.data.readers import RawSchemaError
 from src.evaluation import dependence_audit as da
 from src.evaluation import metrics as mt
@@ -225,7 +225,7 @@ def test_read_network_reads_vaa_and_plusflow_from_the_raw_unit(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     """docs/3 13.9: the inputs come from the raw nhdplusv21 unit (VAA and PlusFlow tables)."""
-    from src.data import nhdplus
+    from src.data import network, nhdplus
 
     calls: list[tuple[Path, str]] = []
     tables = {
@@ -238,7 +238,7 @@ def test_read_network_reads_vaa_and_plusflow_from_the_raw_unit(
         return tables[name], {}
 
     monkeypatch.setattr(nhdplus, "read_nhd_table", fake)
-    net = nhdplus.read_network(tmp_path, [2])
+    net = network.read_network(tmp_path, [2])
     assert calls == [(tmp_path, "vaa"), (tmp_path, "plusflow")]
     assert net.edges.tolist() == [[1, 2]]
     assert net.terminal_path == {2: 9}
@@ -361,7 +361,7 @@ def test_phase8_additions_import_neither_torch_nor_xgboost() -> None:
     """ADL-051: the new evaluation and reader code stays torch-free and xgboost-free."""
     code = (
         "import sys; import src.evaluation.metrics, src.evaluation.dependence_audit, "
-        "src.data.external, src.data.nhdplus; "
+        "src.data.external, src.data.network; "
         "print('torch' in sys.modules, 'xgboost' in sys.modules)"
     )
     out = subprocess.run(

@@ -41,7 +41,7 @@ Phase 8 additions (docs/3 13.9, ADL-117; known-answer tests before Event 1):
   the d-bar log-RMSE, averaged over members, negative values set to 0. The booster enters as a
   ``predict`` callable, so this module stays xgboost-free.
 - Nested-basin BFS: :func:`nested_status` is unchanged; its inputs from the raw ``nhdplusv21``
-  unit are built by :func:`src.data.nhdplus.network_inputs`.
+  unit are built by :func:`src.data.network.network_inputs`.
 """
 
 from __future__ import annotations
