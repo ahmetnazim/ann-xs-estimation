@@ -1,10 +1,12 @@
-"""Phase 8 experiment CLI: plan, run one stage, status and tracking (docs/3 13.2-13.7).
+"""Phase 8 experiment CLI: plan, run one stage, status, tracking, predictions and seals.
 
 Sources: P8-D5 (a) (``run_experiment.py {plan,run,status}``), docs/3 section 13.6 (every count
 checked by ``plan`` before execution), section 13.7 (registry, manifest, Merkle root,
 ``reports/training``), section 13.2 (run root, pilot move, archive), section 13.3 (stage order;
-NN stages need ``checkpoint_1``). Owning phase: 8. The logic lives in
-:mod:`src.models.plan`, :mod:`src.models.orchestrator` and :mod:`src.models.tracking`.
+NN stages need ``checkpoint_1``; ``predict@audit`` and ``predict@all``), section 13.4 (a seal
+lists the prediction files and the run-manifest Merkle root; sealed files are never rewritten).
+Owning phase: 8. The logic lives in :mod:`src.models.plan`, :mod:`src.models.orchestrator`,
+:mod:`src.models.tracking`, :mod:`src.models.predict` and :mod:`src.evaluation.ledger`.
 
 Examples::
 
@@ -12,12 +14,14 @@ Examples::
     run_experiment.py run --stage train@baselines
     run_experiment.py status
     run_experiment.py track
+    run_experiment.py predict --stage predict@audit
+    run_experiment.py seal --stage predict@audit
     run_experiment.py move-pilot
     run_experiment.py archive
 
 ``--reduced`` (dry runs with a reduced ``params.yaml``) makes the comparison with the docs/3 13.6
-count table informative instead of binding. Nothing here reads a target or a prediction; no
-metric is printed.
+count table informative instead of binding. Nothing here reads a target or scores a prediction;
+only counts and hashes are printed.
 """
 
 from __future__ import annotations
@@ -33,7 +37,14 @@ import pandas as pd
 
 from src.config import PARAMS_PATH, Settings, load_settings
 from src.data.io import sha256_file
-from src.models.orchestrator import RunContext, RunFailureError, keep_awake, run_stage
+from src.evaluation.ledger import Ledger
+from src.models.orchestrator import (
+    RunContext,
+    RunFailureError,
+    keep_awake,
+    require_checkpoint_1,
+    run_stage,
+)
 from src.models.plan import (
     EXPECTED_COUNTS_13_6,
     STAGES,
@@ -48,6 +59,13 @@ from src.models.plan import (
     run_id_for,
     table_hashes,
     table_paths,
+)
+from src.models.predict import (
+    PREDICT_STAGES,
+    PredictContext,
+    PredictFailureError,
+    predictions_dir,
+    run_predictions,
 )
 from src.models.registry import read_json, write_json
 from src.models.tracking import (
@@ -280,11 +298,131 @@ def cmd_archive(settings: Settings, args: argparse.Namespace, log: logging.Logge
     return 0
 
 
+def _ledger_path(settings: Settings) -> Path:
+    return settings.runtime.reports_dir / "results" / "scoring_ledger.json"
+
+
+def _report_path(settings: Settings, stage: str) -> Path:
+    """``reports/predictions_<audit|all>.json`` (counts and hashes only)."""
+    return settings.runtime.reports_dir / f"predictions_{stage.split('@')[1]}.json"
+
+
+def _loaded_ledger(path: Path, run_id: str) -> Ledger | None:
+    if not path.is_file():
+        return None
+    ledger = Ledger.load(path)
+    if ledger.header["run_id"] != run_id:
+        raise RuntimeError(f"ledger belongs to {ledger.header['run_id']}, not {run_id}")
+    return ledger
+
+
+def cmd_predict(settings: Settings, args: argparse.Namespace, log: logging.Logger) -> int:
+    """Write the prediction files of one stage and their counts-only report (docs/3 13.3)."""
+    rt = settings.runtime
+    built = _build(settings, reduced=args.reduced)
+    _check_plan_file(built, settings)
+    ledger_path = _ledger_path(settings)
+    if args.stage == "predict@all":
+        require_checkpoint_1(ledger_path, built.run_id)
+    ledger = _loaded_ledger(ledger_path, built.run_id)
+    full = args.stage == "predict@all"
+    ctx = PredictContext(
+        params_path=str(settings.params_path),
+        run_dir=str(built.run_dir(settings)),
+        site_path=str(built.paths["site_table"]),
+        fold_path=str(built.paths["fold_table"]),
+        params_sha256=settings.params_sha256,
+        site_sha256=built.hashes["site_table"],
+        fold_sha256=built.hashes["fold_table"],
+        ind_path=str(built.paths["ind_features"]) if full else "",
+        ind_sha256=built.hashes["ind_features"] if full else "",
+        srnd_path=str(built.paths["srnd_frame"]) if full else "",
+        srnd_sha256=built.hashes["srnd_frame"] if full else "",
+        log_level=rt.log_level,
+    )
+    with keep_awake():
+        try:
+            report = run_predictions(
+                args.stage,
+                built.fits,
+                ctx=ctx,
+                settings=settings,
+                dest_dir=predictions_dir(rt.processed_dir),
+                n_workers=rt.n_workers,
+                sealed=ledger.sealed() if ledger else None,
+                logger=log,
+            )
+        except PredictFailureError as exc:
+            rep = exc.report
+            print(f"{args.stage}: FAILED at {rep['block_id']} ({rep['phase']}): {rep['error']}")
+            return 2
+    report = {"run_id": built.run_id, "plan_sha256": built.sha256, **report}
+    write_json(_report_path(settings, args.stage), report)
+    for rel, info in report["files"].items():
+        print(f"{rel}  rows {info['rows']}  sha256 {info['sha256']}")
+    print(f"{args.stage}: {report['blocks']} blocks, {len(report['files'])} files")
+    return 0
+
+
+def cmd_seal(settings: Settings, args: argparse.Namespace, log: logging.Logger) -> int:
+    """Append a ``seal`` listing the stage's prediction files and the Merkle root (13.4).
+
+    The files must still hash as reported; the run manifest must belong to this plan. The
+    first seal creates the ledger. The ledger refuses a dirty git tree, so the report and the
+    manifest are committed before sealing.
+    """
+    rt = settings.runtime
+    built = _build(settings, reduced=args.reduced)
+    _check_plan_file(built, settings)
+    report_path = _report_path(settings, args.stage)
+    if not report_path.is_file():
+        raise FileNotFoundError(f"{report_path} missing; run `predict --stage {args.stage}`")
+    report = read_json(report_path)
+    if (report.get("run_id"), report.get("plan_sha256")) != (built.run_id, built.sha256):
+        raise RuntimeError(f"{report_path} belongs to another plan")
+    if report.get("stage") != args.stage or report.get("params_sha256") != settings.params_sha256:
+        raise RuntimeError(f"{report_path} is not the {args.stage} report of these params")
+    inputs = []
+    for rel, info in sorted(report["files"].items()):
+        path = rt.repo_root / rel
+        if not path.is_file() or sha256_file(path) != info["sha256"]:
+            raise RuntimeError(f"{rel} changed since it was written; seal refused")
+        inputs.append({"path": rel, "sha256": info["sha256"]})
+    if not inputs:
+        raise RuntimeError(f"{report_path} lists no prediction files")
+    manifest = read_json(rt.reports_dir / "run_manifest.json")
+    if (manifest.get("run_id"), manifest.get("plan_sha256")) != (built.run_id, built.sha256):
+        raise RuntimeError("run_manifest.json belongs to another plan; run `track` first")
+    path = _ledger_path(settings)
+    git = git_state(rt.repo_root)
+    if git["dirty"] or not git["commit"]:
+        raise RuntimeError("a seal needs a clean, committed tree (docs/3 13.4); commit first")
+    ledger = _loaded_ledger(path, built.run_id) or Ledger.create(
+        path,
+        run_id=built.run_id,
+        plan_sha256=built.sha256,
+        params_sha256=settings.params_sha256,
+        uv_lock_sha256=sha256_file(rt.repo_root / "uv.lock"),
+    )
+    rec = ledger.append(
+        "seal",
+        git=git,
+        params_sha256=settings.params_sha256,
+        inputs=inputs,
+        merkle_root=manifest["merkle_root"],
+        note=f"{args.stage}: {len(inputs)} prediction files",
+    )
+    print(f"seal seq {rec['seq']}: {len(inputs)} files, merkle_root {manifest['merkle_root']}")
+    return 0
+
+
 _COMMANDS = {
     "plan": cmd_plan,
     "run": cmd_run,
     "status": cmd_status,
     "track": cmd_track,
+    "predict": cmd_predict,
+    "seal": cmd_seal,
     "move-pilot": cmd_move_pilot,
     "archive": cmd_archive,
 }
@@ -301,6 +439,8 @@ def _parser() -> argparse.ArgumentParser:
         if name == "run":
             p.add_argument("--stage", required=True, choices=STAGES)
             p.add_argument("--allow-dirty", action="store_true", help="dry runs only")
+        if name in ("predict", "seal"):
+            p.add_argument("--stage", required=True, choices=PREDICT_STAGES)
     return parser
 
 

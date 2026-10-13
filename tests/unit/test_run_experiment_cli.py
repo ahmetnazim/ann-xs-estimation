@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -16,7 +17,10 @@ from types import ModuleType
 import pytest
 import yaml
 
-from src.models.orchestrator import StageRefusedError
+from src.config import load_settings
+from src.data.io import sha256_file
+from src.evaluation.ledger import Ledger, LedgerError
+from src.models.orchestrator import RunContext, StageRefusedError, run_stage
 from synthetic_sites import fold_table, site_frame
 
 pytestmark = pytest.mark.unit
@@ -113,3 +117,98 @@ def test_cli_plan_run_status_track(
         cli.main(["run", "--stage", "train@baselines", *base, "--allow-dirty"])
     with pytest.raises(RuntimeError, match="different content"):
         cli.main(["plan", *base])
+
+
+def _git(root: Path, *args: str) -> None:
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=t",
+            "-c",
+            "user.email=t@example.com",
+            "-c",
+            "commit.gpgsign=false",
+            *args,
+        ],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+
+
+def test_cli_predict_and_seal(
+    repo: tuple[Path, Path, Path], capsys: pytest.CaptureFixture[str]
+) -> None:
+    root, _, params = repo
+    cli = _cli()
+    base = ["--params", str(params), "--reduced"]
+    audit = ["--stage", "predict@audit", *base]
+    assert cli.main(["plan", *base]) == 0
+    run_id = capsys.readouterr().out.split()[1]
+    with pytest.raises(FileNotFoundError, match=r"predictions_audit\.json"):
+        cli.main(["seal", *audit])
+    with pytest.raises(RuntimeError, match="fits incomplete"):
+        cli.main(["predict", *audit])
+    assert cli.main(["run", "--stage", "train@baselines", *base, "--allow-dirty"]) == 0
+    settings = load_settings(params)
+    built = cli._build(settings, reduced=True)
+    fits = [
+        f
+        for f in built.fits
+        if f.model == "M2-XGB"
+        and f.ablation is None
+        and f.analysis == "primary"
+        and f.family == "S-ID"
+    ]
+    ctx = RunContext(
+        params_path=str(settings.params_path),
+        site_path=str(built.paths["site_table"]),
+        fold_path=str(built.paths["fold_table"]),
+        run_dir=str(built.run_dir(settings)),
+        params_sha256=settings.params_sha256,
+        site_sha256=built.hashes["site_table"],
+        fold_sha256=built.hashes["fold_table"],
+    )
+    ledger_path = root / "reports" / "results" / "scoring_ledger.json"
+    run_stage(
+        "train@xgb",
+        fits,
+        ctx=ctx,
+        settings=settings,
+        run_id=run_id,
+        ledger_path=ledger_path,
+        n_workers=2,
+    )
+    capsys.readouterr()
+    assert cli.main(["predict", *audit]) == 0
+    rel = "data/processed/predictions/audit_inputs.parquet"
+    out = capsys.readouterr().out
+    assert rel in out
+    assert "predict@audit: 2 blocks, 1 files" in out
+    report = json.loads((root / "reports" / "predictions_audit.json").read_text())
+    assert (report["run_id"], report["plan_sha256"]) == (run_id, built.sha256)
+    assert report["files"][rel]["sha256"] == sha256_file(root / rel)
+    with pytest.raises(StageRefusedError, match="checkpoint_1"):
+        cli.main(["predict", "--stage", "predict@all", *base])
+    with pytest.raises(RuntimeError, match="clean, committed tree"):
+        cli.main(["seal", *audit])
+    assert not ledger_path.exists()
+    _git(root, "init", "-q")
+    _git(root, "add", "-A")
+    _git(root, "commit", "-qm", "synthetic")
+    assert cli.main(["seal", *audit]) == 0
+    assert "seal seq 1: 1 files" in capsys.readouterr().out
+    ledger = Ledger.load(ledger_path)
+    assert ledger.sealed() == {rel: report["files"][rel]["sha256"]}
+    assert ledger.header["run_id"] == run_id
+    manifest = json.loads((root / "reports" / "run_manifest.json").read_text())
+    assert ledger.events[0]["merkle_root"] == manifest["merkle_root"]
+    with pytest.raises(LedgerError, match="out-of-order"):
+        cli.main(["seal", *audit])
+    sealed = (root / rel).read_bytes()
+    (root / rel).write_bytes(sealed + b"x")
+    with pytest.raises(RuntimeError, match="changed since it was written"):
+        cli.main(["seal", *audit])
+    assert cli.main(["predict", *audit]) == 0  # same inputs: the sealed bytes come back
+    assert (root / rel).read_bytes() == sealed
