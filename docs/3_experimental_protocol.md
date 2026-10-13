@@ -1039,3 +1039,217 @@ The tolerances of P7-D5 (c), applied by `tests/physics/` and `tests/unit/`:
 - **Disclosed caveat.** The BFI grid was built from streamgage records, and some of those gauges may also be HYDROSWOT sites. What enters the model is a long-term flow-partition ratio, interpolated to 1 km and averaged over the watershed. It is not the ADCP measurement, its discharge or its geometry. No action.
 - **Related.** StreamCat also publishes channel-geometry metrics (`bankfullwidth`, `bankfulldepth`, `thalwegdepth`). They are not in the acquired metric list (`params.yaml` `acquire.streamcat`), and no site-table column carries them.
 - **Test.** `tests/integration/test_frozen_artifacts.py::test_l4_streamcat_runoff_and_bfi_are_comid_level`: one value per COMID, and no `bankfull*` or `thalweg*` column.
+## 13. Phase 8 amendments (append-only; pre-registered before the first production fit)
+
+Appended in Phase 8 before any production fit, prediction file or scoring event. Sections 1–12 are unchanged. Every rule here is fixed before the event that uses it. A rule found missing after a scoring event is labelled **exploratory** (§4.7). [ADL-116, ADL-117]
+
+### 13.1 Decisions (PI, 2026-10-12; recommended option for every item) [ADL-116]
+
+| Item | Adopted |
+|---|---|
+| P8-D1 | Full pre-registered run, mechanical scoring in the order of §13.4, and the reproducibility capsule. Phase 9 does figures, tables and interpretation |
+| P8-D2 | Next phase: "Phase 9 — Empirical Validation & Scientific Visualization" |
+| P8-D3 | Run root outside Google Drive (§13.2) |
+| P8-D4 | DVC-native tracking: per-fit `run.json`, run registry, run manifest, `dvc metrics`/`plots` (§13.7) |
+| P8-D5 | `src/models/orchestrator.py` and `scripts/run_experiment.py {plan,run,status}`: spawn pool, `runtime.n_workers` workers with 1 torch thread each, M1/M2-XGB in torch-free workers (ADL-051/-086), `caffeinate -i` |
+| P8-D6, Q2 | The stage layout and order of §13.3; the Event 1 inputs are produced before any NN is trained (§3.6.1 (b)) |
+| P8-D7 | Append-only scoring ledger with Events 1–3 and PI checkpoints (§13.4) |
+| P8-D8 | S-RND with M1 and M2-XGB only (§13.6) |
+| P8-D9 | S-IND clusters = the `river` of `ind_prepare` (§13.5) |
+| P8-D10 | SA1–SA6 on the frozen fold table, which spans the union U (126,854 rows = 26 blocks × 4,879 sites; P5-D6). No SA fold table is created (§13.8) |
+| P8-D11, P8-D12 | Docker multi-stage CPU image as the capsule; the production run executes natively on the M4 Max; no cross-platform bit identity is claimed (§13.10) |
+| P8-D13 | `ci_local.sh` unchanged; new `scripts/container_check.sh`; dormant `ci.yml` docker job; actions pinned by verified commit SHA; new modules ≥ 90 % coverage |
+| P8-D14, Q3 | The Phase 7 deferrals and the missing Event 3 inputs are implemented with known-answer tests before Event 1 (§13.9) |
+| Q1 | S-IND: predict every member COMID and aggregate as the targets were built (E-R8) (§13.5) |
+| Q4 | SA1 keeps P5-D6 (Φ's discharge only) (§13.8) |
+| Q5 | A4 is trained for all three M* candidates before any scoring (§13.8) |
+| Q6 | SAs for M5, M2-MLP, M1 and M2-XGB on all 26 blocks (§13.8) |
+| Q7 | XGB models have 10 members, one per `es_member_m` (§13.3) |
+
+### 13.2 Run storage and run identity (P8-D3 (a); amends the §1.5 layout line for `data/checkpoints/`)
+
+- **Run root.** Model artefacts live at `<dvc_store>/runs/<run_id>/`. The path comes from the runtime setting `run_root` (`ANNXS_RUN_ROOT`), which must lie outside the repository and outside Google Drive; runtime settings are not hashed. Inside the run root the P6-D6 layout (`<model>/<analysis>/<family>/r<rep>/f<fold>/inner_<k>/g<NN>` or `member_<m>`) is unchanged.
+- **Not DVC-cached.** DVC 3 has no outputs outside the workspace, so the artefacts are neither in the DVC cache nor in the remote. Their integrity anchor is the run manifest (§13.7). After the production run, the run root is archived as `<dvc_store>/runs_archive/<run_id>.tar`: POSIX ustar, entries sorted by path, mtime 0, uid/gid 0. Its SHA-256 is written into the manifest.
+- **Run identity.** `run_id = "p8-" + the first 12 hex characters of plan_sha256` (§13.6). A resumed run therefore maps to the same root.
+- **Pilot.** The P6-D9 pilot directory `data/checkpoints/` (ADL-090) is moved unchanged to `<dvc_store>/runs/pilot_adl090/`, not deleted. Its file SHA-256 values are listed under `pilot` in the manifest.
+- **In the repository:** small DVC outs only (prediction tables, the run registry, the S-IND feature table and the S-RND frame), plus `cache: false` JSON reports.
+
+### 13.3 Stage layout and execution order (P8-D6 (a), Q2 (a), Q7 (a))
+
+| # | Stage | Content | Outputs | Ledger |
+|---|---|---|---|---|
+| 0a | `ind_features` | S-IND predictors per member COMID (§13.5) | `data/processed/ind/ehydro_ind_features.parquet`; `reports/ind_features.json` (counts only) | – |
+| 0b | `srnd_frame` | Row-level S-RND frame (§13.6) | `data/processed/srnd/srnd_frame.parquet`; `reports/srnd_frame.json` (counts only) | – |
+| 1 | `train@baselines` | M-null, A_J (training-free) and M0, per block, on the outer training set | parameters in the run root; stage manifest | – |
+| 2 | `train@xgb` | M1, M2-XGB, M6-XGB (inner, select, 10 members); A4 on M1 and M2-XGB; SA2–SA6 on M1 and M2-XGB; S-RND M1 and M2-XGB | run root; stage manifest | – |
+| 3 | `predict@audit` | S-ID OOF predictions of M-null and M2-XGB | `data/processed/predictions/audit_inputs.parquet` | `seal` |
+| 4 | `audit` | **Event 1** (§13.4) | `reports/results/audit.json` | `event_1`, then `checkpoint_1` |
+| 5 | `train@nn_primary`, `train@ablations`, `train@sensitivity` | M2-MLP, M3, M4, M5, M6-NN; the M5 ablations and A4 on M2-MLP; the SAs of §13.8. Refused unless `checkpoint_1` is in the ledger | run root; stage manifests | – |
+| 6 | `predict@all` | Every OOF and S-IND prediction (§13.5) | `data/processed/predictions/<model>.parquet` | `seal` |
+| 7 | `select_mstar` | **Event 2** | `reports/results/mstar.json` | `event_2`, then `checkpoint_2` |
+| 8 | `evaluate` | **Event 3** | `reports/results/*.json` | `event_3` |
+
+- **Members.** NN models and XGB models alike have M = 10 members per block; member m trains on `es_train(m)` and stops on `es_val(m)` with the ADL-088 seed.
+  - The XGB point prediction is exp of the mean over members of the log predictions.
+  - For M1 the log is taken of the floored raw-metre predictions (§11.1).
+  - XGB models report no predictive distribution.
+- **Fixed rules.** Ablations reuse the base model's selection (§4.8). SAs reuse the primary selection (Q-D3 (a)). M-null, A_J and M0 are fitted on the outer training set of each block (§3.4 item 1).
+- **No figure stage.** Nothing is plotted from a prediction file in Phase 8.
+
+### 13.4 Scoring ledger and event order (P8-D7 (a))
+
+- **File.** `reports/results/scoring_ledger.json` (`cache: false`, committed after each event). It has a header (`run_id`, `plan_sha256`, `params_sha256`, `uv_lock_sha256`) and an ordered list `events`.
+- **Event record fields.**
+  - `seq`, `event`, `utc`;
+  - `git_commit` and `git_dirty`, which must be `false`;
+  - `params_sha256`;
+  - `inputs` and `outputs`, each a list of `{path, sha256}`;
+  - `note`;
+  - `prev_sha256`, the SHA-256 of the canonical JSON of the previous record. This hash chain makes the ledger append-only; a broken chain refuses every later event.
+- **Order (each step refuses unless all earlier steps are recorded):**
+  1. `seal` (audit inputs)
+  2. `event_1`
+  3. `checkpoint_1`
+  4. NN training is allowed
+  5. `seal` (all predictions)
+  6. `event_2`
+  7. `checkpoint_2`
+  8. `event_3`
+- **Seal.** A seal records the SHA-256 of each prediction file and the run-manifest Merkle root. A sealed prediction file is never overwritten. Every later event checks its inputs against the sealed hashes.
+- **Event 1** (`scripts/audit.py`; §3.6 on S-ID only):
+  - §3.6.1 (a) site targets and (b) M-null and M2-XGB residuals, averaged over the three repeats per site;
+  - global Moran's I (W1, W2) and the correlogram, LISA counts, the variogram fit and selection, ρ̂ and ρ*;
+  - d̃_NN, the nested-basin shares, D, N and the §3.6.7 label.
+
+  Nothing involving an NN.
+- **Event 2** (`scripts/evaluate.py select-mstar`): M* per k ∈ {d̄, A} by §4.4. Candidates M1, M2-MLP, M2-XGB; S-ID OOF; mean over the three repeats. M1's A is Ŵ·d̂. An exact tie raises (ADL-106).
+- **Event 3** (`scripts/evaluate.py evaluate`): everything else in §4.3–§4.6, §4.9, §3.6.1 (c), §3.6.5 strata, §3.6.6, S1 and S-RND, then the §4.7 row computed mechanically. Anything outside §4 and §13 is labelled exploratory.
+- **Checkpoints.** A checkpoint is appended by `scripts/evaluate.py checkpoint --after event_N --note "<PI approval text>"`, only after written PI approval. It contains no number.
+- **Discipline.**
+  - Only `scripts/audit.py` and `scripts/evaluate.py` read observed targets together with predictions, and only inside an event. No metric, residual statistic or plot of a prediction file exists before its event.
+  - An event that crashes before its record is appended may be re-run on the same sealed inputs; the crash is logged in the manifest.
+  - A recorded event is never re-run. A correction is a new `erratum` event that references the original, and both are reported.
+
+### 13.5 S-IND evaluation set, aggregation and clusters (Q1 (a), P8-D9 (a), Q3 (a))
+
+- **Locations.** The `ehydro_ind` rows with `dedupe_status` = kept (ADL-093).
+- **Predictors.** Built per member COMID from the raw units with the functions of `src/data/features.py`: the same columns as `site_table`, R12/R13/R14 applied, no imputation.
+  - A location is **excluded for every model** (common support, §3.2) if any member COMID lacks a predictor of the NN set (22) or the M1 set (19), or lies outside 𝒟. The counts are reported.
+  - **M0** takes the division containing the `point_on_surface` of the member COMID's catchment (EPSG:5070), with the §4.1 pooled fallback.
+  - **A_J** follows the masking rule of the primary analysis.
+- **Aggregation (mirrors E-R8).** Each model predicts every member COMID c (S-IND block: trained on all post-QC sites).
+  - The per-COMID point prediction is exp(μ*_c).
+  - Ŵ = Σ_c L_c Ŵ_c / Σ_c L_c and d̂ = Σ_c L_c d̂_c / Σ_c L_c, with L_c = `LENGTHKM`; Â = Ŵ·d̂.
+  - For A_J, Â is the length-weighted mean of A_J,c.
+  - Log errors are taken at location level.
+- **UQ (descriptive).** `ehydro_ind` stores location values only, so per-COMID observations do not exist. Coverage, width, CRPS and PIT are therefore computed on locations with `n_comids` = 1, where the location distribution equals the COMID mixture. The remaining locations are reported as "not computed", with their count.
+- **Zarrabi product (L8; descriptive).** `Bankfull_Meanflow_CONUS.txt` fields `COMID`, `mf_width` and `mf_depth`. The unit is asserted from the Zenodo record (doi:10.5281/zenodo.13883263) before Event 3, or STOP. The fields are aggregated by the same rule and compared on S-IND only.
+- **Clusters.** The `river` of `ind_prepare`: 18 realised clusters (§4.4 states 25, Zarrabi's count; E-R10).
+  - Vermilion (VPUs 04 and 08) is one cluster, and so is Broad Creek.
+  - A CENWP survey contributes to the river of the location that kept it.
+  - The 2 COMIDs without a catchment were dropped by `ind_prepare`.
+  - The bootstrap is unstratified, with B and the seed as in §4.4.
+
+### 13.6 S-RND and the fit plan (P8-D8 (b))
+
+- **Frame.** `srnd_assignment` (38,693 rows in U), joined to:
+  - `hydroswot_init` on `row_id`, for the per-measurement W, d̄ and A in SI;
+  - the COMID-level predictors from `site_table` on `site_no`.
+- **Models.** M1 (raw-metre targets, §11.1) and M2-XGB (log targets).
+- **Hyperparameters and rounds.** The S-RND table has no inner or ES columns, and none is created (§3.3). Therefore:
+  - the hyperparameters per target are the grid point selected most often over the 15 primary S-ID blocks (ties → lower index);
+  - the number of boosting rounds is the median, rounded half up, of `best_iteration + 1` over the 150 primary S-ID members of that model and target.
+- **Fitting.** Ten members, seeds `fit_seed(seeds, "S-RND", 0, 0, "member", m)`, each trained on all S-RND training rows, unweighted (as Zarrabi). The point prediction is as in §13.3.
+- **Metrics.** Secondary only, weighted 1/|I_j| (§4.3.1, §9.5). The weighted MdAPE is the weighted median of |p/o − 1|, defined as the smallest value whose cumulative normalized weight reaches 1/2.
+- **Fit plan.** A deterministic, sorted list of fits.
+  - Sort key: stage (§13.3), model, ablation, analysis, family (S-ID, S-LRO, S-TAIL-DA, S-TAIL-SO, S-IND, S-RND), repeat, fold, kind (inner, select, member), index, grid.
+  - Its canonical JSON (sorted keys, separators `,` and `:`, UTF-8) has a header holding `params_sha256` and the SHA-256 of the site, fold, S-RND, `ehydro_ind`, `ind_features` and `srnd_frame` tables. `plan_sha256` is the SHA-256 of that JSON.
+- **Expected counts** (26 blocks per model: S-ID 15, S-LRO 8 with no merges, S-TAIL-DA 1, S-TAIL-SO 1, S-IND 1). Inner fits = grid × `inner_k` (3). NN grid 8 (M4: 24); XGB grid 12.
+
+  | Group | Fits |
+  |---|---|
+  | M2-MLP, M3, M5, M6-NN: 26 × (24 + 10) each | 3,536 |
+  | M4: 26 × (72 + 10) | 2,132 |
+  | M5 ablations A1, A2, A3-SP, A3-SR, A4, wA1: 6 × 26 × 10 | 1,560 |
+  | A4 on M2-MLP: 26 × 10 | 260 |
+  | SA1–SA6 on M5: 6 × 26 × 10 | 1,560 |
+  | SA2–SA6 on M2-MLP: 5 × 26 × 10 | 1,300 |
+  | **NN total** | **10,348** |
+  | M1, M2-XGB, M6-XGB: 26 × (36 + 10) each | 3,588 |
+  | A4 on M1 and M2-XGB: 2 × 26 × 10 | 520 |
+  | SA2–SA6 on M1 and M2-XGB: 2 × 5 × 26 × 10 | 2,600 |
+  | S-RND M1 and M2-XGB: 2 × 10 | 20 |
+  | **XGB total** | **6,728** |
+  | Selections (5 NN + 3 XGB models × 26 blocks) | 208 |
+  | Baselines M-null, A_J, M0 × 26 blocks (primary) | 78 |
+
+  Against the §4.8 estimate of ≈ 7,000–7,500 NN fits, the differences are:
+  - M3, a torch rung, is not counted in §4.8: +884;
+  - M4's λ_max triples its inner grid: +1,248;
+  - there are 26 blocks, not ≈ 25;
+  - SA6 is listed in §4.9 but not in §4.8;
+  - A4 on M* (Q5).
+
+  Every count is checked by `run_experiment.py plan` before execution and by the gate afterwards.
+
+### 13.7 Run manifest, registry and tracking (P8-D4 (a))
+
+- **Per fit.** The `run.json` of ADL-087. A fit is complete when its `run.json` exists.
+  - Resume skips a complete fit whose `params_sha256`, table hashes and coordinates match the plan.
+  - A complete fit that does not match stops the run.
+  - An incomplete directory is removed and the fit re-run, logged under `reruns`.
+  - `--overwrite` is never used in production.
+- **Run registry.** `data/processed/runs/run_registry.parquet` (DVC out). One row per planned fit:
+  - `fit_id` (the path relative to the run root), stage, coordinates, status, `wall_s`, epochs;
+  - mean and max Picard iterations, final Ξ_e (M4), `test_blanked`;
+  - the SHA-256 of every file in the fit directory.
+- **Run manifest.** `reports/run_manifest.json` (`cache: false`):
+  - `schema_version`, `run_id`, `plan_sha256`, `params_sha256`, `uv_lock_sha256`, the table SHA-256 values, the git commit at start and end;
+  - host (platform, Python, torch, xgboost), `n_workers`, `torch_threads_per_worker`;
+  - per stage: planned, done, failures, reruns (`fit_id`, reason, UTC) and wall time;
+  - the registry SHA-256, the Merkle root, `pilot` and `archive`.
+- **Merkle root.** Leaves are SHA-256(`0x00` ‖ `fit_id` ‖ `0x00` ‖ relative file path ‖ `0x00` ‖ file SHA-256 hex), sorted by (`fit_id`, path). Nodes are SHA-256(`0x01` ‖ left ‖ right), split at the largest power of two below n, as in RFC 6962 §2.1 (Laurie et al. 2013; doi:10.17487/rfc6962).
+- **Failures.** Any production `PhiConvergenceError`, non-finite loss or worker exception stops the scheduling of new fits. Running fits drain, and the failing fit, seed and coordinates are reported (Phase 8 rule 4). A fit is re-run only after a documented failure.
+- **`dvc metrics` / `dvc plots`.** Training diagnostics only: per-epoch training and `es_val` objectives, Ξ_e (M4) and Picard iterations, summarised from `run.json` into `reports/training/*.json` (`cache: false`). Outer-test rows never appear in them.
+
+### 13.8 Ablations and sensitivity analyses (P8-D10, Q4 (a), Q5 (a), Q6 (a))
+
+- **Folds.** Every SA uses the frozen fold table (it spans U). Each SA is evaluated on the test sites of its own analysis frame (§4.9; descriptive).
+- **SA1** swaps only Φ's discharge to `Q_C` (P5-D6). It is trained for M5 only. For M2-MLP, M1 and M2-XGB, which have no Φ, SA1 is identical to the primary analysis by construction, is not trained, and is reported as such. The `Q_E` predictor column is unchanged in every model (disclosed against L11).
+- **A4** is trained for M5 and for all three M* candidates (M1, M2-MLP, M2-XGB) before any scoring event. After Event 2, the A4 result of the realised M* is reported (descriptive).
+- **SA2–SA6** run for M5, M2-MLP, M1 and M2-XGB on all 26 blocks. The "M*-NN" of §4.8 is read as M2-MLP. After Event 2, the SAs of the realised M* are reported, and the others are labelled supplementary.
+
+### 13.9 Evaluation additions and Event 3 inputs (P8-D14 (a), Q3 (a))
+
+Implemented in `src/evaluation` with known-answer tests before Event 1:
+
+- **Weighted MdAPE** as defined in §13.6.
+- **V-error variance share (§4.3.2).** With e_V = ln V̂ − ln V_obs = δq − e_A, where δq = q_E − q_obs and e_A = ln Â − ln A_obs:
+  - s_Q = Cov(δq, e_V)/Var(e_V) and s_A = −Cov(e_A, e_V)/Var(e_V);
+  - s_Q + s_A = 1 exactly;
+  - population moments with site weights.
+- **Manning back-calculation consistency (§4.3.2, docs/2 Prop 6.2, Prop 7.4).**
+  - Formula: ν̂_back = (5/3)ℓ̂ + ŵ + (2/3)k(e^{ℓ̂−ŵ}, r̂) + s/2 − q_E.
+  - r̂ comes from d̂_max/d̂ (M2). For M0 and M1 it is r̄, the training-fold median of r_obs as for M3.
+  - Rows with d̂_max ≤ d̂ are counted as invariant-4 violations and excluded from this statistic.
+  - Reported: the share with dist(ν̂_back, [ν_min, ν_max]) > 0.
+- **W2 with co-located sites (§3.6.2).** Pairs at d_ij = 0 get weight 0 in W2 and are counted. W1 is unchanged.
+- **Nested-basin BFS (§3.6.5).** Upstream reachability on the reversed PlusFlow graph (`FromComID` → `ToComID`, divergences included), restricted to the same `TerminalPa`, from the raw `nhdplusv21` unit.
+- **AOA importance (§3.6.6).** M2-XGB permutation importance of the d̄ booster.
+  - For each of the 10 members: on its `es_val` rows, 10 permutations per feature with `default_rng(SeedSequence([member_seed, feature_index]))`.
+  - Importance = the mean increase in the d̄ log-RMSE, averaged over members, negative values set to 0.
+  - The cross-validated training DI uses the block's frozen `inner_fold` column.
+- **S1 (§4.6).** HyG `Manning_n` at matching gages (`Gage_ID` = `site_no`), finite and positive. Spearman ρ and log-RMSE against the site-level M5 n̂ (§4.4 H4 definition). Descriptive, a consistency check.
+
+### 13.10 Reproducibility capsule (P8-D11 (a), P8-D12 (a), P8-D13 (a))
+
+- **Image.** Multi-stage Docker, CPU only, `linux/arm64`.
+  - Build stage: `ghcr.io/astral-sh/uv:0.12.1`, `uv sync --frozen --no-dev --group ops`.
+  - Runtime stage: `python:3.12-slim-bookworm`, pinned by digest, with `libgomp1`; non-root uid 1000; no data or caches inside.
+  - `docker-compose.yml` mounts `data/raw` and `data/processed` read-only, and the run root and `reports/` read-write.
+- **Execution.** The production run executes natively (binding environment: `uv.lock` plus `scripts/dev_env.sh`). The image is verified by `scripts/container_check.sh`: build, `ci_local.sh` inside, `verify_models.py --quick`, one pilot fit.
+- **Recorded.** The image ID, the base digests and the `uv.lock` SHA-256, which must equal the run's. Bit identity across macOS and Linux is not claimed (BLAS, libm).
+
+### 13.11 Unchanged
+
+No `params.yaml` value, grid, threshold, metric definition or decision rule changes. M-null, A_J and M0 are fitted on training parts only. Outer test rows are blanked in every fit (runner guard). No fold is created by model code. The frozen artefacts of §10.1 and §11 are never regenerated.
