@@ -40,7 +40,9 @@ pytestmark = pytest.mark.unit
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL = load_settings().protocol
-BLOCK = {"spec": None, "ablation": None, "analysis": "primary", "family": "S-ID", "unit": "site"}
+#: Key columns of a primary S-ID row as ``src.models.predict._base`` writes them (``spec`` is set to
+#: the model name per row; no ablation is ``""``). Pinned by the F-C3b-1 contract test below.
+BLOCK = {"spec": None, "ablation": "", "analysis": "primary", "family": "S-ID", "unit": "site"}
 
 
 # ----------------------------------------------------------------------------- synthetic tables
@@ -620,3 +622,36 @@ def test_event_modules_import_neither_torch_nor_xgboost() -> None:
         [sys.executable, "-c", code], capture_output=True, text=True, check=True, cwd=REPO_ROOT
     ).stdout.strip()
     assert out == "False False", f"ADL-051: torch/xgboost imported: {out}"
+
+
+def test_fixture_keys_match_the_prediction_writer() -> None:
+    """F-C3b-1 contract: the synthetic OOF rows carry the key values ``predict._base`` writes."""
+    from src.models import predict
+
+    keys = pd.DataFrame({"site_no": ["s0"], "comid": [1000]})
+    empty = pd.DataFrame()
+    bf = predict.BlockFrame(empty, np.array([], dtype=int), empty, np.array([0]), keys)
+    for model in event1.AUDIT_MODELS:
+        job = predict.PredictJob(model, None, "primary", "S-ID", 2, 3, 1)
+        written = predict._base(job, bf).iloc[0]
+        raw = sites(5)
+        frame = event1.audit_frame(raw)
+        ours = oof_preds(frame, folds(frame["site_no"]), model, lambda i, r, k: 0.0).iloc[0]
+        for col in ("spec", "model", "ablation", "analysis", "family", "unit"):
+            assert ours[col] == written[col], f"F-C3b-1: fixture {col}={ours[col]!r}"
+
+
+def test_primary_rows_follow_the_writer_ablation_contract() -> None:
+    """F-C3b-1 regression: ``ablation == ''`` rows are primary; a null ablation is refused."""
+    raw = sites(10)
+    frame = event1.audit_frame(raw)
+    ft = folds(frame["site_no"])
+    preds = oof_preds(frame, ft, "M-null", lambda i, r, k: 0.25)
+    assert preds["ablation"].eq("").all()
+    abl = preds.assign(ablation="A1")
+    mask = event1.primary_sid_rows(pd.concat([preds, abl], ignore_index=True))
+    assert int(mask.sum()) == len(preds)
+    res = event1.oof_residuals(preds, frame, ft, models=("M-null",))
+    assert np.allclose(res["M-null:dbar"].to_numpy(), 0.25, rtol=0.0, atol=1e-12)
+    with pytest.raises(ValueError, match="null ablation"):
+        event1.primary_sid_rows(preds.assign(ablation=None))

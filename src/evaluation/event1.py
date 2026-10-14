@@ -54,6 +54,7 @@ __all__ = [
     "Event1Result",
     "audit_frame",
     "oof_residuals",
+    "primary_sid_rows",
     "run_event1",
     "series_stats",
     "sid_blocks",
@@ -77,6 +78,8 @@ RESIDUAL_TARGETS: Final[Mapping[str, str]] = {
 _LOG_OBS: Final[frozenset[str]] = frozenset({"W", "dbar", "dmax", "A"})
 #: Protocol 3.6.4 / 3.6.7: rho* and condition D use the M2-XGB d-bar residuals.
 LABEL_SERIES: Final[str] = "M2-XGB:dbar"
+#: ``src.models.predict._base`` writes ``ablation = job.ablation or ""`` (F-C3b-1).
+NO_ABLATION: Final[str] = ""
 _FRAME_COLUMNS: Final[tuple[str, ...]] = (
     "site_no",
     "comid",
@@ -152,6 +155,23 @@ def sid_test_assignment(frame: pd.DataFrame, folds: pd.DataFrame) -> pd.DataFram
     return test
 
 
+def primary_sid_rows(preds: pd.DataFrame) -> pd.Series:
+    """Mask of S-ID, primary-analysis, no-ablation site rows of a prediction file.
+
+    The writer stores "no ablation" as ``""`` (``src.models.predict._base``); a null ablation is
+    not that contract and raises instead of being silently dropped (F-C3b-1).
+    """
+    if preds["ablation"].isna().any():
+        raise ValueError("prediction rows with a null ablation; the writer stores '' (F-C3b-1)")
+    mask: pd.Series = (
+        preds["family"].eq(FAMILY)
+        & preds["analysis"].eq("primary")
+        & preds["ablation"].eq(NO_ABLATION)
+        & preds["unit"].eq("site")
+    )
+    return mask
+
+
 def oof_residuals(
     preds: pd.DataFrame,
     frame: pd.DataFrame,
@@ -166,13 +186,7 @@ def oof_residuals(
     """
     test = sid_test_assignment(frame, folds)
     n_rep = test["repeat"].nunique()
-    sel = (
-        preds["family"].eq(FAMILY)
-        & preds["analysis"].eq("primary")
-        & preds["ablation"].isna()
-        & preds["unit"].eq("site")
-    )
-    rows = preds.loc[sel]
+    rows = preds.loc[primary_sid_rows(preds)]
     obs = {k: _observed(frame, c) for k, c in RESIDUAL_TARGETS.items()}
     index = pd.Index(frame["site_no"], name="site_no")
     out = pd.DataFrame(index=index)

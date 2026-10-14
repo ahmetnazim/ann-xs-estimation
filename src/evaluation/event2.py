@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 
 from src.config import ProtocolParams
-from src.evaluation.event1 import FAMILY, audit_frame, sid_test_assignment
+from src.evaluation.event1 import FAMILY, audit_frame, primary_sid_rows, sid_test_assignment
 from src.evaluation.hypotheses import select_mstar
 from src.evaluation.metrics import rmse_log
 
@@ -36,13 +36,7 @@ def sid_rmse_by_repeat(
 ) -> dict[str, dict[int, float]]:
     """``{k: {repeat: RMSE_log}}`` of one candidate's S-ID OOF predictions (protocol 4.3.1)."""
     test = sid_test_assignment(frame, folds)
-    sel = (
-        preds["model"].eq(model)
-        & preds["family"].eq(FAMILY)
-        & preds["analysis"].eq("primary")
-        & preds["ablation"].isna()
-        & preds["unit"].eq("site")
-    )
+    sel = preds["model"].eq(model) & primary_sid_rows(preds)
     rows = preds.loc[sel].astype({"repeat": int, "outer_fold": int}).copy()
     if rows.duplicated(["site_no", "repeat"]).any():
         raise ValueError(f"{model}: duplicated S-ID OOF predictions")
