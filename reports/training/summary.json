@@ -45,6 +45,15 @@
    "wall_s_mean": 0.6155728341492179,
    "xi_final_max": null
   },
+  "M2-MLP": {
+   "epochs_max": 117.0,
+   "epochs_mean": 84.91628959276018,
+   "fits_done": 884,
+   "picard_max": null,
+   "wall_s_max": 4.035413374891505,
+   "wall_s_mean": 1.606165750606704,
+   "xi_final_max": null
+  },
   "M2-XGB": {
    "epochs_max": null,
    "epochs_mean": null,
@@ -61,6 +70,42 @@
    "picard_max": null,
    "wall_s_max": 2.65795712498948,
    "wall_s_mean": 1.358678793922389,
+   "xi_final_max": null
+  },
+  "M3": {
+   "epochs_max": 182.0,
+   "epochs_mean": 104.87556561085972,
+   "fits_done": 884,
+   "picard_max": 32.0,
+   "wall_s_max": 14.343060750048608,
+   "wall_s_mean": 7.7950630112742365,
+   "xi_final_max": null
+  },
+  "M4": {
+   "epochs_max": 500.0,
+   "epochs_mean": 260.9155722326454,
+   "fits_done": 2132,
+   "picard_max": null,
+   "wall_s_max": 195.1036636249628,
+   "wall_s_mean": 30.76405554650243,
+   "xi_final_max": 511.0091148500776
+  },
+  "M5": {
+   "epochs_max": 107.0,
+   "epochs_mean": 74.34049773755656,
+   "fits_done": 884,
+   "picard_max": 28.0,
+   "wall_s_max": 15.340365540934727,
+   "wall_s_mean": 10.22972429849021,
+   "xi_final_max": null
+  },
+  "M6-NN": {
+   "epochs_max": 106.0,
+   "epochs_mean": 70.38800904977376,
+   "fits_done": 884,
+   "picard_max": 28.0,
+   "wall_s_max": 17.327741000102833,
+   "wall_s_mean": 11.072023397865463,
    "xi_final_max": null
   },
   "M6-XGB": {
@@ -83,7 +128,7 @@
    "planned": 78
   },
   "train@nn_primary": {
-   "done": 0,
+   "done": 5798,
    "planned": 5798
   },
   "train@sensitivity": {
