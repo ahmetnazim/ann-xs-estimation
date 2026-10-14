@@ -1,0 +1,28 @@
+{
+ "events": [
+  {
+   "event": "seal",
+   "git_commit": "3567eeacefa72f9d8b1de79c26cf1f66f9d06a74",
+   "git_dirty": false,
+   "inputs": [
+    {
+     "path": "data/processed/predictions/audit_inputs.parquet",
+     "sha256": "ad0f191a2456bb16f1781b0fdb2928fa46d496166c423405d31b7c87cc416449"
+    }
+   ],
+   "merkle_root": "820984e5df97e5df9650d62ef71e6fe1806de35bbfaba535a74e3eb6fc10fb90",
+   "note": "predict@audit: 1 prediction files",
+   "outputs": [],
+   "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+   "prev_sha256": "ff6b139e7fe8b77252e464d258d354b61537477c15a0c5f027c911319ee26188",
+   "seq": 1,
+   "utc": "2026-10-14T11:46:08Z"
+  }
+ ],
+ "header": {
+  "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+  "plan_sha256": "da9b7303cb841f28b3ca081d657e477315238f5e773eb20575239f6476794bca",
+  "run_id": "p8-da9b7303cb84",
+  "uv_lock_sha256": "85c69462b26510f2cd61bc4ba8f6ac0f6677a219715fbaf7220959b221da6e6d"
+ }
+}
