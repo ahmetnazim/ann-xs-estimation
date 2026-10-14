@@ -161,6 +161,44 @@
    "prev_sha256": "62fccd1ef1f2b73780fe8e0cea67fc6b89ee912b463e65b14f0f5c651b287dc6",
    "seq": 4,
    "utc": "2026-10-14T23:13:06Z"
+  },
+  {
+   "event": "event_2",
+   "git_commit": "971927e29a7ed007c0b9dcc9f9c54ce873542dee",
+   "git_dirty": false,
+   "inputs": [
+    {
+     "path": "data/processed/predictions/M1.parquet",
+     "sha256": "4d61429564a89e29186fbc1502dd878ca23481ddc83ac5d183df6bcc18b5497c"
+    },
+    {
+     "path": "data/processed/predictions/M2-MLP.parquet",
+     "sha256": "f444410a826a4fa10a28f64667f036e4bf56a8c7233d42bd17fc61b8153ab8c4"
+    },
+    {
+     "path": "data/processed/predictions/M2-XGB.parquet",
+     "sha256": "e280ab2b3f053f2d879ae1b43e9684a1834686d2c65ef0d58c9ccbc20f6e42a8"
+    },
+    {
+     "path": "data/processed/site_table.parquet",
+     "sha256": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470"
+    },
+    {
+     "path": "data/processed/splits/fold_assignment.parquet",
+     "sha256": "1bf628c83fd658c179243499af5d533738fefaeb15b63a71c476530c40dc872c"
+    }
+   ],
+   "note": "Event 2: M* per target on S-ID OOF (docs/3 13.4, protocol 4.4)",
+   "outputs": [
+    {
+     "path": "reports/results/mstar.json",
+     "sha256": "6bd7bc01aaad60d12cf350e681cf0dcaac32bfb913151d99660c2ef9ee259834"
+    }
+   ],
+   "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+   "prev_sha256": "65ebf56b0625507029a9949868d92a16b9270a88f0a3cf86c2caa52c5646c6fc",
+   "seq": 5,
+   "utc": "2026-10-14T23:13:22Z"
   }
  ],
  "header": {

@@ -1,0 +1,97 @@
+{
+ "candidates": [
+  "M1",
+  "M2-MLP",
+  "M2-XGB"
+ ],
+ "event": "event_2",
+ "family": "S-ID",
+ "inputs": [
+  {
+   "path": "data/processed/predictions/M1.parquet",
+   "sha256": "4d61429564a89e29186fbc1502dd878ca23481ddc83ac5d183df6bcc18b5497c"
+  },
+  {
+   "path": "data/processed/predictions/M2-MLP.parquet",
+   "sha256": "f444410a826a4fa10a28f64667f036e4bf56a8c7233d42bd17fc61b8153ab8c4"
+  },
+  {
+   "path": "data/processed/predictions/M2-XGB.parquet",
+   "sha256": "e280ab2b3f053f2d879ae1b43e9684a1834686d2c65ef0d58c9ccbc20f6e42a8"
+  },
+  {
+   "path": "data/processed/site_table.parquet",
+   "sha256": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470"
+  },
+  {
+   "path": "data/processed/splits/fold_assignment.parquet",
+   "sha256": "1bf628c83fd658c179243499af5d533738fefaeb15b63a71c476530c40dc872c"
+  }
+ ],
+ "m1_area": "ln A = mu_W + mu_dbar (A = W-hat * dbar-hat)",
+ "mstar": {
+  "A": "M2-XGB",
+  "dbar": "M2-XGB"
+ },
+ "n_sites": 3988,
+ "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+ "plan_sha256": "da9b7303cb841f28b3ca081d657e477315238f5e773eb20575239f6476794bca",
+ "rmse_log_by_repeat": {
+  "M1": {
+   "A": {
+    "0": 0.7088819904574213,
+    "1": 0.7030658485277064,
+    "2": 0.6974588985730544
+   },
+   "dbar": {
+    "0": 0.47557159623885703,
+    "1": 0.473597349725471,
+    "2": 0.47446031631508057
+   }
+  },
+  "M2-MLP": {
+   "A": {
+    "0": 0.6502483071385046,
+    "1": 0.6494635210446249,
+    "2": 0.6484230548420125
+   },
+   "dbar": {
+    "0": 0.45264621946052097,
+    "1": 0.45184077031134345,
+    "2": 0.4514117051939867
+   }
+  },
+  "M2-XGB": {
+   "A": {
+    "0": 0.6249701291663923,
+    "1": 0.626140700931793,
+    "2": 0.6251980185908798
+   },
+   "dbar": {
+    "0": 0.44081083509424607,
+    "1": 0.4383626213629464,
+    "2": 0.4397041376436216
+   }
+  }
+ },
+ "rmse_log_mean": {
+  "M1": {
+   "A": 0.7031355791860606,
+   "dbar": 0.4745430874264695
+  },
+  "M2-MLP": {
+   "A": 0.649378294341714,
+   "dbar": 0.4519662316552837
+  },
+  "M2-XGB": {
+   "A": 0.625436282896355,
+   "dbar": 0.4396258647002713
+  }
+ },
+ "run_id": "p8-da9b7303cb84",
+ "schema_version": 1,
+ "targets": [
+  "dbar",
+  "A"
+ ]
+}
