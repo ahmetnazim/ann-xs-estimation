@@ -1,0 +1,255 @@
+{
+ "blocks": 1068,
+ "files": {
+  "data/processed/predictions/A_J.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "52134b42149f176f494b67753740ea22c23c177f8d9e381bae4092d02c0459b9"
+  },
+  "data/processed/predictions/M-null.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "365f1ba9c2e68d84312a1fa01bb3fa2207a2e05cfa630f1038d1568541319476"
+  },
+  "data/processed/predictions/M0.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "84c9ee8e26a6f2d3f948098d885a26d7c7ad3a840464776fead6318886c784ac"
+  },
+  "data/processed/predictions/M1.parquet": {
+   "rows": 109419,
+   "rows_by_family_unit": {
+    "S-ID/site": 67941,
+    "S-IND/comid": 2586,
+    "S-IND/location": 786,
+    "S-LRO/site": 22647,
+    "S-RND/srnd_row": 9673,
+    "S-TAIL-DA/site": 3902,
+    "S-TAIL-SO/site": 1884
+   },
+   "sha256": "4d61429564a89e29186fbc1502dd878ca23481ddc83ac5d183df6bcc18b5497c"
+  },
+  "data/processed/predictions/M1_A4.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "1f1e1d79ace07f97eee49a58cb99e8e36035f589b4ac2341911ad26aa5b45ede"
+  },
+  "data/processed/predictions/M2-MLP.parquet": {
+   "rows": 99746,
+   "rows_by_family_unit": {
+    "S-ID/site": 67941,
+    "S-IND/comid": 2586,
+    "S-IND/location": 786,
+    "S-LRO/site": 22647,
+    "S-TAIL-DA/site": 3902,
+    "S-TAIL-SO/site": 1884
+   },
+   "sha256": "f444410a826a4fa10a28f64667f036e4bf56a8c7233d42bd17fc61b8153ab8c4"
+  },
+  "data/processed/predictions/M2-MLP_A4.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "cb19b581867363c93364782abb35609c2595af078549a84a00c7534cf5c29e06"
+  },
+  "data/processed/predictions/M2-XGB.parquet": {
+   "rows": 109419,
+   "rows_by_family_unit": {
+    "S-ID/site": 67941,
+    "S-IND/comid": 2586,
+    "S-IND/location": 786,
+    "S-LRO/site": 22647,
+    "S-RND/srnd_row": 9673,
+    "S-TAIL-DA/site": 3902,
+    "S-TAIL-SO/site": 1884
+   },
+   "sha256": "e280ab2b3f053f2d879ae1b43e9684a1834686d2c65ef0d58c9ccbc20f6e42a8"
+  },
+  "data/processed/predictions/M2-XGB_A4.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "d3534ae5f4a18f0f4e4e38c83d64654623a556f85d54371658d1376f8f14fa22"
+  },
+  "data/processed/predictions/M3.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "baf19b973f8e0927f0b8e7d720288b6a0d1fe09b774ccaf8512f69ddd4510811"
+  },
+  "data/processed/predictions/M4.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "18ab50881365d3ab7b5a220c6550fe08c64d2803929341f7c72189aed90d720f"
+  },
+  "data/processed/predictions/M5.parquet": {
+   "rows": 117277,
+   "rows_by_family_unit": {
+    "S-ID/site": 79905,
+    "S-IND/comid": 3017,
+    "S-IND/location": 917,
+    "S-LRO/site": 26635,
+    "S-TAIL-DA/site": 4580,
+    "S-TAIL-SO/site": 2223
+   },
+   "sha256": "122512da2fad4fc60e2863fbbb3bba32eb72a2cc2cf7553ba7b026cac87a3b7d"
+  },
+  "data/processed/predictions/M5_A1.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "24e47386557b4f09b1f265d3304a4aa8997148cf84312190cfbcfea986411bef"
+  },
+  "data/processed/predictions/M5_A2.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "53b2d1c2edca129ba26a9005a4ac60387b87615f44e40b82d8bfef647fce8397"
+  },
+  "data/processed/predictions/M5_A3-SP.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "7c596870459c8b7019ec8fd4586520925b4edd91fedccb055735a3d69245a9f2"
+  },
+  "data/processed/predictions/M5_A3-SR.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "edc89bc6bf86c54ffdd1104ce78d6be052aff4d040874905d097cd8c590898ef"
+  },
+  "data/processed/predictions/M5_A4.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "ce6a979d457ee9a60feb99f673440c62c68ee47cab6947814f30f123c97603d6"
+  },
+  "data/processed/predictions/M5_wA1.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "7518fd0b3ac6e9959cafec38f01a39f6e3c6ec3ac3c891822da249a77f4e636c"
+  },
+  "data/processed/predictions/M6-NN.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "fe1ef462eb5f6ab9c02a795eedb78ca8fbc2b2c0f42e2b0646b1720c34633bfc"
+  },
+  "data/processed/predictions/M6-XGB.parquet": {
+   "rows": 17531,
+   "rows_by_family_unit": {
+    "S-ID/site": 11964,
+    "S-IND/comid": 431,
+    "S-IND/location": 131,
+    "S-LRO/site": 3988,
+    "S-TAIL-DA/site": 678,
+    "S-TAIL-SO/site": 339
+   },
+   "sha256": "bea6495a2879a99fe45e56ae2416eced7c4c72663cadd59188f1909f9c376174"
+  }
+ },
+ "inputs": {
+  "artefacts": "bde2ef4cec2562be2447d8bff8703e14e8c629bdb7d93266b7bd42f58e6b62c3",
+  "tables": "588383f4009ef1d35da9e0d5d8daf417c05551baf5a638b36125db1f9c38ecb1"
+ },
+ "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+ "plan_sha256": "da9b7303cb841f28b3ca081d657e477315238f5e773eb20575239f6476794bca",
+ "run_id": "p8-da9b7303cb84",
+ "stage": "predict@all"
+}
