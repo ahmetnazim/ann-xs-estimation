@@ -11,6 +11,12 @@
    "git_commit": "fc7cc3e4c75c4b2fc5c7ef30f5e393871ecae61a",
    "seq": 2,
    "utc": "2026-10-14T11:59:17Z"
+  },
+  {
+   "event": "checkpoint_1",
+   "git_commit": "fb9a7e5c875aaf9fc241bfdbc230cf3a99e6d485",
+   "seq": 3,
+   "utc": "2026-10-14T12:04:39Z"
   }
  ]
 }

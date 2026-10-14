@@ -55,6 +55,18 @@
    "prev_sha256": "425c73938da2d660da7684152888b69309673315206d66825cb2c4dc5cc6b746",
    "seq": 2,
    "utc": "2026-10-14T12:00:10Z"
+  },
+  {
+   "event": "checkpoint_1",
+   "git_commit": "fb9a7e5c875aaf9fc241bfdbc230cf3a99e6d485",
+   "git_dirty": false,
+   "inputs": [],
+   "note": "PI written approval \"APPROVED\" (chat, 2026-10-14, in reply to the Event 1 summary; NN training authorised)",
+   "outputs": [],
+   "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+   "prev_sha256": "ea6b4fb773280540ceb4b17f59362ca298f8d615005b4f1c076b006dbc543de2",
+   "seq": 3,
+   "utc": "2026-10-14T12:04:39Z"
   }
  ],
  "header": {
