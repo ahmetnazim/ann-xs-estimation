@@ -43,7 +43,7 @@ AUDIT = PROTOCOL.audit
 RULES = PROTOCOL.audit_rules
 LN2 = math.log(2.0)
 TIGHT = 1e-12
-LOCK = "Phase 8: scoring locked until the Phase 7 gate"
+LOCK = "Event 3 (`evaluate.py evaluate`) is implemented in Phase 8 Batch C3c"
 
 
 def close(got: float, want: float, tol: float, ref: str) -> None:
@@ -961,17 +961,25 @@ def test_nugget_model_and_range_and_cluster_count() -> None:
 
 
 # ============================================================================ locks and imports
-@pytest.mark.parametrize("script", ["evaluate.py", "audit.py"])
-def test_cli_main_is_locked_in_phase_7(script) -> None:
-    """docs/3 P7-D1 (a): scripts/{evaluate,audit}.py refuse to run until the Phase 7 gate."""
-    path = REPO_ROOT / "scripts" / script
-    with pytest.raises(NotImplementedError, match=LOCK):
-        runpy.run_path(str(path), run_name="__main__")
+def test_cli_event_3_is_locked_until_c3c() -> None:
+    """docs/3 13.4: ``evaluate.py evaluate`` (Event 3) refuses to run until Batch C3c.
+
+    Supersedes the P7-D1 (a) lock of both scripts: PHASE_08 Batch C unlocks ``audit.py`` and
+    ``evaluate.py`` behind the scoring-ledger guard, whose refusals are tested in
+    ``tests/unit/test_evaluation_events.py``.
+    """
+    path = REPO_ROOT / "scripts" / "evaluate.py"
+    with pytest.raises(NotImplementedError, match=r"Event 3 .* C3c"):
+        runpy.run_path(str(path), run_name="not_main")["main"](["evaluate"])
     proc = subprocess.run(
-        [sys.executable, str(path)], capture_output=True, text=True, cwd=REPO_ROOT, check=False
+        [sys.executable, str(path), "evaluate"],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+        check=False,
     )
-    assert proc.returncode != 0, f"P7-D1: {script} exited 0"
-    assert LOCK in proc.stderr, f"P7-D1: lock message missing from stderr: {proc.stderr[-300:]}"
+    assert proc.returncode != 0, "Event 3 must not run before C3c"
+    assert LOCK in proc.stderr, f"lock message missing from stderr: {proc.stderr[-300:]}"
 
 
 def test_evaluation_package_imports_neither_torch_nor_xgboost() -> None:
