@@ -1843,24 +1843,24 @@ stages:
     outs:
     - path: data/processed/runs/run_registry.parquet
       hash: md5
-      md5: a89297ddafb1e0d9eda09a6094bf919f
-      size: 761719
+      md5: 46527681f4c0dc2d905617e403a0b477
+      size: 1853292
     - path: reports/run_manifest.json
       hash: md5
-      md5: bd63b4ccf5f803864f991ba5f4207d10
-      size: 2647
+      md5: c0ea09cfc28ec37870997ac4fc08104e
+      size: 2698
     - path: reports/training/curves.json
       hash: md5
-      md5: 58e0494c51d30eb3494f7c9198986bb9
-      size: 3
+      md5: 2e40348050bc91db25b7877ff5a77edb
+      size: 162224
     - path: reports/training/summary.json
       hash: md5
-      md5: 19e57267853477d21660f869b2139d92
-      size: 2000
+      md5: 0a7fc7aebe4a07ae93ce163f16e8c726
+      size: 4657
     - path: reports/training/xi.json
       hash: md5
-      md5: 58e0494c51d30eb3494f7c9198986bb9
-      size: 3
+      md5: 8fe1dc556b970fe48b9c66f9ab93c6aa
+      size: 21762
   predict_audit:
     cmd: python scripts/run_experiment.py predict --stage predict@audit
     deps:
