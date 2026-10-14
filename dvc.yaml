@@ -155,4 +155,40 @@ stages:
       - data/processed/predictions/M5_wA1.parquet: {persist: true}
       - data/processed/predictions/M6-NN.parquet: {persist: true}
     metrics: [{reports/predictions_all.json: {cache: false}}]
-  # Stages 4, 7 and 8 (audit, select_mstar, evaluate) are added with their code (C3b, C3c).
+
+  # Stages 4 and 7 (docs/3 13.3, 13.4): scoring events behind the ledger guard. Each refuses
+  # unless the previous ledger step is recorded, the ledger header matches the recomputed plan,
+  # params.yaml and uv.lock, the tree (ledger included) is clean and committed, and every
+  # prediction input hashes as sealed. A recorded event is never re-run. Outs are cache: false
+  # and persist: DVC must not delete a recorded output before a refused re-run. The ledger and
+  # reports/results/event_attempts.json are git-tracked, not DVC outs (C3b-l).
+  audit:                                              # 4, Event 1 (docs/3 3.6)
+    cmd: python scripts/audit.py
+    deps:
+      [scripts/audit.py, params.yaml, uv.lock, src/config.py, src/evaluation/events.py,
+       src/evaluation/event1.py, src/evaluation/dependence_audit.py, src/evaluation/ledger.py,
+       src/models, src/physics, src/utils, src/data/folds.py, src/data/network.py,
+       src/data/nhdplus.py, src/data/readers.py, src/data/io.py, src/data/srnd_frame.py, src/data/ind_features.py,
+       data/processed/site_table.parquet, data/processed/splits/fold_assignment.parquet,
+       data/processed/splits/srnd_assignment.parquet, data/processed/ind/ehydro_ind.parquet,
+       data/processed/ind/ehydro_ind_features.parquet, data/processed/srnd/srnd_frame.parquet,
+       data/raw/nhdplusv21, data/processed/predictions/audit_inputs.parquet]
+    outs:
+      - reports/results/audit.json: {cache: false, persist: true}
+      - reports/results/audit_strata.parquet: {cache: false, persist: true}
+  select_mstar:                                       # 7, Event 2 (docs/3 4.4)
+    cmd: python scripts/evaluate.py select-mstar
+    deps:
+      [scripts/evaluate.py, params.yaml, uv.lock, src/config.py, src/evaluation/events.py,
+       src/evaluation/event1.py, src/evaluation/event2.py, src/evaluation/dependence_audit.py,
+       src/evaluation/hypotheses.py, src/evaluation/metrics.py, src/evaluation/ledger.py,
+       src/models, src/physics, src/utils, src/data/folds.py, src/data/io.py,
+       src/data/srnd_frame.py, src/data/ind_features.py, data/processed/site_table.parquet,
+       data/processed/splits/fold_assignment.parquet,
+       data/processed/splits/srnd_assignment.parquet, data/processed/ind/ehydro_ind.parquet,
+       data/processed/ind/ehydro_ind_features.parquet, data/processed/srnd/srnd_frame.parquet,
+       data/processed/predictions/M1.parquet, data/processed/predictions/M2-MLP.parquet,
+       data/processed/predictions/M2-XGB.parquet]
+    outs:
+      - reports/results/mstar.json: {cache: false, persist: true}
+  # Stage 8 (evaluate, Event 3) is added with its code (C3c).
