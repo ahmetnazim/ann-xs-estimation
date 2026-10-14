@@ -69,3 +69,90 @@ stages:
     params: [splits.ind_dedupe_m, ehydro]
     outs: [data/processed/ind/ehydro_ind.parquet]
     metrics: [{reports/ind_prepare.json: {cache: false}}]
+
+  # ---- Phase 8 (docs/3 13.3). Stages 0a/0b build the last two plan-header tables.
+  ind_features:                                       # 0a, docs/3 13.5
+    cmd: python -m src.data.ind_features
+    deps: [src/data/ind_features.py, src/data/features.py, src/data/srnd_frame.py, src/data/qc.py,
+           src/data/nhdplus.py, src/data/readers.py, src/data/io.py, src/data/schemas.py,
+           src/data/validate_raw.py, data/processed/ind/ehydro_ind.parquet,
+           data/processed/unit_mapped, data/raw/streamcat, data/raw/usgs_attrs, data/raw/d50,
+           data/raw/aridity, data/raw/nhdplusv21, data/raw/physiography]
+    params: [features, acquire.streamcat, transforms.features]
+    outs: [data/processed/ind/ehydro_ind_features.parquet]
+    metrics: [{reports/ind_features.json: {cache: false}}]
+  srnd_frame:                                         # 0b, docs/3 13.6
+    cmd: python -m src.data.srnd_frame
+    deps: [src/data/srnd_frame.py, src/data/io.py, src/data/schemas.py,
+           data/processed/splits/srnd_assignment.parquet, data/processed/qc/hydroswot_init.parquet,
+           data/processed/site_table.parquet]
+    params: [transforms.features]
+    outs: [data/processed/srnd/srnd_frame.parquet]
+    metrics: [{reports/srnd_frame.json: {cache: false}}]
+
+  # Stages 1, 2 and 5. Fits live in the run root outside the workspace (docs/3 13.2), so these
+  # stages have no outs; the whole params.yaml is a dep because its SHA-256 enters the plan
+  # (and so the run_id). The orchestrator refuses NN stages without checkpoint_1 (13.3, 13.4)
+  # and a dirty git tree. Run one stage at a time: `dvc repro -s train@<item>`, then track.
+  train:
+    foreach: [baselines, xgb, nn_primary, ablations, sensitivity]
+    do:
+      cmd: >-
+        python scripts/run_experiment.py plan &&
+        python scripts/run_experiment.py run --stage train@${item}
+      deps: &run_deps
+        [scripts/run_experiment.py, params.yaml, uv.lock, src/config.py, src/models, src/physics,
+         src/utils, src/data/dataset.py, src/data/folds.py, src/data/normstats.py, src/data/io.py,
+         src/data/srnd_frame.py, src/data/ind_features.py, src/evaluation/ledger.py,
+         src/evaluation/metrics.py, data/processed/site_table.parquet,
+         data/processed/splits/fold_assignment.parquet,
+         data/processed/splits/srnd_assignment.parquet, data/processed/ind/ehydro_ind.parquet,
+         data/processed/ind/ehydro_ind_features.parquet, data/processed/srnd/srnd_frame.parquet]
+
+  # docs/3 13.7: registry (DVC out), run manifest and training diagnostics (cache: false),
+  # rebuilt from the run root. `run --stage` also refreshes them; `dvc repro -s track` records.
+  track:
+    cmd: python scripts/run_experiment.py track
+    deps: *run_deps
+    outs:
+      - data/processed/runs/run_registry.parquet
+      - reports/run_manifest.json: {cache: false}
+      - reports/training/curves.json: {cache: false}
+      - reports/training/xi.json: {cache: false}
+    metrics: [{reports/training/summary.json: {cache: false}}]
+
+  # Stages 3 and 6 (`predict@audit`, `predict@all`; DVC forbids per-item out lists, hence two
+  # stages). persist: DVC must never delete a prediction file before a re-run; a sealed file is
+  # refused by the writer if its bytes would change (13.4). Seals are `run_experiment.py seal`.
+  predict_audit:
+    cmd: python scripts/run_experiment.py predict --stage predict@audit
+    deps: *run_deps
+    outs:
+      - data/processed/predictions/audit_inputs.parquet: {persist: true}
+    metrics: [{reports/predictions_audit.json: {cache: false}}]
+  predict_all:
+    cmd: python scripts/run_experiment.py predict --stage predict@all
+    deps: *run_deps
+    outs:
+      - data/processed/predictions/M-null.parquet: {persist: true}
+      - data/processed/predictions/A_J.parquet: {persist: true}
+      - data/processed/predictions/M0.parquet: {persist: true}
+      - data/processed/predictions/M1.parquet: {persist: true}
+      - data/processed/predictions/M1_A4.parquet: {persist: true}
+      - data/processed/predictions/M2-XGB.parquet: {persist: true}
+      - data/processed/predictions/M2-XGB_A4.parquet: {persist: true}
+      - data/processed/predictions/M6-XGB.parquet: {persist: true}
+      - data/processed/predictions/M2-MLP.parquet: {persist: true}
+      - data/processed/predictions/M2-MLP_A4.parquet: {persist: true}
+      - data/processed/predictions/M3.parquet: {persist: true}
+      - data/processed/predictions/M4.parquet: {persist: true}
+      - data/processed/predictions/M5.parquet: {persist: true}
+      - data/processed/predictions/M5_A1.parquet: {persist: true}
+      - data/processed/predictions/M5_A2.parquet: {persist: true}
+      - data/processed/predictions/M5_A3-SP.parquet: {persist: true}
+      - data/processed/predictions/M5_A3-SR.parquet: {persist: true}
+      - data/processed/predictions/M5_A4.parquet: {persist: true}
+      - data/processed/predictions/M5_wA1.parquet: {persist: true}
+      - data/processed/predictions/M6-NN.parquet: {persist: true}
+    metrics: [{reports/predictions_all.json: {cache: false}}]
+  # Stages 4, 7 and 8 (audit, select_mstar, evaluate) are added with their code (C3b, C3c).

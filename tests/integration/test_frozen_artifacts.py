@@ -28,6 +28,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+import yaml
 
 from src.config import load_settings
 from src.data import schemas
@@ -64,6 +65,18 @@ BLOCK = ["family", "repeat", "outer_fold"]
 TRACKED = ("dvc.yaml", "dvc.lock", "params.yaml", ".dvcignore", ".dvc/config")
 RAW_SAMPLE = "data/raw/hydroswot/SWOT_ADCP_Dataset.txt"
 WAIVED_STAGE = "acquire@ehydro_author"  # ADL-099
+#: docs/3 13.3 stages run only in the production run (Phase 8 Batch D). Each may be pending only
+#: while it has no dvc.lock entry; once recorded it must be up to date like every other stage.
+PHASE8_RUN_STAGES = (
+    "train@baselines",
+    "train@xgb",
+    "train@nn_primary",
+    "train@ablations",
+    "train@sensitivity",
+    "track",
+    "predict_audit",
+    "predict_all",
+)
 
 
 def _need(path: Path) -> Path:
@@ -310,13 +323,26 @@ def test_dvc_cache_and_remote_in_sync() -> None:
     assert out.returncode == 0, f"dvc status -c exit {out.returncode}: {text!r}"
     assert "in sync" in text, f"dvc status -c: {text!r}"
     warnings = [line for line in text.splitlines() if line.startswith("WARNING")]
-    other = [line for line in warnings if "ehydro_author" not in line]
+    unrun = _unrun_phase8_stages()
+    other = [
+        line
+        for line in warnings
+        if "ehydro_author" not in line
+        and not any(f"(stage: '{s}')" in line and "missing version info" in line for s in unrun)
+    ]
     assert not other, f"unexpected DVC warnings: {other}"
+
+
+def _unrun_phase8_stages() -> set[str]:
+    """Phase 8 run stages without a ``dvc.lock`` entry (not yet executed in production)."""
+    lock = yaml.safe_load((REPO / "dvc.lock").read_text(encoding="utf-8"))
+    return set(PHASE8_RUN_STAGES) - set(lock.get("stages", {}))
 
 
 def test_dvc_pipeline_changes_only_the_waived_stage() -> None:
     """Phase 7 Step 0 / gate item 5: ``dvc status`` lists only ``acquire@ehydro_author`` (the
-    ADL-099 waiver); every frozen stage is up to date.
+    ADL-099 waiver); every frozen stage is up to date. Phase 8 run stages not yet recorded in
+    ``dvc.lock`` may also be listed (docs/3 13.3; they run in the production run).
     """
     out = _dvc("status")
     stages = [
@@ -324,4 +350,7 @@ def test_dvc_pipeline_changes_only_the_waived_stage() -> None:
         for line in out.stdout.splitlines()
         if line and not line[0].isspace() and line.endswith(":")
     ]
-    assert stages == [WAIVED_STAGE], f"changed stages {stages}; stdout {out.stdout!r}"
+    unrun = _unrun_phase8_stages()
+    assert stages[:1] == [WAIVED_STAGE], f"changed stages {stages}; stdout {out.stdout!r}"
+    unexpected = [s for s in stages[1:] if s not in unrun]
+    assert not unexpected, f"changed stages {unexpected}; stdout {out.stdout!r}"
