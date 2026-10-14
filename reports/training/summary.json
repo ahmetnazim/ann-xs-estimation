@@ -54,6 +54,15 @@
    "wall_s_mean": 1.606165750606704,
    "xi_final_max": null
   },
+  "M2-MLP_A4": {
+   "epochs_max": 105.0,
+   "epochs_mean": 77.01923076923077,
+   "fits_done": 260,
+   "picard_max": null,
+   "wall_s_max": 3.9922686251811683,
+   "wall_s_mean": 1.7712080429540946,
+   "xi_final_max": null
+  },
   "M2-XGB": {
    "epochs_max": null,
    "epochs_mean": null,
@@ -99,6 +108,60 @@
    "wall_s_mean": 10.22972429849021,
    "xi_final_max": null
   },
+  "M5_A1": {
+   "epochs_max": 83.0,
+   "epochs_mean": 72.95384615384616,
+   "fits_done": 260,
+   "picard_max": 0.0,
+   "wall_s_max": 3.89004341699183,
+   "wall_s_mean": 3.047270369904044,
+   "xi_final_max": null
+  },
+  "M5_A2": {
+   "epochs_max": 93.0,
+   "epochs_mean": 74.78076923076924,
+   "fits_done": 260,
+   "picard_max": 28.0,
+   "wall_s_max": 10.408698958810419,
+   "wall_s_mean": 7.112177579758617,
+   "xi_final_max": null
+  },
+  "M5_A3-SP": {
+   "epochs_max": 93.0,
+   "epochs_mean": 74.17692307692307,
+   "fits_done": 260,
+   "picard_max": 28.0,
+   "wall_s_max": 9.51898237504065,
+   "wall_s_mean": 6.337366311986429,
+   "xi_final_max": null
+  },
+  "M5_A3-SR": {
+   "epochs_max": 93.0,
+   "epochs_mean": 73.74230769230769,
+   "fits_done": 260,
+   "picard_max": 28.0,
+   "wall_s_max": 10.088226582854986,
+   "wall_s_mean": 6.440625134937895,
+   "xi_final_max": null
+  },
+  "M5_A4": {
+   "epochs_max": 91.0,
+   "epochs_mean": 73.29230769230769,
+   "fits_done": 260,
+   "picard_max": 28.0,
+   "wall_s_max": 10.313692166935652,
+   "wall_s_mean": 6.94259798592852,
+   "xi_final_max": null
+  },
+  "M5_wA1": {
+   "epochs_max": 110.0,
+   "epochs_mean": 74.9,
+   "fits_done": 260,
+   "picard_max": 28.0,
+   "wall_s_max": 11.87913158396259,
+   "wall_s_mean": 7.190851172601554,
+   "xi_final_max": null
+  },
   "M6-NN": {
    "epochs_max": 106.0,
    "epochs_mean": 70.38800904977376,
@@ -120,7 +183,7 @@
  },
  "stages": {
   "train@ablations": {
-   "done": 0,
+   "done": 1820,
    "planned": 1820
   },
   "train@baselines": {
