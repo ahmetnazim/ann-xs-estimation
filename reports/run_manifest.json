@@ -1,0 +1,97 @@
+{
+ "archive": null,
+ "git": {
+  "end": {
+   "commit": "0afb266984ce2ddb4b9fc2d6d31185515e366abf",
+   "dirty": false
+  },
+  "start": {
+   "commit": "0afb266984ce2ddb4b9fc2d6d31185515e366abf",
+   "dirty": false
+  }
+ },
+ "host": {
+  "machine": "arm64",
+  "packages": {
+   "dvc": "3.67.1",
+   "numpy": "2.5.3",
+   "pandas": "3.0.6",
+   "pyarrow": "25.0.1",
+   "torch": "2.14.1",
+   "xgboost": "3.4.1"
+  },
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.13"
+ },
+ "merkle_root": "df2e6686f8b00c8b7599d7fafd6ec60c41fa1346b60594904598fed937e9b060",
+ "n_leaves": 156,
+ "n_workers": 10,
+ "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+ "pilot": null,
+ "plan_sha256": "da9b7303cb841f28b3ca081d657e477315238f5e773eb20575239f6476794bca",
+ "registry_sha256": "9545b8c66a702535f5c3eb57ab9550b62b2db651f2d743595a1b968a28b7bd90",
+ "run_id": "p8-da9b7303cb84",
+ "schema_version": 1,
+ "stages": {
+  "train@ablations": {
+   "cleanup": [],
+   "done": 0,
+   "failures": [],
+   "invocations": 0,
+   "planned": 1820,
+   "reruns": [],
+   "wall_s": 0.0
+  },
+  "train@baselines": {
+   "cleanup": [],
+   "done": 78,
+   "failures": [],
+   "invocations": 1,
+   "planned": 78,
+   "reruns": [],
+   "wall_s": 1.9400964581873268
+  },
+  "train@nn_primary": {
+   "cleanup": [],
+   "done": 0,
+   "failures": [],
+   "invocations": 0,
+   "planned": 5798,
+   "reruns": [],
+   "wall_s": 0.0
+  },
+  "train@sensitivity": {
+   "cleanup": [],
+   "done": 0,
+   "failures": [],
+   "invocations": 0,
+   "planned": 2860,
+   "reruns": [],
+   "wall_s": 0.0
+  },
+  "train@xgb": {
+   "cleanup": [],
+   "done": 0,
+   "failures": [],
+   "invocations": 0,
+   "planned": 6806,
+   "reruns": [],
+   "wall_s": 0.0
+  }
+ },
+ "tables": {
+  "ehydro_ind": "a47bcd71e234a4dee69e8563c25b35d548f2a5030a04ca0b63ccf1ce0fff550c",
+  "fold_table": "1bf628c83fd658c179243499af5d533738fefaeb15b63a71c476530c40dc872c",
+  "ind_features": "c8397597a87c321088f88f58c24400db038fa50f54f50db4ffa743b75d80ebb1",
+  "site_table": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470",
+  "srnd_assignment": "b3c07ba313f5e3b834d85dbeb7ec1c9b17c31e7f5b2db0f1ef775a52013808a1",
+  "srnd_frame": "c1dd7216ff729f3fa4b783190063e16fc8d40e6bbb9bd3d9694012fa9bdb44f1"
+ },
+ "torch_threads_per_worker": 1,
+ "training_reports": {
+  "curves": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+  "summary": "c7c473cbe0e0244e1ada6ec178854e7ef650bca4b18674f49ae08ff5798828fe",
+  "xi": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+ },
+ "uv_lock_sha256": "85c69462b26510f2cd61bc4ba8f6ac0f6677a219715fbaf7220959b221da6e6d"
+}

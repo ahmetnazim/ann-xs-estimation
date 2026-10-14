@@ -1568,3 +1568,94 @@ stages:
       hash: md5
       md5: 2ab87a7a00f504fbbb41d7ce60d411fe
       size: 1112
+  train@baselines:
+    cmd: python scripts/run_experiment.py plan && python 
+      scripts/run_experiment.py run --stage train@baselines
+    deps:
+    - path: data/processed/ind/ehydro_ind.parquet
+      hash: md5
+      md5: a0a7f1ecbb69bd4b2763a8c97c220da2
+      size: 18326
+    - path: data/processed/ind/ehydro_ind_features.parquet
+      hash: md5
+      md5: a0e253f9e79d9123964b28c1a7759455
+      size: 114206
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/processed/splits/fold_assignment.parquet
+      hash: md5
+      md5: e09eafc7d1032584d8ce9fd56cdf1dc3
+      size: 609163
+    - path: data/processed/splits/srnd_assignment.parquet
+      hash: md5
+      md5: 3e01536b960383e982aace1378c4adc2
+      size: 232119
+    - path: data/processed/srnd/srnd_frame.parquet
+      hash: md5
+      md5: 4557ed9d50fa28cc2c4e09f2ea7b37cc
+      size: 2492623
+    - path: params.yaml
+      hash: md5
+      md5: 38d6ff7029136c2d77be571f79acabdf
+      size: 87236
+    - path: scripts/run_experiment.py
+      hash: md5
+      md5: 7d16a77976b22975863a05f80a0011fd
+      size: 18511
+    - path: src/config.py
+      hash: md5
+      md5: 1f22e6dfdd811a87809422c4e5fe92b7
+      size: 24874
+    - path: src/data/dataset.py
+      hash: md5
+      md5: b6564d74c078689d362fa497edc776a8
+      size: 5344
+    - path: src/data/folds.py
+      hash: md5
+      md5: 854f904cd2521c106cd29b1429306773
+      size: 5826
+    - path: src/data/ind_features.py
+      hash: md5
+      md5: 2a4c2b147279894f6651d52d53b97be4
+      size: 16800
+    - path: src/data/io.py
+      hash: md5
+      md5: 019c1fbf8ac4b95dd22b3cb458015cf0
+      size: 4437
+    - path: src/data/normstats.py
+      hash: md5
+      md5: c4249a1bfd8c7d3173b87ed286eeb5f7
+      size: 10089
+    - path: src/data/srnd_frame.py
+      hash: md5
+      md5: 0cc73505010daf67920be78777f2af35
+      size: 8674
+    - path: src/evaluation/ledger.py
+      hash: md5
+      md5: 6573416814c6bb45159a4c937426fe64
+      size: 12214
+    - path: src/evaluation/metrics.py
+      hash: md5
+      md5: 4e4bbbfc9488c31543a55ded51f4c6da
+      size: 15386
+    - path: src/models
+      hash: md5
+      md5: fd92997cc2b7e155dc4636f23f97e256.dir
+      size: 625087
+      nfiles: 38
+    - path: src/physics
+      hash: md5
+      md5: 6f5deee115df23f3441f00b7f65f746b.dir
+      size: 74572
+      nfiles: 10
+    - path: src/utils
+      hash: md5
+      md5: e13859a297bbf33bcb23333fa727a6b3.dir
+      size: 17910
+      nfiles: 7
+    - path: uv.lock
+      hash: md5
+      md5: 00903a90378d1770195cb053d661d4ae
+      size: 239269

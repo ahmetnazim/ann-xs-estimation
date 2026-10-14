@@ -1,0 +1,53 @@
+{
+ "models": {
+  "A_J": {
+   "epochs_max": null,
+   "epochs_mean": null,
+   "fits_done": 26,
+   "picard_max": null,
+   "wall_s_max": 0.0749763750936836,
+   "wall_s_mean": 0.06768158652210751,
+   "xi_final_max": null
+  },
+  "M-null": {
+   "epochs_max": null,
+   "epochs_mean": null,
+   "fits_done": 26,
+   "picard_max": null,
+   "wall_s_max": 0.16237633302807808,
+   "wall_s_mean": 0.11901195665212491,
+   "xi_final_max": null
+  },
+  "M0": {
+   "epochs_max": null,
+   "epochs_mean": null,
+   "fits_done": 26,
+   "picard_max": null,
+   "wall_s_max": 0.07902745786122978,
+   "wall_s_mean": 0.06671121627844584,
+   "xi_final_max": null
+  }
+ },
+ "stages": {
+  "train@ablations": {
+   "done": 0,
+   "planned": 1820
+  },
+  "train@baselines": {
+   "done": 78,
+   "planned": 78
+  },
+  "train@nn_primary": {
+   "done": 0,
+   "planned": 5798
+  },
+  "train@sensitivity": {
+   "done": 0,
+   "planned": 2860
+  },
+  "train@xgb": {
+   "done": 0,
+   "planned": 6806
+  }
+ }
+}
