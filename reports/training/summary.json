@@ -46,12 +46,12 @@
    "xi_final_max": null
   },
   "M2-MLP": {
-   "epochs_max": 117.0,
-   "epochs_mean": 84.91628959276018,
-   "fits_done": 884,
+   "epochs_max": 133.0,
+   "epochs_mean": 79.94047619047619,
+   "fits_done": 2184,
    "picard_max": null,
    "wall_s_max": 4.035413374891505,
-   "wall_s_mean": 1.606165750606704,
+   "wall_s_mean": 1.6124926087276579,
    "xi_final_max": null
   },
   "M2-MLP_A4": {
@@ -101,11 +101,11 @@
   },
   "M5": {
    "epochs_max": 107.0,
-   "epochs_mean": 74.34049773755656,
-   "fits_done": 884,
+   "epochs_mean": 73.62152209492635,
+   "fits_done": 2444,
    "picard_max": 28.0,
    "wall_s_max": 15.340365540934727,
-   "wall_s_mean": 10.22972429849021,
+   "wall_s_mean": 7.89538555895731,
    "xi_final_max": null
   },
   "M5_A1": {
@@ -195,7 +195,7 @@
    "planned": 5798
   },
   "train@sensitivity": {
-   "done": 0,
+   "done": 2860,
    "planned": 2860
   },
   "train@xgb": {

@@ -2,7 +2,7 @@
  "archive": null,
  "git": {
   "end": {
-   "commit": "d90a24c01288ee81b688c653f4d47704c56b1f5a",
+   "commit": "ee0667c50e73265bde1f11ba486a5f364c5f91b7",
    "dirty": false
   },
   "start": {
@@ -23,13 +23,13 @@
   "platform": "macOS-26.6.2-arm64-arm-64bit",
   "python": "3.12.13"
  },
- "merkle_root": "991bbb14f959eaa6d43b92000c118723056d9eda829869f9b9f79be0ee45aebf",
- "n_leaves": 40068,
+ "merkle_root": "bb97203df74599de568bee5316d4b147d1b7dea770220d7917da464b937a1fb2",
+ "n_leaves": 51508,
  "n_workers": 10,
  "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
  "pilot": null,
  "plan_sha256": "da9b7303cb841f28b3ca081d657e477315238f5e773eb20575239f6476794bca",
- "registry_sha256": "bf9dd30056ef8ab0c92054ad128d9649d3ff6d1a7ec45911aec00b11f9ecdd77",
+ "registry_sha256": "645355acaf810d8bcba7afc7684f4e0601b99e9854fa445714107a4c7f1ec500",
  "run_id": "p8-da9b7303cb84",
  "schema_version": 1,
  "stages": {
@@ -62,12 +62,12 @@
   },
   "train@sensitivity": {
    "cleanup": [],
-   "done": 0,
+   "done": 2860,
    "failures": [],
-   "invocations": 0,
+   "invocations": 1,
    "planned": 2860,
    "reruns": [],
-   "wall_s": 0.0
+   "wall_s": 1241.4532295421232
   },
   "train@xgb": {
    "cleanup": [],
@@ -90,7 +90,7 @@
  "torch_threads_per_worker": 1,
  "training_reports": {
   "curves": "0564e261258df707db4c99caa0ec3f6f3aea316122424611b0007503af71bd44",
-  "summary": "fb17498c165cc9408ae7dfdb8bbe4028afad3b56324569f97082ee3d7deed7d1",
+  "summary": "35ed5efd742d7797e611da6c86eff56ef0760e7a1cd504f21353e48fc2fdc90c",
   "xi": "4f92948a1cc7bff903847bc363ff5646f7320ccf146d4da3465539ae1928be03"
  },
  "uv_lock_sha256": "85c69462b26510f2cd61bc4ba8f6ac0f6677a219715fbaf7220959b221da6e6d"
