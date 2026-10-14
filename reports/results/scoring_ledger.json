@@ -17,6 +17,44 @@
    "prev_sha256": "ff6b139e7fe8b77252e464d258d354b61537477c15a0c5f027c911319ee26188",
    "seq": 1,
    "utc": "2026-10-14T11:46:08Z"
+  },
+  {
+   "event": "event_1",
+   "git_commit": "fc7cc3e4c75c4b2fc5c7ef30f5e393871ecae61a",
+   "git_dirty": false,
+   "inputs": [
+    {
+     "path": "data/processed/predictions/audit_inputs.parquet",
+     "sha256": "ad0f191a2456bb16f1781b0fdb2928fa46d496166c423405d31b7c87cc416449"
+    },
+    {
+     "path": "data/processed/site_table.parquet",
+     "sha256": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470"
+    },
+    {
+     "path": "data/processed/splits/fold_assignment.parquet",
+     "sha256": "1bf628c83fd658c179243499af5d533738fefaeb15b63a71c476530c40dc872c"
+    },
+    {
+     "path": "data/raw/nhdplusv21/MANIFEST.sha256",
+     "sha256": "e40d54cf755343ac96eed33c2c935191abdc7d34d67ea7611a9251b4e6665ecc"
+    }
+   ],
+   "note": "Event 1: spatial and network dependence audit on S-ID (docs/3 13.4, protocol 3.6) [re-run after 1 unrecorded attempt(s)]",
+   "outputs": [
+    {
+     "path": "reports/results/audit.json",
+     "sha256": "d8b44a5e2556e7a04f574c3a7be8f6785e58f7ab0d334dd22c3ac9b0e3c2adcf"
+    },
+    {
+     "path": "reports/results/audit_strata.parquet",
+     "sha256": "c039cc16973083a79fffdd9a02df6cda02bc9fb9b0085446e034b1c7744e0e68"
+    }
+   ],
+   "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+   "prev_sha256": "425c73938da2d660da7684152888b69309673315206d66825cb2c4dc5cc6b746",
+   "seq": 2,
+   "utc": "2026-10-14T12:00:10Z"
   }
  ],
  "header": {

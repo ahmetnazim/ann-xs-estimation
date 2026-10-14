@@ -62,3 +62,6 @@ Icon?
 
 # NOT ignored on purpose (Phase 4 gate check): dvc.yaml, dvc.lock, params.yaml, .dvcignore,
 # uv.lock, .python-version, reports/*.json, docs/tables/*.csv. `*.csv` is not ignored globally.
+
+# Phase 8 event outputs (docs/3 13.4; dvc.yaml audit stage, cache: false) are committed with the ledger
+!reports/results/*.parquet
