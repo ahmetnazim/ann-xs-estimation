@@ -94,7 +94,20 @@ only-include = ["src", "tests", "pyproject.toml", "params.yaml", "dvc.yaml"]
 target-version = "py312"
 line-length = 100
 src = ["src", "tests"]
-extend-exclude = [".agents", "literature", "data", "docs"]
+# "./data" is the root data/ tree only ("data" also matched src/data; F-C3, Phase 8). The five
+# src/data modules below are dependencies of frozen DVC stages with pre-existing findings; they
+# stay byte-identical, so they are excluded by name rather than reformatted.
+extend-exclude = [
+    ".agents",
+    "literature",
+    "./data",
+    "docs",
+    "src/data/ehydro.py",
+    "src/data/features.py",
+    "src/data/ind_prepare.py",
+    "src/data/schemas.py",
+    "src/data/split.py",
+]
 # Cache location: RUFF_CACHE_DIR (scripts/dev_env.sh, outside Drive; P4-D2 (a)).
 
 [tool.ruff.lint]

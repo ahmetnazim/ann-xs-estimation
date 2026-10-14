@@ -107,6 +107,7 @@ class NormStats:
     provenance: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self) -> None:
+        """Validate field lengths, transform kinds and the fit provenance (L5)."""
         n = len(self.names)
         if not all(len(v) == n for v in (self.kinds, self.offsets, self.mean, self.std)):
             raise ValueError("NormStats fields must have one entry per feature")

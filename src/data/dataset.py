@@ -92,9 +92,11 @@ class SiteDataset(Dataset[Batch]):
         self.features = tuple(features)
 
     def __len__(self) -> int:
+        """Return the number of rows."""
         return int(self.row.shape[0])
 
     def __getitem__(self, index: list[int]) -> Batch:
+        """Return the batch of rows ``index`` (the ADL-077 batch contract)."""
         idx = torch.as_tensor(index, dtype=torch.int64)
         return {
             "x": self.x[idx],
