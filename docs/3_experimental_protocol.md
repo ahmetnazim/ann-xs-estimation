@@ -1253,3 +1253,13 @@ Implemented in `src/evaluation` with known-answer tests before Event 1:
 ### 13.11 Unchanged
 
 No `params.yaml` value, grid, threshold, metric definition or decision rule changes. M-null, A_J and M0 are fitted on training parts only. Outer test rows are blanked in every fit (runner guard). No fold is created by model code. The frozen artefacts of §10.1 and §11 are never regenerated.
+
+### 13.12 Event 1 and Event 2 computation rules (Phase 8 Batch C3b; fixed before Event 1) [ADL-125]
+
+- **Event 1 series.** Site targets ln W, ln d̄ and t; OOF residuals e = μ_k − ln o_k (t: μ_t − t_obs) of M-null and M2-XGB for k ∈ {W, d̄, d_max, A, t}. Every series gets §3.6.2–§3.6.4. D, ρ̂ and ρ* use M2-XGB d̄ only.
+- **Residual per site.** Each post-QC site is outer-test exactly once per S-ID repeat; its residual is the mean over the three repeats. A missing, duplicated or misplaced prediction stops the event.
+- **d̃_NN and nested share.** Pooled over every (repeat, outer fold, test site) of the 15 S-ID blocks; per-block values reported alongside. The nested class uses the §13.9 BFS per block.
+- **Seed.** `seeds.global` for every permutation test.
+- **Strata.** Event 1 writes `reports/results/audit_strata.parquet` (per S-ID test instance: nearest-training distance, far flag d > ρ*, ψ_max, nested class; no error values); Event 3 uses it for §3.6.5. |ΔPathLength| and LevelPathI are Event 3 descriptives.
+- **Event 2.** RMSE of ln k per (repeat, outer fold) on S-ID OOF, mean over the three repeats, M* by §4.4; M1's ln Â = μ_W + μ_d̄.
+- **Runtime.** Events refuse if the ledger header (`run_id`, `plan_sha256`, `params_sha256`, `uv_lock_sha256`) differs from the recomputed values, if the tree or the ledger is not committed, or if an input is unsealed or changed. Attempts are logged in `reports/results/event_attempts.json` (stands in for "the manifest" of §13.4, a `track` DVC out). A checkpoint note contains no decimal number or percentage.
