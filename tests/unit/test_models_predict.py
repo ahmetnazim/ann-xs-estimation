@@ -606,6 +606,41 @@ def test_inline_driver_and_bit_identical_rerun(
     assert again["files"] == rep["files"]
 
 
+def test_audit_blocks_are_reused_by_predict_all(
+    trained: Run, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Batch D F-D1: production order on one run dir. ``predict@audit`` runs with the reduced
+    context (no S-IND/S-RND tables, as in ``run_experiment.py``); ``predict@all`` then reuses its
+    blocks (resume key = the job's own tables) and gives the same files as the fixture.
+    """
+    run_dir = tmp_path / RUN_ID
+    shutil.copytree(trained.run_dir, run_dir, ignore=shutil.ignore_patterns("predictions"))
+    full = pr.PredictContext(**{**json.loads(trained.ctx.to_json()), "run_dir": str(run_dir)})
+    reduced = dict.fromkeys(("ind_path", "ind_sha256", "srnd_path", "srnd_sha256"), "")
+    audit = pr.PredictContext(**{**json.loads(full.to_json()), **reduced})
+    monkeypatch.setattr(pr, "xgb_raw", pr.booster_predictions)  # inline: no torch-free worker
+    common: dict[str, Any] = {
+        "settings": trained.settings,
+        "dest_dir": tmp_path / "out",
+        "n_workers": 1,
+        "inline": True,
+        "repo_root": tmp_path,
+    }
+    pr.run_predictions("predict@audit", trained.fits, ctx=audit, **common)
+    tables = pr.PredictTables.load(full)
+    xjob = _job(trained, "M2-XGB")
+    for phase in ("raw", "main"):
+        res = pr.execute_job(xjob, phase, tables, trained.settings, run_dir, full.stage_dir)
+        assert res["skipped"] is True, phase
+    rep = pr.run_predictions("predict@all", trained.fits, ctx=full, **common)
+    assert {k: v["sha256"] for k, v in rep["files"].items()} == {
+        k: v["sha256"] for k, v in trained.reports["predict@all"]["files"].items()
+    }
+    ijob = _job(trained, "M2-XGB", "S-IND")
+    with pytest.raises(RuntimeError, match=r"lacks \['ind_features'\]"):
+        pr.job_tables(ijob, pr.PredictTables.load(audit))
+
+
 # ----------------------------------------------------------------------------- guards
 def test_refusals(trained: Run, tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="unknown prediction stage"):

@@ -240,7 +240,10 @@ def cmd_run(settings: Settings, args: argparse.Namespace, log: logging.Logger) -
                   f"executed {res.executed}, reruns {len(res.reruns)}")  # fmt: skip
         except RunFailureError as exc:
             rep = exc.report
-            print(f"{args.stage}: FAILED at {rep['fit_id']} (seed {rep['seed']}): {rep['error']}")
+            print(
+                f"{args.stage}: FAILED at {rep['fit_id']} (seed {rep['seed']}): "
+                f"{rep['error']}: {rep.get('message', '')}"
+            )
             code = 2
         finally:
             manifest = _track(settings, built)
@@ -354,7 +357,12 @@ def cmd_predict(settings: Settings, args: argparse.Namespace, log: logging.Logge
             )
         except PredictFailureError as exc:
             rep = exc.report
-            print(f"{args.stage}: FAILED at {rep['block_id']} ({rep['phase']}): {rep['error']}")
+            if rep.get("traceback"):
+                log.error("worker traceback:\n%s", rep["traceback"])
+            print(
+                f"{args.stage}: FAILED at {rep['block_id']} ({rep['phase']}): "
+                f"{rep['error']}: {rep.get('message', '')}"
+            )
             return 2
     report = {"run_id": built.run_id, "plan_sha256": built.sha256, **report}
     write_json(_report_path(settings, args.stage), report)

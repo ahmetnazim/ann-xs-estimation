@@ -73,6 +73,7 @@ __all__ = [
     "back_calc",
     "block_frame",
     "execute_job",
+    "job_tables",
     "prediction_jobs",
     "predictions_dir",
     "run_predictions",
@@ -413,10 +414,25 @@ def _checked_run(
     return doc
 
 
+def job_tables(job: PredictJob, tables: PredictTables) -> dict[str, str]:
+    """Hashes of the tables one job reads (the resume key; Batch D, F-D1).
+
+    Site and fold for every job, plus ``ind_features`` (S-IND jobs) or ``srnd_frame`` (S-RND
+    jobs). A block written by ``predict@audit`` is therefore reused by ``predict@all`` (whose
+    context also carries the S-IND and S-RND tables) after an exact match.
+    """
+    keys = ["site_table", "fold_table"]
+    keys += {"S-IND": ["ind_features"], "S-RND": ["srnd_frame"]}.get(job.family, [])
+    missing = [k for k in keys if k not in tables.hashes]
+    if missing:
+        raise RuntimeError(f"{job.block_id}: prediction context lacks {missing}")
+    return {k: tables.hashes[k] for k in sorted(keys)}
+
+
 def _sidecar(
     job: PredictJob, phase: str, run_dir: Path, settings: Settings, tables: PredictTables
 ) -> dict[str, Any]:
-    """Resume key: the job, params, table hashes and the SHA-256 of each artefact ``run.json``."""
+    """Resume key: the job, params, the job's table hashes and each artefact ``run.json``."""
     arts = {
         (d / _RUN).relative_to(run_dir).as_posix(): sha256_file(d / _RUN)
         for d in _artefact_dirs(run_dir, job)
@@ -426,7 +442,7 @@ def _sidecar(
         "job": job.to_json(),
         "phase": phase,
         "params_sha256": settings.params_sha256,
-        "tables": dict(sorted(tables.hashes.items())),
+        "tables": job_tables(job, tables),
         "artefacts": arts,
     }
 
