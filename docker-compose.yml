@@ -1,0 +1,29 @@
+# Reproducibility capsule runtime (docs/3 §13.10; P8-D11 (a)). The production run executes
+# natively (P8-D12 (a)); this file runs the capsule against the same data for verification.
+#
+#   docker compose run --rm capsule python scripts/run_experiment.py status
+#
+# data/raw and data/processed are read-only. Their entries are symlinks into the DVC cache
+# (.dvc/config `cache.type = symlink`), so the cache is mounted read-only at its host path.
+# The run root (outside the repo and outside Google Drive, docs/3 §13.2) and reports/ are
+# read-write. Nothing is copied into the image.
+name: ann-xs-estimation
+services:
+  capsule:
+    image: ann-xs-estimation:capsule
+    build:
+      context: .
+      target: runtime
+      platforms: [linux/arm64]
+    platform: linux/arm64
+    user: "1000:1000"
+    environment:
+      ANNXS_RUN_ROOT: /runs
+      ANNXS_DVC_STORE: /dvc_store
+      ANNXS_N_WORKERS: ${ANNXS_N_WORKERS:-10}
+    volumes:
+      - ./data/raw:/app/data/raw:ro
+      - ./data/processed:/app/data/processed:ro
+      - ${HOME}/dvc_store/ANN_XS_Estimation/cache:${HOME}/dvc_store/ANN_XS_Estimation/cache:ro
+      - ${ANNXS_RUN_ROOT_HOST:-${HOME}/dvc_store/ANN_XS_Estimation/runs}:/runs
+      - ./reports:/app/reports

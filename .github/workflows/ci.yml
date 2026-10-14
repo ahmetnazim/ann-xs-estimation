@@ -3,7 +3,10 @@
 # CI-COMMANDS markers of scripts/ci_local.sh (enforced by tests/unit/test_ci_config.py).
 # Linux pulls torch from the pinned CPU index (pyproject.toml [tool.uv.sources]). Real data is
 # DVC-managed and absent here, so the integration tests are deselected (and skip without data).
-# Action versions were set without network verification; refresh them when a remote is added.
+# Actions are pinned by commit SHA, verified with `git ls-remote` on 2026-10-13 (lightweight
+# tags): checkout v7.0.1, setup-uv v10.3.0, setup-buildx-action v4.4.1, build-push-action v7.4.0.
+# The `docker` job builds the capsule (docs/3 13.10) and never pushes; the binding capsule
+# evidence is scripts/container_check.sh (P8-D13 (a)).
 name: ci
 
 on:
@@ -20,11 +23,13 @@ jobs:
     env:
       HYPOTHESIS_PROFILE: ci
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           version: "0.12.1"
           python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
       - run: uv sync --frozen --all-groups
       - run: uv run ruff check .
       - run: uv run ruff format --check .
@@ -34,3 +39,18 @@ jobs:
       - run: uv run coverage report --include="src/models/*" --fail-under=87
       - run: uv run coverage report --include="src/evaluation/*" --fail-under=90
       - run: uv run coverage report --include="src/data/*" --fail-under=74
+
+  docker:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          target: check
+          platforms: linux/arm64
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
