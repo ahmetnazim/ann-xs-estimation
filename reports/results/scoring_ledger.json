@@ -199,6 +199,18 @@
    "prev_sha256": "65ebf56b0625507029a9949868d92a16b9270a88f0a3cf86c2caa52c5646c6fc",
    "seq": 5,
    "utc": "2026-10-14T23:13:22Z"
+  },
+  {
+   "event": "checkpoint_2",
+   "git_commit": "26b14bab1a771ac6018c1225a1869e8e1b3f0529",
+   "git_dirty": false,
+   "inputs": [],
+   "note": "PI written approval \"APPROVED\" (chat, 2026-10-14, in reply to the Event 2 summary; M* = M2-XGB for dbar and A accepted)",
+   "outputs": [],
+   "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+   "prev_sha256": "f1d34929f1641c27884b3adfc2aeb7fc3779808108e65f2c035612078cc80528",
+   "seq": 6,
+   "utc": "2026-10-14T23:18:35Z"
   }
  ],
  "header": {
