@@ -1,0 +1,20 @@
+{
+ "blocks": 30,
+ "files": {
+  "data/processed/predictions/audit_inputs.parquet": {
+   "rows": 23928,
+   "rows_by_family_unit": {
+    "S-ID/site": 23928
+   },
+   "sha256": "ad0f191a2456bb16f1781b0fdb2928fa46d496166c423405d31b7c87cc416449"
+  }
+ },
+ "inputs": {
+  "artefacts": "948e37bdea463d07fd4c3e20acfdad2d0c0d6565aa3b01603cae1df8f7c621d7",
+  "tables": "78957bcb747ebaf96866e66428534566eb802dce874f8406590b97adc996e345"
+ },
+ "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+ "plan_sha256": "da9b7303cb841f28b3ca081d657e477315238f5e773eb20575239f6476794bca",
+ "run_id": "p8-da9b7303cb84",
+ "stage": "predict@audit"
+}
