@@ -59,6 +59,7 @@ only-include = ["src/annxs_figures", "tests", "pyproject.toml"]
 target-version = "py312"
 line-length = 100
 src = ["src", "tests"]
+cache-dir = "/tmp/annxs_figures_ruff_cache"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "C4", "NPY", "PT", "RUF", "D", "ANN"]
@@ -68,6 +69,7 @@ convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D", "ANN"]
+"figures/tests/**" = ["D", "ANN"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["annxs_figures"]
@@ -77,6 +79,7 @@ python_version = "3.12"
 strict = true
 warn_unreachable = true
 files = ["figures/src", "figures/tests", "scripts/make_figures.py"]
+cache_dir = "/tmp/annxs_figures_mypy_cache"
 
 [[tool.mypy.overrides]]
 module = [
@@ -107,6 +110,7 @@ filterwarnings = ["error"]
 [tool.coverage.run]
 source = ["annxs_figures"]
 branch = true
+data_file = "/tmp/annxs_figures.coverage"
 
 [tool.coverage.report]
 precision = 0
