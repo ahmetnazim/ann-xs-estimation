@@ -2647,3 +2647,233 @@ stages:
       hash: md5
       md5: 08cd9319c54c7452ad925154101c697e
       size: 2164
+  evaluate:
+    cmd: python scripts/evaluate.py evaluate
+    deps:
+    - path: data/processed/ind/ehydro_ind.parquet
+      hash: md5
+      md5: a0a7f1ecbb69bd4b2763a8c97c220da2
+      size: 18326
+    - path: data/processed/ind/ehydro_ind_features.parquet
+      hash: md5
+      md5: a0e253f9e79d9123964b28c1a7759455
+      size: 114206
+    - path: data/processed/predictions/A_J.parquet
+      hash: md5
+      md5: 070baf59dcaf64dafd53080fbdd03799
+      size: 155463
+    - path: data/processed/predictions/M-null.parquet
+      hash: md5
+      md5: dc653058cb895d7307f93401ed28c420
+      size: 172512
+    - path: data/processed/predictions/M0.parquet
+      hash: md5
+      md5: 99693d9109fb9e7ba6e43379912b45c6
+      size: 759620
+    - path: data/processed/predictions/M1.parquet
+      hash: md5
+      md5: c24229c74e5eb820813328bccdea748b
+      size: 23806754
+    - path: data/processed/predictions/M1_A4.parquet
+      hash: md5
+      md5: d648a428f26b29f26efc4e66db1352bd
+      size: 4018632
+    - path: data/processed/predictions/M2-MLP.parquet
+      hash: md5
+      md5: a12833ff5f7517f7984d077090578559
+      size: 119274290
+    - path: data/processed/predictions/M2-MLP_A4.parquet
+      hash: md5
+      md5: 0e60a175c238adbd826c541d6fe9a28c
+      size: 20801273
+    - path: data/processed/predictions/M2-XGB.parquet
+      hash: md5
+      md5: 872c613f9b6f85c8565aa108431bb75a
+      size: 33673551
+    - path: data/processed/predictions/M2-XGB_A4.parquet
+      hash: md5
+      md5: 0c09189010a062c34b02cb26ddc54a6a
+      size: 5325301
+    - path: data/processed/predictions/M3.parquet
+      hash: md5
+      md5: d5eb70b573928dba44a55d648f65df73
+      size: 6543537
+    - path: data/processed/predictions/M4.parquet
+      hash: md5
+      md5: c6e102bd16bc3516e2e9e34bdc3ad923
+      size: 17405621
+    - path: data/processed/predictions/M5.parquet
+      hash: md5
+      md5: 4ecb2122f62a0b904f04cbe0b64d9937
+      size: 115970236
+    - path: data/processed/predictions/M5_A1.parquet
+      hash: md5
+      md5: 02264766f8833d738513f689fc6a8084
+      size: 17072526
+    - path: data/processed/predictions/M5_A2.parquet
+      hash: md5
+      md5: 6d9e36b4d508780c53fe206da5b527f3
+      size: 17213524
+    - path: data/processed/predictions/M5_A3-SP.parquet
+      hash: md5
+      md5: 8479cb61f2658f53e1f5124f19a80019
+      size: 17199162
+    - path: data/processed/predictions/M5_A3-SR.parquet
+      hash: md5
+      md5: cda6e1174972a0ed9a6b0c2af768301c
+      size: 17200792
+    - path: data/processed/predictions/M5_A4.parquet
+      hash: md5
+      md5: d35e8d81c513cacd0a8127449da176a6
+      size: 17196112
+    - path: data/processed/predictions/M5_wA1.parquet
+      hash: md5
+      md5: daef71ebd96f098212f2fdbd85d194fc
+      size: 17207799
+    - path: data/processed/predictions/M6-NN.parquet
+      hash: md5
+      md5: 431724f309044ffefab18aec132233a4
+      size: 8763824
+    - path: data/processed/predictions/M6-XGB.parquet
+      hash: md5
+      md5: 2e0e111506c0494086089fa806c4fb9a
+      size: 7347343
+    - path: data/processed/qc/hydroswot_init.parquet
+      hash: md5
+      md5: 9711cc7503caa2d2f6669abc713cb117
+      size: 2950832
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/processed/splits/fold_assignment.parquet
+      hash: md5
+      md5: e09eafc7d1032584d8ce9fd56cdf1dc3
+      size: 609163
+    - path: data/processed/splits/srnd_assignment.parquet
+      hash: md5
+      md5: 3e01536b960383e982aace1378c4adc2
+      size: 232119
+    - path: data/processed/srnd/srnd_frame.parquet
+      hash: md5
+      md5: 4557ed9d50fa28cc2c4e09f2ea7b37cc
+      size: 2492623
+    - path: data/raw/hyg
+      hash: md5
+      md5: a5f1f0f808cc5915f47539eb77cc128f.dir
+      size: 6492997
+      nfiles: 3
+    - path: data/raw/nhdplusv21
+      hash: md5
+      md5: 69b67b8e05ee2f8fc888e9a3399b7b67.dir
+      size: 43848085319
+      nfiles: 2331
+    - path: params.yaml
+      hash: md5
+      md5: 38d6ff7029136c2d77be571f79acabdf
+      size: 87236
+    - path: reports/results/audit.json
+      hash: md5
+      md5: 2fc1edaaf9157f3b90bb1b2bf6a287cf
+      size: 64505
+    - path: reports/results/audit_strata.parquet
+      hash: md5
+      md5: 23beb2e47f460adfceece7bbd8c5f508
+      size: 173772
+    - path: reports/results/mstar.json
+      hash: md5
+      md5: 08cd9319c54c7452ad925154101c697e
+      size: 2164
+    - path: scripts/evaluate.py
+      hash: md5
+      md5: 7efd5e3f4caf6f54efc25f6649ebb779
+      size: 13226
+    - path: src/config.py
+      hash: md5
+      md5: 1f22e6dfdd811a87809422c4e5fe92b7
+      size: 24874
+    - path: src/data/external.py
+      hash: md5
+      md5: a77f9512434701278b26561ab0a0b12f
+      size: 5257
+    - path: src/data/folds.py
+      hash: md5
+      md5: 854f904cd2521c106cd29b1429306773
+      size: 5826
+    - path: src/data/ind_features.py
+      hash: md5
+      md5: 2a4c2b147279894f6651d52d53b97be4
+      size: 16800
+    - path: src/data/io.py
+      hash: md5
+      md5: 019c1fbf8ac4b95dd22b3cb458015cf0
+      size: 4437
+    - path: src/data/network.py
+      hash: md5
+      md5: a0012b2739ee2159b0537db9219bffcb
+      size: 2815
+    - path: src/data/nhdplus.py
+      hash: md5
+      md5: 97ed3f0b5ec2643edf18f1a3986e2a6e
+      size: 11718
+    - path: src/data/readers.py
+      hash: md5
+      md5: be8bd1a4f6450a6b4a2026005825d004
+      size: 6589
+    - path: src/data/srnd_frame.py
+      hash: md5
+      md5: 0cc73505010daf67920be78777f2af35
+      size: 8674
+    - path: src/evaluation
+      hash: md5
+      md5: 1383b328a52a23932b432057d50fcf95.dir
+      size: 242087
+      nfiles: 17
+    - path: src/models
+      hash: md5
+      md5: fd92997cc2b7e155dc4636f23f97e256.dir
+      size: 625087
+      nfiles: 38
+    - path: src/physics
+      hash: md5
+      md5: 6f5deee115df23f3441f00b7f65f746b.dir
+      size: 74572
+      nfiles: 10
+    - path: src/utils
+      hash: md5
+      md5: e13859a297bbf33bcb23333fa727a6b3.dir
+      size: 17910
+      nfiles: 7
+    - path: uv.lock
+      hash: md5
+      md5: 00903a90378d1770195cb053d661d4ae
+      size: 239269
+    outs:
+    - path: reports/results/event3.json
+      hash: md5
+      md5: 97d05047aba6fcde17c9f6d65632bc49
+      size: 7102
+    - path: reports/results/event3_consistency.json
+      hash: md5
+      md5: 7ca955e3332ba64aa679a305a6844c17
+      size: 23833
+    - path: reports/results/event3_dependence.json
+      hash: md5
+      md5: 37a98f6eb40964e517dc0154e2ceb091
+      size: 95042
+    - path: reports/results/event3_descriptive.json
+      hash: md5
+      md5: 52276c4f5ed0427d6bb0330bf6e40405
+      size: 9440
+    - path: reports/results/event3_hypotheses.json
+      hash: md5
+      md5: 65efd0c8d47d8257bdf398c11bd20e80
+      size: 16979
+    - path: reports/results/event3_matrix.parquet
+      hash: md5
+      md5: b57d679922d021672b015cedc4e01563
+      size: 445653
+    - path: reports/results/event3_uq.json
+      hash: md5
+      md5: 2fa23ef619239d11a1f86cb059c40bdf
+      size: 382506
