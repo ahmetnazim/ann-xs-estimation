@@ -19,6 +19,11 @@ Design (P7-D1 (a)):
   bit-identical replicates. The percentile interval uses ``numpy.quantile`` (linear method).
 
 Torch-free and xgboost-free. Owning phase: 7 (P7-D1 (a)).
+
+Phase 8 addition (Batch C3c, docs/3 13.13): :func:`bootstrap_matrix` and
+:func:`two_sample_bootstrap_matrix` evaluate a vector of statistics on each draw. They consume the
+generator exactly as :func:`paired_cluster_bootstrap` and :func:`two_sample_cluster_bootstrap`, so
+column ``k`` equals the scalar bootstrap of statistic ``k`` (verified by test).
 """
 
 from __future__ import annotations
@@ -36,11 +41,13 @@ __all__ = [
     "ClusterDesign",
     "average_over_repeats",
     "bonferroni_level",
+    "bootstrap_matrix",
     "cluster_design",
     "paired_cluster_bootstrap",
     "percentile_ci",
     "site_weighted_bias",
     "site_weighted_rmse",
+    "two_sample_bootstrap_matrix",
     "two_sample_cluster_bootstrap",
 ]
 
@@ -48,6 +55,8 @@ FloatArray = NDArray[np.float64]
 IntArray = NDArray[np.int64]
 Stat = Callable[[IntArray, IntArray], float]
 Stat2 = Callable[[IntArray, IntArray, IntArray, IntArray], float]
+StatVec = Callable[[IntArray, IntArray], ArrayLike]
+StatVec2 = Callable[[IntArray, IntArray, IntArray, IntArray], ArrayLike]
 
 
 @dataclass(frozen=True)
@@ -162,6 +171,69 @@ def two_sample_cluster_bootstrap(
         idx_b, g_b = _draw(design_b, rng)
         out[b] = _finite(stat(idx_a, g_a, idx_b, g_b), b)
     return out
+
+
+def _finite_row(value: ArrayLike, k: int | None, b: int) -> FloatArray:
+    v = np.asarray(value, dtype=np.float64)
+    if v.ndim != 1 or v.size == 0 or (k is not None and v.size != k):
+        raise ValueError(f"vector statistic has shape {v.shape} at replicate {b}")
+    if not bool(np.isfinite(v).all()):
+        raise ValueError(f"bootstrap statistic is non-finite at replicate {b}")
+    return v
+
+
+def bootstrap_matrix(
+    stat: StatVec,
+    clusters: ArrayLike,
+    strata: ArrayLike | None,
+    cfg: BootstrapParams,
+    *,
+    n_boot: int | None = None,
+) -> FloatArray:
+    """``(B, K)`` replicates of a vector statistic under the paired (stratified) bootstrap.
+
+    The draws are those of :func:`paired_cluster_bootstrap` with the same inputs and seed, so
+    column ``k`` equals the scalar bootstrap of component ``k``.
+    """
+    design = cluster_design(clusters, strata)
+    b_total = cfg.b if n_boot is None else n_boot
+    if b_total < 1:
+        raise ValueError("n_boot must be >= 1")
+    rng = np.random.default_rng(cfg.seed)
+    rows: list[FloatArray] = []
+    for b in range(b_total):
+        idx, groups = _draw(design, rng)
+        rows.append(_finite_row(stat(idx, groups), rows[0].size if rows else None, b))
+    return np.vstack(rows)
+
+
+def two_sample_bootstrap_matrix(
+    stat: StatVec2,
+    clusters_a: ArrayLike,
+    strata_a: ArrayLike | None,
+    clusters_b: ArrayLike,
+    strata_b: ArrayLike | None,
+    cfg: BootstrapParams,
+    *,
+    n_boot: int | None = None,
+) -> FloatArray:
+    """``(B, K)`` replicates of a vector statistic under the H3 two-sample bootstrap.
+
+    The draws are those of :func:`two_sample_cluster_bootstrap` (set A first in each replicate).
+    """
+    design_a = cluster_design(clusters_a, strata_a)
+    design_b = cluster_design(clusters_b, strata_b)
+    b_total = cfg.b if n_boot is None else n_boot
+    if b_total < 1:
+        raise ValueError("n_boot must be >= 1")
+    rng = np.random.default_rng(cfg.seed)
+    rows: list[FloatArray] = []
+    for b in range(b_total):
+        idx_a, g_a = _draw(design_a, rng)
+        idx_b, g_b = _draw(design_b, rng)
+        value = stat(idx_a, g_a, idx_b, g_b)
+        rows.append(_finite_row(value, rows[0].size if rows else None, b))
+    return np.vstack(rows)
 
 
 def percentile_ci(stats: ArrayLike, level: float) -> tuple[float, float]:

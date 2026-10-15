@@ -31,7 +31,7 @@ from src.config import load_settings
 from src.data.io import sha256_file
 from src.data.network import NetworkInputs
 from src.evaluation import dependence_audit as da
-from src.evaluation import event1, event2, events
+from src.evaluation import event1, event2, event3, events
 from src.evaluation.events import EventRefusedError
 from src.evaluation.ledger import Ledger
 from synthetic_sites import site_frame
@@ -395,17 +395,24 @@ def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
     raw = sites(40)
     raw.to_parquet(proc / "site_table.parquet")
     folds(raw["site_no"]).to_parquet(proc / "splits" / "fold_assignment.parquet")
-    for rel, data in (
-        ("splits/srnd_assignment.parquet", b"srnd"),
-        ("ind/ehydro_ind.parquet", b"ind"),
-        ("ind/ehydro_ind_features.parquet", b"indf"),
-        ("srnd/srnd_frame.parquet", b"frame"),
+    for rel in (
+        "splits/srnd_assignment.parquet",
+        "ind/ehydro_ind.parquet",
+        "ind/ehydro_ind_features.parquet",
+        "srnd/srnd_frame.parquet",
     ):
         (proc / rel).parent.mkdir(parents=True, exist_ok=True)
-        (proc / rel).write_bytes(data)
+        pd.DataFrame({"table": [rel]}).to_parquet(proc / rel)  # read only by a faked Event 3
+    (proc / "qc").mkdir()
+    pd.DataFrame({"row_id": [0], "chan_mat_cd": ["SAND"], "F_eps": [False]}).to_parquet(
+        proc / "qc" / "hydroswot_init.parquet"
+    )
     nhd = root / "data" / "raw" / "nhdplusv21"
     nhd.mkdir(parents=True)
     (nhd / "MANIFEST.sha256").write_text("synthetic\n")
+    hyg = root / "data" / "raw" / "hyg"
+    hyg.mkdir(parents=True)
+    (hyg / "MANIFEST.sha256").write_text("synthetic hyg\n")
     (root / "uv.lock").write_text("lock")
     params = yaml.safe_load((REPO_ROOT / "params.yaml").read_text())
     params["model"]["inner_grid"].update(weight_decay=[0.0], lr=[1.0e-3], m4_lambda_max=[10.0])
@@ -535,6 +542,11 @@ def test_cli_events_end_to_end_and_refusals(
         rel = f"data/processed/predictions/{m}.parquet"
         p.to_parquet(root / rel)
         rels.append(rel)
+    for stem in evaluate.EVENT3_PREDICTIONS:  # the other Event 3 inputs (content faked below)
+        rel = f"data/processed/predictions/{stem}.parquet"
+        if rel not in rels:
+            pd.DataFrame({"stem": [stem]}).to_parquet(root / rel)
+            rels.append(rel)
     _commit(root, "predictions")
     with pytest.raises(EventRefusedError, match="next ledger step is 'seal'"):
         evaluate.main(["select-mstar", *base])
@@ -561,7 +573,74 @@ def test_cli_events_end_to_end_and_refusals(
         evaluate.main(["checkpoint", "--after", "event_2", "--note", "PI: approve M star", *base])
         == 0
     )
-    with pytest.raises(NotImplementedError, match="C3c"):
+    with pytest.raises(EventRefusedError, match="clean, committed tree"):
+        evaluate.main(["evaluate", *base])
+    _commit(root, "checkpoint 2")
+
+    # Event 3 plumbing; the computation is tested in test_evaluation_event3.py
+    seen: dict[str, object] = {}
+
+    def fake_run_event3(inp, protocol, *, log_kappa, aoa, n_boot=None):
+        seen.update(preds=sorted(inp.preds), mstar=inp.mstar, n_strata=len(inp.audit_strata))
+        seen.update(callables=callable(log_kappa) and callable(aoa), n_boot=n_boot)
+        docs = {name: {"section": name} for name in evaluate.EVENT3_DOCS}
+        docs["hypotheses"].update(
+            audit_label="label text",
+            outcome_4_7={"rows": [], "statement": "no row of protocol 4.7 matches"},
+        )
+        return event3.Event3Result(documents=docs, matrix=pd.DataFrame({"metric": ["rmse_log"]}))
+
+    monkeypatch.setattr(evaluate, "run_event3", fake_run_event3)
+    monkeypatch.setattr(evaluate, "_FORBIDDEN", ())  # pytest itself has loaded torch/xgboost
+    monkeypatch.setattr(evaluate, "_vaa_maps", lambda nhd_dir, comids: (net, {}, {}))
+    monkeypatch.setattr(
+        evaluate,
+        "read_hyg_manning",
+        lambda path: (pd.DataFrame({"site_no": [], "manning_n": []}), {"rows": 0}),
+    )
+    assert evaluate.main(["evaluate", *base]) == 0
+    out = capsys.readouterr().out
+    assert "event_3 recorded as ledger seq 7" in out
+    assert seen["preds"] == sorted(evaluate.EVENT3_PREDICTIONS)
+    assert seen["mstar"]["mstar"] == {"dbar": "M2-MLP", "A": "M2-MLP"}  # type: ignore[index]
+    assert seen["callables"] is True
+    assert seen["n_boot"] is None  # production B from params
+    led = Ledger.load(path)
+    rec = led.events[-1]
+    assert rec["event"] == "event_3"
+    in_paths = [i["path"] for i in rec["inputs"]]
+    order = list(evaluate.EVENT3_PREDICTIONS)
+    assert in_paths[:20] == sorted(rels, key=lambda r: order.index(Path(r).stem))
+    assert in_paths[20:] == [
+        "data/processed/ind/ehydro_ind.parquet",
+        "data/processed/splits/fold_assignment.parquet",
+        "data/processed/ind/ehydro_ind_features.parquet",
+        "data/processed/site_table.parquet",
+        "data/processed/splits/srnd_assignment.parquet",
+        "data/processed/srnd/srnd_frame.parquet",
+        "reports/results/audit.json",
+        "reports/results/audit_strata.parquet",
+        "reports/results/mstar.json",
+        "data/processed/qc/hydroswot_init.parquet",
+        "data/raw/nhdplusv21/MANIFEST.sha256",
+        "data/raw/hyg/MANIFEST.sha256",
+    ]
+    res_dir = root / "reports" / "results"
+    outs = {o["path"]: o["sha256"] for o in rec["outputs"]}
+    want = [f"reports/results/event3_{n}.json" for n in evaluate.EVENT3_DOCS]
+    want += ["reports/results/event3_matrix.parquet", "reports/results/event3.json"]
+    assert list(outs) == want
+    for rel, sha in outs.items():
+        assert sha == sha256_file(root / rel)
+    index = json.loads((res_dir / "event3.json").read_text())
+    assert index["outcome_4_7"]["statement"] == "no row of protocol 4.7 matches"
+    assert [o["path"] for o in index["outputs"]] == want[:-1]
+    assert index["outcome_table_4_7"]["4"][2] == "ASCE; fallback per ADL-014"
+    hyp = json.loads((res_dir / "event3_hypotheses.json").read_text())
+    assert hyp["run_id"] == led.header["run_id"]
+    assert hyp["section"] == "hypotheses"
+    _commit(root, "event 3")
+    with pytest.raises(EventRefusedError, match="recorded and is never re-run"):
         evaluate.main(["evaluate", *base])
     led = Ledger.load(path)
     assert led.recorded() == [
@@ -571,6 +650,7 @@ def test_cli_events_end_to_end_and_refusals(
         "seal",
         "event_2",
         "checkpoint_2",
+        "event_3",
     ]
 
 
@@ -613,7 +693,8 @@ def test_event_modules_import_neither_torch_nor_xgboost() -> None:
     """ADL-051: the event modules and both CLIs load no torch or xgboost."""
     code = (
         "import sys, runpy; import src.evaluation.events, src.evaluation.event1, "
-        "src.evaluation.event2; "
+        "src.evaluation.event2, src.evaluation.event3, src.evaluation.event3_sets, "
+        "src.evaluation.event3_stats, src.evaluation.event3_workers; "
         "runpy.run_path('scripts/audit.py', run_name='x'); "
         "runpy.run_path('scripts/evaluate.py', run_name='x'); "
         "print('torch' in sys.modules, 'xgboost' in sys.modules)"
