@@ -17,6 +17,7 @@ from annxs_figures import (
     RESULTS_SHA256,
     ForbiddenImportBlocker,
     assert_no_forbidden_imports,
+    generate_all_tables,
     load_verified_bundle,
     sha256_file,
 )
@@ -116,6 +117,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     tables_dir = repo_root / "docs" / "tables"
     figures_dir.mkdir(parents=True, exist_ok=True)
     tables_dir.mkdir(parents=True, exist_ok=True)
+
+    with ForbiddenImportBlocker.guard():
+        bundle = load_verified_bundle(repo_root)
+        generated_tables = generate_all_tables(bundle, tables_dir)
+
+    tables_sha256: dict[str, str] = {
+        str(generated_tables.markdown_path.relative_to(repo_root)): sha256_file(
+            generated_tables.markdown_path
+        )
+    }
+    for csv_path in sorted(generated_tables.csv_paths.values()):
+        tables_sha256[str(csv_path.relative_to(repo_root))] = sha256_file(csv_path)
+    manifest["tables_sha256"] = dict(sorted(tables_sha256.items()))
 
     manifest_path = figures_dir / "provenance_manifest.json"
     manifest_text = (
