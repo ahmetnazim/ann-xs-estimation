@@ -1,0 +1,71 @@
+section,item,stratum,value,status_or_note,evidence_tier,source_file
+frame_and_qc,qc_rows,all,39927.0,QC R8 closure filter on HYDROSWOT,Descriptive,reports/results/event3_consistency.json
+frame_and_qc,qc_R8_rows_flagged,all,13862.0,QC R8 closure filter on HYDROSWOT,Descriptive,reports/results/event3_consistency.json
+frame_and_qc,share_removed,all,0.34718361008841137,QC R8 closure filter on HYDROSWOT,Descriptive,reports/results/event3_consistency.json
+frame_and_qc,n_sites,all,3988.0,QC R8 closure filter on HYDROSWOT,Descriptive,reports/results/event3_consistency.json
+split_summary,S-ID:n_rows,all,11964.0,"n_units=3988, n_repeats=3",Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-ID:n_units,all,3988.0,optimistic under spatial/network dependence,Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-IND:n_rows,all,131.0,"n_units=131, n_repeats=1",Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-IND:n_units,all,131.0,131 locations / 18 rivers,Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-LRO:n_rows,all,3988.0,"n_units=3988, n_repeats=1",Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-LRO:n_units,all,3988.0,,Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-TAIL-DA:n_rows,all,678.0,"n_units=678, n_repeats=1",Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-TAIL-DA:n_units,all,678.0,,Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-TAIL-SO:n_rows,all,339.0,"n_units=339, n_repeats=1",Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-TAIL-SO:n_units,all,339.0,,Descriptive,reports/results/event3_matrix.parquet
+split_summary,S-IND:n_clusters,all,18.0,131 locations / 18 rivers,Descriptive,reports/results/event3_hypotheses.json
+split_summary,S-IND:n_locations_single_comid_uq,single_comid,33.0,131 locations / 18 rivers (UQ: 33 single-COMID rows),Descriptive,reports/results/event3_uq.json
+split_summary,S-IND:not_computed_multi_comid_uq,multi_comid,98.0,not computed: multi-COMID eHydro locations excluded from UQ,Descriptive,reports/results/event3_uq.json
+split_summary,S-IND:A_J_dropped_rows,A_J|primary|S-IND,81.0,non-positive Q_E rows dropped for A_J on S-IND,Descriptive,reports/results/event3_descriptive.json
+split_summary,S-RND:n_rows,all,9673.0,weights=1/|I_j|,Secondary,reports/results/event3_descriptive.json
+stratum_counts_division,division:APPALACHIAN HIGHLANDS,APPALACHIAN HIGHLANDS,1067.0,S-LRO n_rows=1067,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_division,division:ATLANTIC PLAIN,ATLANTIC PLAIN,609.0,S-LRO n_rows=609,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_division,division:INTERIOR HIGHLANDS,INTERIOR HIGHLANDS,159.0,S-LRO n_rows=159,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_division,division:INTERIOR PLAINS,INTERIOR PLAINS,1326.0,S-LRO n_rows=1326,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_division,division:INTERMONTANE PLATEAUS,INTERMONTANE PLATEAUS,212.0,S-LRO n_rows=212,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_division,division:LAURENTIAN UPLAND,LAURENTIAN UPLAND,83.0,S-LRO n_rows=83,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_division,division:PACIFIC MOUNTAIN SYSTEM,PACIFIC MOUNTAIN SYSTEM,279.0,S-LRO n_rows=279,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_division,division:ROCKY MOUNTAIN SYSTEM,ROCKY MOUNTAIN SYSTEM,253.0,S-LRO n_rows=253,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:1,1,36.0,S-LRO n_rows=36,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:10,10,6.0,S-LRO n_rows=6,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:2,2,192.0,S-LRO n_rows=192,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:3,3,563.0,S-LRO n_rows=563,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:4,4,1094.0,S-LRO n_rows=1094,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:5,5,1076.0,S-LRO n_rows=1076,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:6,6,688.0,S-LRO n_rows=688,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:7,7,234.0,S-LRO n_rows=234,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:8,8,60.0,S-LRO n_rows=60,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_stream_order,stream_order:9,9,39.0,S-LRO n_rows=39,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_da_q,da_q:1,1,798.0,S-LRO n_rows=798,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_da_q,da_q:2,2,797.0,S-LRO n_rows=797,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_da_q,da_q:3,3,798.0,S-LRO n_rows=798,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_da_q,da_q:4,4,797.0,S-LRO n_rows=797,Descriptive,reports/results/event3_matrix.parquet
+stratum_counts_da_q,da_q:5,5,798.0,S-LRO n_rows=798,Descriptive,reports/results/event3_matrix.parquet
+da_quintile_cuts_km2,cut_Q1_Q2_km2,Q1/Q2,224.62650000000002,drainage area quintile boundary (km^2),Descriptive,reports/results/event3_descriptive.json
+da_quintile_cuts_km2,cut_Q2_Q3_km2,Q2/Q3,633.3389999999999,drainage area quintile boundary (km^2),Descriptive,reports/results/event3_descriptive.json
+da_quintile_cuts_km2,cut_Q3_Q4_km2,Q3/Q4,1629.35496,drainage area quintile boundary (km^2),Descriptive,reports/results/event3_descriptive.json
+da_quintile_cuts_km2,cut_Q4_Q5_km2,Q4/Q5,5361.812460000002,drainage area quintile boundary (km^2),Descriptive,reports/results/event3_descriptive.json
+event_1_audit,n_sites,S-ID,3988.0,Event 1 frame sites; label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,n_blocks,S-ID,15.0,3 repeats x 5 outer folds; label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,d_nn_median_km,S-ID,15.013025767854781,pooled median nearest-train distance (km); label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,rho_hat_km,S-ID,169.23483683392598,variogram practical range rho_hat (km); label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,rho_star_km,S-ID,169.23483683392598,effective range rho_star (km); label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,share_far,S-ID,0.00025075225677031093,share of test instances with d_nn > rho_star; label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,share_strong,S-ID,0.42126379137412234,share of strongly nested test instances (psi >= 0.5); label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,share_weak,S-ID,0.48788030758943496,share of weakly nested test instances (0 < psi < 0.5); label=optimistic under spatial/network dependence,Descriptive,reports/results/audit.json
+event_1_audit,M2-XGB:dbar:moran_W1_I,S-ID,0.03960154239656528,"z_perm=5.2971, pseudo_p=0.0010",Descriptive,reports/results/audit.json
+event_1_audit,M2-XGB:dbar:moran_W2_I,S-ID,0.03554770876506517,"z_perm=5.4172, pseudo_p=0.0010",Descriptive,reports/results/audit.json
+event_1_audit_strata,n_test_instances,S-ID,11964.0,"3 repeats x 3,988 sites in audit_strata.parquet",Descriptive,reports/results/audit_strata.parquet
+event_3_M5_residual_dependence,M5:A:moran_W1_I,S-ID,0.04162768270946579,"z_perm=5.5525, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:A:moran_W2_I,S-ID,0.034466725232987674,"z_perm=5.1335, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:W:moran_W1_I,S-ID,0.07308452980746633,"z_perm=9.6456, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:W:moran_W2_I,S-ID,0.0637635540102145,"z_perm=9.3730, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:dbar:moran_W1_I,S-ID,0.031998392349568756,"z_perm=4.2093, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:dbar:moran_W2_I,S-ID,0.028449916704694506,"z_perm=4.2268, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:dmax:moran_W1_I,S-ID,0.031537053090310754,"z_perm=4.1467, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:dmax:moran_W2_I,S-ID,0.027908826309142726,"z_perm=4.1205, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:t:moran_W1_I,S-ID,0.05415173824413831,"z_perm=7.4279, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+event_3_M5_residual_dependence,M5:t:moran_W2_I,S-ID,0.04807830150864078,"z_perm=7.4101, pseudo_p=0.0010",Descriptive,reports/results/event3_dependence.json
+not_computed_items,L8_zarrabi_product,external_product,,not computed: the Zenodo record (doi:10.5281/zenodo.13883263) states no unit for mf_width/mf_depth; docs/3 13.5 requires the unit to be asserted from the record,Descriptive,reports/results/event3_descriptive.json
+not_computed_items,H2_far_stratum,far,,not computed: fewer than 30 sites in a repeat,Secondary,reports/results/event3_hypotheses.json
+not_computed_items,S2_far_stratum,far,,not computed: fewer than 30 sites in a repeat,Secondary,reports/results/event3_hypotheses.json

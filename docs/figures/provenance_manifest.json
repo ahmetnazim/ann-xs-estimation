@@ -66,5 +66,17 @@
     "data/processed/predictions/M6-NN.parquet": "fe1ef462eb5f6ab9c02a795eedb78ca8fbc2b2c0f42e2b0646b1720c34633bfc",
     "data/processed/predictions/M6-XGB.parquet": "bea6495a2879a99fe45e56ae2416eced7c4c72663cadd59188f1909f9c376174",
     "data/processed/predictions/audit_inputs.parquet": "ad0f191a2456bb16f1781b0fdb2928fa46d496166c423405d31b7c87cc416449"
+  },
+  "tables_sha256": {
+    "docs/tables/benchmark_results.md": "dfb2468ef2d0d3f8f24e27409d67bb4587733ca0aca9a06a3928355cd342ba99",
+    "docs/tables/t1_hypotheses_and_outcome.csv": "70a89a1065221e098168276ab072ff9354b28bc3d23ebfe2a1accf81373970a8",
+    "docs/tables/t2_metrics_matrix.csv": "08a7b13618d225b2039bd1d314bdc424db908f1156f3013193c157d59ffa8534",
+    "docs/tables/t3_s2_contrasts.csv": "42664ba9c43aedbadfe780080171ce52a7c298d2e239703076098ea867d5e809",
+    "docs/tables/t4_uq_calibration.csv": "ee91bc7928b815a2b2cf15172cdd38995e845d8bb64685494839aaf956682f0b",
+    "docs/tables/t5_physical_consistency.csv": "0db5e5d58ed8bbf2bccdb2d7b4238aa9461f3887ccc3d39cce7f1d5c015acc71",
+    "docs/tables/t6_ablations_and_sensitivity.csv": "c10dcb70d35863c50447a06fa83d3364d18d89f820095eb30f5677b880215838",
+    "docs/tables/t7_srnd_benchmark.csv": "987a8564333df1f3e9f9e3fc2ab6fd8cea0e6a49764aae1bfda6cbc16f8cde94",
+    "docs/tables/t8_s1_hyg_consistency.csv": "f65b7e315c53d661b7ef27706f450deaef53da4edc973058027ff5035cffbffd",
+    "docs/tables/t9_frame_and_data_summary.csv": "b03f5581b4b9603470e7295058cbf010beecdf1ea164627548caddfdb78660fd"
   }
 }
