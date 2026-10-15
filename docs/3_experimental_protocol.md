@@ -1333,3 +1333,4 @@ No `params.yaml` value, grid, threshold, metric definition or decision rule chan
 - **(t) §4.7 and the A1 map.**
   - The matched rows come from `hypotheses.outcome_rows`. The statement quotes each matched claim verbatim, or reads "no row of protocol 4.7 matches".
   - A1 (descriptive, Proposition 7.6): ν(full κ) = ν(A1) + (2/3) ln κ̂, and the H4 points are recomputed on the mapped ν.
+- **(u) Undefined caveat and descriptive statistics (F-C3c-1).** In a caveat stratum or a descriptive ablation entry, a correlation with a constant input is null, with the reason recorded. In the F_S stratum S = S_floor by definition, so ρ(n̂, S) is undefined there; it is reported on the not-F_S stratum and on the full set. Hypothesis statistics are never nulled: an undefined one stops the event.
