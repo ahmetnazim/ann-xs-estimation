@@ -229,7 +229,7 @@ stages:
   figures:
     cmd: >-
       UV_PROJECT_ENVIRONMENT="$HOME/.venvs/ANN_XS_Estimation_figures"
-      uv run --project figures --frozen python scripts/make_figures.py
+      uv run --project figures --frozen python -B scripts/make_figures.py
     deps:
       [scripts/make_figures.py, figures/pyproject.toml, figures/uv.lock,
        figures/src/annxs_figures,

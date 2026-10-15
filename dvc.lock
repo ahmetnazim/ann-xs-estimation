@@ -2879,7 +2879,7 @@ stages:
       size: 382506
   figures:
     cmd: UV_PROJECT_ENVIRONMENT="$HOME/.venvs/ANN_XS_Estimation_figures" uv run 
-      --project figures --frozen python scripts/make_figures.py
+      --project figures --frozen python -B scripts/make_figures.py
     deps:
     - path: data/processed/ind/ehydro_ind.parquet
       hash: md5
@@ -2993,13 +2993,13 @@ stages:
       nfiles: 11
     - path: figures/pyproject.toml
       hash: md5
-      md5: 95d327d82e1e750fe95b43ca37fe57a9
-      size: 2735
+      md5: 4bec81585282344d90a6c4b84cef9435
+      size: 2899
     - path: figures/src/annxs_figures
       hash: md5
-      md5: 0f476a20b89ad1caf4597578f7c68c9e.dir
-      size: 36863
-      nfiles: 3
+      md5: 4c30ff4b81157e82c3b2d1370ae02b3e.dir
+      size: 95613
+      nfiles: 4
     - path: figures/uv.lock
       hash: md5
       md5: 4aaf5ff26248acf759c23053f9241b82
@@ -3066,16 +3066,16 @@ stages:
       size: 21762
     - path: scripts/make_figures.py
       hash: md5
-      md5: b0a69da65dc8ea10cf5cbdfdec56e667
-      size: 4564
+      md5: 6cf566a74ae492c234f22cb1b3f0a7a6
+      size: 5143
     outs:
     - path: docs/figures
       hash: md5
-      md5: 28606a3f880126e38d1893f6e4ad1bb5.dir
-      size: 5322
+      md5: fef0219c3760c9deaeeb8851a96010a9.dir
+      size: 6471
       nfiles: 2
     - path: docs/tables
       hash: md5
-      md5: 6ffbaaad7b4ac6e1afabed19a80b2560.dir
-      size: 0
-      nfiles: 1
+      md5: 26e6d85e12ad93bc12dd826aafe44145.dir
+      size: 2846782
+      nfiles: 11
