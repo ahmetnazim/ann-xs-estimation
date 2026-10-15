@@ -1,0 +1,114 @@
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "annxs-figures"
+version = "0.1.0"
+description = "Isolated publication figure and table pipeline for ANN_XS_Estimation (Phase 9; P9-D3 (a))."
+requires-python = "==3.12.*"
+authors = [{ name = "Ahmet Nazim Sahin" }]
+classifiers = [
+    "Private :: Do Not Upload",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Hydrology",
+]
+# Isolated from main uv.lock so train/predict/score_event* stages stay untouched (P9-D3 (a)).
+# Torch and xgboost are strictly excluded (ADL-051, ADL-086).
+dependencies = [
+    "numpy==2.5.3",
+    "scipy==1.18.1",
+    "pandas==3.0.6",
+    "pyarrow==25.0.1",
+    "pyyaml==6.0.3",
+    "geopandas==1.2.0",
+    "shapely==2.2.0",
+    "pyproj==3.8.0",
+    "pyogrio==0.13.0",
+    "matplotlib==3.11.2",
+    "SciencePlots==2.2.2",
+    "colorspacious==1.1.2",
+    "pillow==12.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff==0.16.10",
+    "mypy==2.4.0",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "pandas-stubs==3.0.5.260914",
+    "types-PyYAML==6.0.12.20260906",
+]
+
+[tool.uv]
+required-version = ">=0.12.1"
+environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'linux'",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/annxs_figures"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/annxs_figures", "tests", "pyproject.toml"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "C4", "NPY", "PT", "RUF", "D", "ANN"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "ANN"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["annxs_figures"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+files = ["figures/src", "figures/tests", "scripts/make_figures.py"]
+
+[[tool.mypy.overrides]]
+module = [
+    "geopandas.*",
+    "shapely.*",
+    "pyogrio.*",
+    "pyarrow.*",
+    "scipy.*",
+    "matplotlib.*",
+    "mpl_toolkits.*",
+    "scienceplots.*",
+    "colorspacious.*",
+    "PIL.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["figures/tests"]
+pythonpath = ["figures/src"]
+addopts = "-ra --strict-markers --strict-config --import-mode=importlib -p no:cacheprovider --confcutdir=figures"
+markers = [
+    "unit: fast provenance, table, and figure-pipeline checks (Phase 9)",
+]
+xfail_strict = true
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["annxs_figures"]
+branch = true
+
+[tool.coverage.report]
+precision = 0
+show_missing = true
+fail_under = 90

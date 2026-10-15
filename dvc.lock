@@ -2877,3 +2877,205 @@ stages:
       hash: md5
       md5: 2fa23ef619239d11a1f86cb059c40bdf
       size: 382506
+  figures:
+    cmd: UV_PROJECT_ENVIRONMENT="$HOME/.venvs/ANN_XS_Estimation_figures" uv run 
+      --project figures --frozen python scripts/make_figures.py
+    deps:
+    - path: data/processed/ind/ehydro_ind.parquet
+      hash: md5
+      md5: a0a7f1ecbb69bd4b2763a8c97c220da2
+      size: 18326
+    - path: data/processed/predictions/A_J.parquet
+      hash: md5
+      md5: 070baf59dcaf64dafd53080fbdd03799
+      size: 155463
+    - path: data/processed/predictions/M-null.parquet
+      hash: md5
+      md5: dc653058cb895d7307f93401ed28c420
+      size: 172512
+    - path: data/processed/predictions/M0.parquet
+      hash: md5
+      md5: 99693d9109fb9e7ba6e43379912b45c6
+      size: 759620
+    - path: data/processed/predictions/M1.parquet
+      hash: md5
+      md5: c24229c74e5eb820813328bccdea748b
+      size: 23806754
+    - path: data/processed/predictions/M1_A4.parquet
+      hash: md5
+      md5: d648a428f26b29f26efc4e66db1352bd
+      size: 4018632
+    - path: data/processed/predictions/M2-MLP.parquet
+      hash: md5
+      md5: a12833ff5f7517f7984d077090578559
+      size: 119274290
+    - path: data/processed/predictions/M2-MLP_A4.parquet
+      hash: md5
+      md5: 0e60a175c238adbd826c541d6fe9a28c
+      size: 20801273
+    - path: data/processed/predictions/M2-XGB.parquet
+      hash: md5
+      md5: 872c613f9b6f85c8565aa108431bb75a
+      size: 33673551
+    - path: data/processed/predictions/M2-XGB_A4.parquet
+      hash: md5
+      md5: 0c09189010a062c34b02cb26ddc54a6a
+      size: 5325301
+    - path: data/processed/predictions/M3.parquet
+      hash: md5
+      md5: d5eb70b573928dba44a55d648f65df73
+      size: 6543537
+    - path: data/processed/predictions/M4.parquet
+      hash: md5
+      md5: c6e102bd16bc3516e2e9e34bdc3ad923
+      size: 17405621
+    - path: data/processed/predictions/M5.parquet
+      hash: md5
+      md5: 4ecb2122f62a0b904f04cbe0b64d9937
+      size: 115970236
+    - path: data/processed/predictions/M5_A1.parquet
+      hash: md5
+      md5: 02264766f8833d738513f689fc6a8084
+      size: 17072526
+    - path: data/processed/predictions/M5_A2.parquet
+      hash: md5
+      md5: 6d9e36b4d508780c53fe206da5b527f3
+      size: 17213524
+    - path: data/processed/predictions/M5_A3-SP.parquet
+      hash: md5
+      md5: 8479cb61f2658f53e1f5124f19a80019
+      size: 17199162
+    - path: data/processed/predictions/M5_A3-SR.parquet
+      hash: md5
+      md5: cda6e1174972a0ed9a6b0c2af768301c
+      size: 17200792
+    - path: data/processed/predictions/M5_A4.parquet
+      hash: md5
+      md5: d35e8d81c513cacd0a8127449da176a6
+      size: 17196112
+    - path: data/processed/predictions/M5_wA1.parquet
+      hash: md5
+      md5: daef71ebd96f098212f2fdbd85d194fc
+      size: 17207799
+    - path: data/processed/predictions/M6-NN.parquet
+      hash: md5
+      md5: 431724f309044ffefab18aec132233a4
+      size: 8763824
+    - path: data/processed/predictions/M6-XGB.parquet
+      hash: md5
+      md5: 2e0e111506c0494086089fa806c4fb9a
+      size: 7347343
+    - path: data/processed/predictions/audit_inputs.parquet
+      hash: md5
+      md5: 41adff68eafb3de4d4c5db66113f8c5a
+      size: 603975
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/processed/splits/fold_assignment.parquet
+      hash: md5
+      md5: e09eafc7d1032584d8ce9fd56cdf1dc3
+      size: 609163
+    - path: data/processed/splits/srnd_assignment.parquet
+      hash: md5
+      md5: 3e01536b960383e982aace1378c4adc2
+      size: 232119
+    - path: data/raw/nhdplusv21
+      hash: md5
+      md5: 69b67b8e05ee2f8fc888e9a3399b7b67.dir
+      size: 43848085319
+      nfiles: 2331
+    - path: data/raw/physiography
+      hash: md5
+      md5: e5b71a1597c9c89417c9c6312b45c367.dir
+      size: 1108956
+      nfiles: 11
+    - path: figures/pyproject.toml
+      hash: md5
+      md5: 95d327d82e1e750fe95b43ca37fe57a9
+      size: 2735
+    - path: figures/src/annxs_figures
+      hash: md5
+      md5: 0f476a20b89ad1caf4597578f7c68c9e.dir
+      size: 36863
+      nfiles: 3
+    - path: figures/uv.lock
+      hash: md5
+      md5: 4aaf5ff26248acf759c23053f9241b82
+      size: 72384
+    - path: reports/results/audit.json
+      hash: md5
+      md5: 2fc1edaaf9157f3b90bb1b2bf6a287cf
+      size: 64505
+    - path: reports/results/audit_strata.parquet
+      hash: md5
+      md5: 23beb2e47f460adfceece7bbd8c5f508
+      size: 173772
+    - path: reports/results/event3.json
+      hash: md5
+      md5: 97d05047aba6fcde17c9f6d65632bc49
+      size: 7102
+    - path: reports/results/event3_consistency.json
+      hash: md5
+      md5: 7ca955e3332ba64aa679a305a6844c17
+      size: 23833
+    - path: reports/results/event3_dependence.json
+      hash: md5
+      md5: 37a98f6eb40964e517dc0154e2ceb091
+      size: 95042
+    - path: reports/results/event3_descriptive.json
+      hash: md5
+      md5: 52276c4f5ed0427d6bb0330bf6e40405
+      size: 9440
+    - path: reports/results/event3_hypotheses.json
+      hash: md5
+      md5: 65efd0c8d47d8257bdf398c11bd20e80
+      size: 16979
+    - path: reports/results/event3_matrix.parquet
+      hash: md5
+      md5: b57d679922d021672b015cedc4e01563
+      size: 445653
+    - path: reports/results/event3_uq.json
+      hash: md5
+      md5: 2fa23ef619239d11a1f86cb059c40bdf
+      size: 382506
+    - path: reports/results/mstar.json
+      hash: md5
+      md5: 08cd9319c54c7452ad925154101c697e
+      size: 2164
+    - path: reports/results/scoring_ledger.json
+      hash: md5
+      md5: 7df3a22ef641b4706f7d9ce995f87048
+      size: 14654
+    - path: reports/run_manifest.json
+      hash: md5
+      md5: c0ea09cfc28ec37870997ac4fc08104e
+      size: 2698
+    - path: reports/training/curves.json
+      hash: md5
+      md5: 2e40348050bc91db25b7877ff5a77edb
+      size: 162224
+    - path: reports/training/summary.json
+      hash: md5
+      md5: 0a7fc7aebe4a07ae93ce163f16e8c726
+      size: 4657
+    - path: reports/training/xi.json
+      hash: md5
+      md5: 8fe1dc556b970fe48b9c66f9ab93c6aa
+      size: 21762
+    - path: scripts/make_figures.py
+      hash: md5
+      md5: b0a69da65dc8ea10cf5cbdfdec56e667
+      size: 4564
+    outs:
+    - path: docs/figures
+      hash: md5
+      md5: 28606a3f880126e38d1893f6e4ad1bb5.dir
+      size: 5322
+      nfiles: 2
+    - path: docs/tables
+      hash: md5
+      md5: 6ffbaaad7b4ac6e1afabed19a80b2560.dir
+      size: 0
+      nfiles: 1

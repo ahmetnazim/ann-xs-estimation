@@ -1,0 +1,70 @@
+{
+  "audit_label": "optimistic under spatial/network dependence",
+  "frozen_tables_sha256": {
+    "data/processed/ind/ehydro_ind.parquet": "a47bcd71e234a4dee69e8563c25b35d548f2a5030a04ca0b63ccf1ce0fff550c",
+    "data/processed/site_table.parquet": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470",
+    "data/processed/splits/fold_assignment.parquet": "1bf628c83fd658c179243499af5d533738fefaeb15b63a71c476530c40dc872c",
+    "data/processed/splits/srnd_assignment.parquet": "b3c07ba313f5e3b834d85dbeb7ec1c9b17c31e7f5b2db0f1ef775a52013808a1"
+  },
+  "ledger_events": [
+    "seal",
+    "event_1",
+    "checkpoint_1",
+    "seal",
+    "event_2",
+    "checkpoint_2",
+    "event_3"
+  ],
+  "ledger_header": {
+    "params_sha256": "1b6c670e0ab7816247fc065d0c0fa77699d0b439edb5d66ca7efeb9e720adbde",
+    "plan_sha256": "da9b7303cb841f28b3ca081d657e477315238f5e773eb20575239f6476794bca",
+    "run_id": "p8-da9b7303cb84",
+    "uv_lock_sha256": "85c69462b26510f2cd61bc4ba8f6ac0f6677a219715fbaf7220959b221da6e6d"
+  },
+  "matrix_rows": 45544,
+  "outcome_4_7": {
+    "claim": "Diagnose with the pre-registered ablations (A1, A3, M4, SA1, SA5) and report. No post-hoc headline switch: any new variant is labelled exploratory",
+    "evidence_tier": "Confirmatory",
+    "outcome": "M5 worse (S-LRO CI lower bound > 0)",
+    "row": 4,
+    "source_file": "reports/results/event3.json",
+    "statement": "row 4: \"Diagnose with the pre-registered ablations (A1, A3, M4, SA1, SA5) and report. No post-hoc headline switch: any new variant is labelled exploratory\"",
+    "venue": "ASCE; fallback per ADL-014"
+  },
+  "results_sha256": {
+    "reports/results/audit.json": "d8b44a5e2556e7a04f574c3a7be8f6785e58f7ab0d334dd22c3ac9b0e3c2adcf",
+    "reports/results/audit_strata.parquet": "c039cc16973083a79fffdd9a02df6cda02bc9fb9b0085446e034b1c7744e0e68",
+    "reports/results/event3.json": "59841fea054e366d6616f24b27a121802200c2bd0a03237f16552e71f032de17",
+    "reports/results/event3_consistency.json": "d3d99ac85d3a6ccf93ee2c0071f9b8fbd9b822a0c94194eebd10d43fe3215818",
+    "reports/results/event3_dependence.json": "f7184e8cac7adaf77596ce746dc2e8d6d423eabdc5b01684b41869d4d343e1a3",
+    "reports/results/event3_descriptive.json": "17baa7c14c70b14d66bee3e58945b03e86b95bc93537529568fff45be0306591",
+    "reports/results/event3_hypotheses.json": "27866ceaa3ac0aec2e45c5e3f2ad4fbe0f6fcb3735669913c96033fb27469b09",
+    "reports/results/event3_matrix.parquet": "bc66633897d7d7b8b31013bd6061780a82641c609d95be09a180a0e762a8dc55",
+    "reports/results/event3_uq.json": "e11761af22f198a2252e86693b6e4bf2180e142c29f4f6a3ab3abe50c67498b3",
+    "reports/results/mstar.json": "6bd7bc01aaad60d12cf350e681cf0dcaac32bfb913151d99660c2ef9ee259834",
+    "reports/results/scoring_ledger.json": "e2fd2e3ba9ff64d2108103944306f6e5f0b68d0eddcd2c2968ddd2d5384cef71"
+  },
+  "sealed_predictions_sha256": {
+    "data/processed/predictions/A_J.parquet": "52134b42149f176f494b67753740ea22c23c177f8d9e381bae4092d02c0459b9",
+    "data/processed/predictions/M-null.parquet": "365f1ba9c2e68d84312a1fa01bb3fa2207a2e05cfa630f1038d1568541319476",
+    "data/processed/predictions/M0.parquet": "84c9ee8e26a6f2d3f948098d885a26d7c7ad3a840464776fead6318886c784ac",
+    "data/processed/predictions/M1.parquet": "4d61429564a89e29186fbc1502dd878ca23481ddc83ac5d183df6bcc18b5497c",
+    "data/processed/predictions/M1_A4.parquet": "1f1e1d79ace07f97eee49a58cb99e8e36035f589b4ac2341911ad26aa5b45ede",
+    "data/processed/predictions/M2-MLP.parquet": "f444410a826a4fa10a28f64667f036e4bf56a8c7233d42bd17fc61b8153ab8c4",
+    "data/processed/predictions/M2-MLP_A4.parquet": "cb19b581867363c93364782abb35609c2595af078549a84a00c7534cf5c29e06",
+    "data/processed/predictions/M2-XGB.parquet": "e280ab2b3f053f2d879ae1b43e9684a1834686d2c65ef0d58c9ccbc20f6e42a8",
+    "data/processed/predictions/M2-XGB_A4.parquet": "d3534ae5f4a18f0f4e4e38c83d64654623a556f85d54371658d1376f8f14fa22",
+    "data/processed/predictions/M3.parquet": "baf19b973f8e0927f0b8e7d720288b6a0d1fe09b774ccaf8512f69ddd4510811",
+    "data/processed/predictions/M4.parquet": "18ab50881365d3ab7b5a220c6550fe08c64d2803929341f7c72189aed90d720f",
+    "data/processed/predictions/M5.parquet": "122512da2fad4fc60e2863fbbb3bba32eb72a2cc2cf7553ba7b026cac87a3b7d",
+    "data/processed/predictions/M5_A1.parquet": "24e47386557b4f09b1f265d3304a4aa8997148cf84312190cfbcfea986411bef",
+    "data/processed/predictions/M5_A2.parquet": "53b2d1c2edca129ba26a9005a4ac60387b87615f44e40b82d8bfef647fce8397",
+    "data/processed/predictions/M5_A3-SP.parquet": "7c596870459c8b7019ec8fd4586520925b4edd91fedccb055735a3d69245a9f2",
+    "data/processed/predictions/M5_A3-SR.parquet": "edc89bc6bf86c54ffdd1104ce78d6be052aff4d040874905d097cd8c590898ef",
+    "data/processed/predictions/M5_A4.parquet": "ce6a979d457ee9a60feb99f673440c62c68ee47cab6947814f30f123c97603d6",
+    "data/processed/predictions/M5_wA1.parquet": "7518fd0b3ac6e9959cafec38f01a39f6e3c6ec3ac3c891822da249a77f4e636c",
+    "data/processed/predictions/M6-NN.parquet": "fe1ef462eb5f6ab9c02a795eedb78ca8fbc2b2c0f42e2b0646b1720c34633bfc",
+    "data/processed/predictions/M6-XGB.parquet": "bea6495a2879a99fe45e56ae2416eced7c4c72663cadd59188f1909f9c376174",
+    "data/processed/predictions/audit_inputs.parquet": "ad0f191a2456bb16f1781b0fdb2928fa46d496166c423405d31b7c87cc416449"
+  }
+}

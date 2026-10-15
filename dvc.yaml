@@ -222,3 +222,41 @@ stages:
       - reports/results/event3_descriptive.json: {cache: false, persist: true}
       - reports/results/event3_matrix.parquet: {cache: false, persist: true}
       - reports/results/event3.json: {cache: false, persist: true}
+
+  # ---- Phase 9 (P9-D3 (a), P9-D8 (a)): publication figures and diagnostic tables.
+  # Isolated plotting environment (`figures/uv.lock`, no main `uv.lock` dep); torch- and
+  # xgboost-free (ADL-051, ADL-086). Outputs are git-tracked (`cache: false, persist: true`).
+  figures:
+    cmd: >-
+      UV_PROJECT_ENVIRONMENT="$HOME/.venvs/ANN_XS_Estimation_figures"
+      uv run --project figures --frozen python scripts/make_figures.py
+    deps:
+      [scripts/make_figures.py, figures/pyproject.toml, figures/uv.lock,
+       figures/src/annxs_figures,
+       reports/results/scoring_ledger.json, reports/results/audit.json,
+       reports/results/audit_strata.parquet, reports/results/mstar.json,
+       reports/results/event3.json, reports/results/event3_hypotheses.json,
+       reports/results/event3_uq.json, reports/results/event3_consistency.json,
+       reports/results/event3_dependence.json, reports/results/event3_descriptive.json,
+       reports/results/event3_matrix.parquet,
+       reports/run_manifest.json, reports/training/curves.json,
+       reports/training/xi.json, reports/training/summary.json,
+       data/processed/site_table.parquet,
+       data/processed/splits/fold_assignment.parquet,
+       data/processed/splits/srnd_assignment.parquet,
+       data/processed/ind/ehydro_ind.parquet,
+       data/raw/physiography, data/raw/nhdplusv21,
+       data/processed/predictions/audit_inputs.parquet,
+       data/processed/predictions/A_J.parquet, data/processed/predictions/M-null.parquet,
+       data/processed/predictions/M0.parquet, data/processed/predictions/M1.parquet,
+       data/processed/predictions/M1_A4.parquet, data/processed/predictions/M2-MLP.parquet,
+       data/processed/predictions/M2-MLP_A4.parquet, data/processed/predictions/M2-XGB.parquet,
+       data/processed/predictions/M2-XGB_A4.parquet, data/processed/predictions/M3.parquet,
+       data/processed/predictions/M4.parquet, data/processed/predictions/M5.parquet,
+       data/processed/predictions/M5_A1.parquet, data/processed/predictions/M5_A2.parquet,
+       data/processed/predictions/M5_A3-SP.parquet, data/processed/predictions/M5_A3-SR.parquet,
+       data/processed/predictions/M5_A4.parquet, data/processed/predictions/M5_wA1.parquet,
+       data/processed/predictions/M6-NN.parquet, data/processed/predictions/M6-XGB.parquet]
+    outs:
+      - docs/figures: {cache: false, persist: true}
+      - docs/tables: {cache: false, persist: true}
