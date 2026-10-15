@@ -1263,3 +1263,73 @@ No `params.yaml` value, grid, threshold, metric definition or decision rule chan
 - **Strata.** Event 1 writes `reports/results/audit_strata.parquet` (per S-ID test instance: nearest-training distance, far flag d > ρ*, ψ_max, nested class; no error values); Event 3 uses it for §3.6.5. |ΔPathLength| and LevelPathI are Event 3 descriptives.
 - **Event 2.** RMSE of ln k per (repeat, outer fold) on S-ID OOF, mean over the three repeats, M* by §4.4; M1's ln Â = μ_W + μ_d̄.
 - **Runtime.** Events refuse if the ledger header (`run_id`, `plan_sha256`, `params_sha256`, `uv_lock_sha256`) differs from the recomputed values, if the tree or the ledger is not committed, or if an input is unsealed or changed. Attempts are logged in `reports/results/event_attempts.json` (stands in for "the manifest" of §13.4, a `track` DVC out). A checkpoint note contains no decimal number or percentage.
+
+### 13.13 Event 3 computation rules (Phase 8 Batch C3c; fixed before Event 3) [ADL-128]
+
+- **(a) Evaluation rows.** One row per (unit, repeat).
+  - Site families: every site of the model's analysis frame is outer-test exactly once per repeat (S-ID three, the others one). A missing, duplicated or misplaced prediction stops the event.
+  - S-IND: the kept `ehydro_ind` locations, scored on the location rows. A location whose point prediction is non-finite for every available target is dropped and counted (A_J masking).
+  - S-RND: the test rows of M1 and M2-XGB, weighted 1/|I_j|. The weights are computed before rows without a prediction are dropped and counted.
+  - Ablations and SAs are scored on the test sites of their own analysis frame (§13.8). A non-finite error on a hypothesis row stops the event.
+- **(b) S-ID statistics.** Every metric is computed per repeat and averaged over the three repeats, for point estimates and inside each bootstrap draw.
+- **(c) Strata.**
+  - The drainage-area quintile cutpoints come from post-QC `DA_km2` of the primary frame (`numpy.quantile`, linear). The class is `searchsorted(cuts, DA, side="right") + 1` (the M-null convention).
+  - Stream order and division come from `site_table`; for S-IND, from the outlet COMID's `ind_features` row.
+  - A missing division is its own stratum, `"none"`, also as a bootstrap stratum.
+  - Far and nested labels (S-ID) come from Event 1's `audit_strata.parquet`. The S-LRO nested class is computed as in (p).
+- **(d) Cells.** Every cell reports `n_rows`, `n_units`, `n_excluded` and `n_repeats`. A metric that is undefined in any repeat is null. ρ_S(r̂, r_obs) is computed on t, which is equivalent because r = 1/(e^t − 1) is strictly decreasing.
+- **(e) Bootstrap designs.**
+  - B and the seed are those of §4.4. Percentile intervals.
+  - All statistics of one design share the same draws. The vector bootstrap equals the Phase 7 scalar bootstrap column by column.
+  - Site families: clusters are sites, stratified by division. A drawn site brings all of its repeats.
+  - S-IND: clusters are rivers, unstratified. Only locations predicted by M5, M*_d̄ and M*_A are used.
+- **(f) H1.** Δ = RMSE_d̄(M5) − RMSE_d̄(M*_d̄), with k = A (against M*_A) alongside.
+  - Computed on S-LRO, pooled over the 8 folds, and on S-IND as in (e).
+  - The decision is taken by `hypotheses.decide_h1`.
+- **(g) H2.** S-ID, DA quintile 1: mean over repeats of |B_d̄(M5)| − |B_d̄(M*_d̄)|. Each bias is reported with its own interval. S-LRO quintile 1 is reported as secondary.
+- **(h) H3.** The two-sample bootstrap of proofs §9.5, with L = −RMSE_d̄(T_ID) + RMSE_d̄(T_OOD) and Δ = L(M5) − L(M*_d̄).
+  - T_ID: the S-ID OOF rows of the same sites as T_OOD.
+  - T_OOD: S-LRO (H3-LRO), S-TAIL-DA (H3-TAIL) and S-TAIL-SO (secondary).
+  - Sets A and B are resampled independently and are paired inside.
+- **(i) H4.** Site level, from M5 on S-ID.
+  - ν̂ is the mean over repeats of `nu_mean`, and r̂ the mean over repeats of `r_mean`. r_obs = 1/(e^{t_obs} − 1).
+  - The shares π_ν, π_r and π_lit and the three Spearman ρ, with site-cluster intervals stratified by division.
+  - Reported alongside: F_S strata, the z_n quantiles, n̂ by `chan_mat_cd`, and the S-LRO values.
+- **(j) S2.** M5 vs M6-NN and M4 vs M5 on d̄, at level 1 − α_B/4, on S-ID and S-LRO.
+  - Descriptive aspect-ratio strata: quintiles over the family's rows of κ̂ = κ(e^{μ_d̄ − μ_W}, 1/(e^{μ_t} − 1)) from M5's ensemble point predictions.
+  - The strata report per-repeat-averaged RMSE differences, without intervals.
+  - ln κ is evaluated by the torch quadrature of `src/physics/shape.py` (`solver.quad_level`, `quad_trunc`) in a spawned worker.
+- **(k) Far and not-nested strata.** Computed only when Event 1's label is optimistic.
+  - "Far" means d > ρ*; "not nested" means class `none`.
+  - H2 (within quintile 1) and S2 are recomputed in each stratum, but only if the stratum has at least 30 distinct sites in every repeat. Otherwise the cell is "not computed", with the counts.
+  - A stratum interval lying entirely on the other side of 0 from the full-set interval is flagged `opposite_sign_to_full_set`.
+  - Disclosure: the stratum sizes were known from Event 1, which recorded no error values.
+- **(l) UQ.**
+  - Models: M2-MLP, M4 and M5, the M5 ablations, M2-MLP A4, and the SAs of M5 and M2-MLP. XGB models and the remaining rungs have no predictive distribution.
+  - Coverage of the stored central interval (q_lo, q_hi), mean log-width, the CRPS of the member Gaussian mixture, and PIT in 10 equal bins summed over repeats.
+  - Each statistic is computed per repeat and averaged. Primary models are also reported by division and DA quintile.
+  - S-IND: only locations with `n_comids` = 1, scored on their COMID rows. Multi-COMID locations are counted as not computed.
+- **(m) Consistency (§4.3.2).**
+  - Observed closure ε_A on the primary frame: median |ε_A|, the share above ln 1.05, and the QC R8 rows flagged.
+  - Predicted closure and the share of d̂_max < d̂ (M2 models).
+  - Back-calculated ν̂: the share outside [ν_min, ν_max]. Invariant-4 violations are counted and excluded.
+  - The M4 Manning residual (RMS and quantiles), and the maximum solver residual and Picard iterations.
+  - The implied-V skill with the oracle decomposition s_Q + s_A = 1.
+  - The continuity residual does not exist, because V̂ = Q_E/Â.
+- **(n) AOA (§3.6.6).** Blocks: S-LRO (8), S-TAIL-DA, S-TAIL-SO and S-IND.
+  - Importance, threshold and DI as in §13.9, evaluated in spawned xgboost workers without torch. Every booster is checked against its `run.json`, `params_sha256` and the table hashes.
+  - A unit is inside if DI ≤ threshold. An S-IND location is inside only if every member COMID is inside.
+  - Inside and outside metrics are reported for every ladder model. Descriptive.
+- **(o) §3.6.1 (c).** The M5 OOF residual series (the Event 1 `series_stats`, with W1, W2 and the divisions). Descriptive.
+- **(p) Nested partner.** The partner is the nested training site, on the same `TerminalPa` and up- or downstream reachable, that attains ψ_max. Ties go to the smallest |ΔPathLength|, then the lowest COMID.
+  - The S-ID ψ_max and classes must equal Event 1's, or the event stops.
+  - For the strong and weak classes, the |ΔPathLength| quartiles and the share on the same LevelPathI are reported.
+- **(q) S1.** As in §13.9: matched on `site_no`, with the site-level ν̂ of (i). Computed only with at least three matches.
+- **(r) L8.** Not computed: the Zarrabi record (doi:10.5281/zenodo.13883263) states no unit for `mf_width` and `mf_depth`, and §13.5 requires the unit to be asserted from the record.
+- **(s) Outputs.** All under `reports/results/`, as DVC outs `cache: false, persist: true` of stage `evaluate`:
+  - `event3_{hypotheses,uq,consistency,dependence,descriptive}.json`;
+  - `event3_matrix.parquet`: long format, one row per spec, analysis, family, target, stratum and metric, with counts;
+  - `event3.json`: the index with inputs, outputs, the audit label and the §4.7 outcome.
+- **(t) §4.7 and the A1 map.**
+  - The matched rows come from `hypotheses.outcome_rows`. The statement quotes each matched claim verbatim, or reads "no row of protocol 4.7 matches".
+  - A1 (descriptive, Proposition 7.6): ν(full κ) = ν(A1) + (2/3) ln κ̂, and the H4 points are recomputed on the mapped ν.
