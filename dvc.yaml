@@ -191,4 +191,34 @@ stages:
        data/processed/predictions/M2-XGB.parquet]
     outs:
       - reports/results/mstar.json: {cache: false, persist: true}
-  # Stage 8 (evaluate, Event 3) is added with its code (C3c).
+  evaluate:                                           # 8, Event 3 (docs/3 13.4, 13.13)
+    cmd: python scripts/evaluate.py evaluate
+    deps:
+      [scripts/evaluate.py, params.yaml, uv.lock, src/config.py, src/evaluation, src/models,
+       src/physics, src/utils, src/data/external.py, src/data/folds.py, src/data/io.py,
+       src/data/network.py, src/data/nhdplus.py, src/data/readers.py, src/data/srnd_frame.py,
+       src/data/ind_features.py, data/processed/site_table.parquet,
+       data/processed/splits/fold_assignment.parquet,
+       data/processed/splits/srnd_assignment.parquet, data/processed/ind/ehydro_ind.parquet,
+       data/processed/ind/ehydro_ind_features.parquet, data/processed/srnd/srnd_frame.parquet,
+       data/processed/qc/hydroswot_init.parquet, data/raw/nhdplusv21, data/raw/hyg,
+       data/processed/predictions/A_J.parquet, data/processed/predictions/M-null.parquet,
+       data/processed/predictions/M0.parquet, data/processed/predictions/M1.parquet,
+       data/processed/predictions/M1_A4.parquet, data/processed/predictions/M2-MLP.parquet,
+       data/processed/predictions/M2-MLP_A4.parquet, data/processed/predictions/M2-XGB.parquet,
+       data/processed/predictions/M2-XGB_A4.parquet, data/processed/predictions/M3.parquet,
+       data/processed/predictions/M4.parquet, data/processed/predictions/M5.parquet,
+       data/processed/predictions/M5_A1.parquet, data/processed/predictions/M5_A2.parquet,
+       data/processed/predictions/M5_A3-SP.parquet, data/processed/predictions/M5_A3-SR.parquet,
+       data/processed/predictions/M5_A4.parquet, data/processed/predictions/M5_wA1.parquet,
+       data/processed/predictions/M6-NN.parquet, data/processed/predictions/M6-XGB.parquet,
+       reports/results/audit.json, reports/results/audit_strata.parquet,
+       reports/results/mstar.json]
+    outs:
+      - reports/results/event3_hypotheses.json: {cache: false, persist: true}
+      - reports/results/event3_uq.json: {cache: false, persist: true}
+      - reports/results/event3_consistency.json: {cache: false, persist: true}
+      - reports/results/event3_dependence.json: {cache: false, persist: true}
+      - reports/results/event3_descriptive.json: {cache: false, persist: true}
+      - reports/results/event3_matrix.parquet: {cache: false, persist: true}
+      - reports/results/event3.json: {cache: false, persist: true}

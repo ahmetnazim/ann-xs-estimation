@@ -78,6 +78,7 @@ PHASE8_RUN_STAGES = (
     "predict_all",
     "audit",
     "select_mstar",
+    "evaluate",
 )
 
 
