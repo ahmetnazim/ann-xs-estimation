@@ -27,7 +27,7 @@ import pandas as pd
 import pytest
 from scipy.stats import spearmanr
 
-from src.config import PARAMS_PATH, load_settings
+from src.config import PARAMS_PATH, S_FLOOR_DATA, load_settings
 from src.data.folds import analysis_frame
 from src.data.network import NetworkInputs
 from src.evaluation import bootstrap as bs
@@ -83,6 +83,8 @@ def _site_table() -> pd.DataFrame:
     base["Q_obs"] = base["Q_E"] * np.exp(rng.normal(0.0, 0.1, N))
     base["V"] = base["Q_obs"] / base["A"]
     base["eps_A"] = rng.normal(0.0, 0.02, N)
+    # schemas.SiteTable: F_S means "S equals the data slope floor" (P3-03); F-C3c-1 regression.
+    base.loc[base["F_S"].astype(bool), "S"] = S_FLOOR_DATA
     return pd.concat(
         [base, base.assign(variant="sa2"), base.assign(variant="sa3")], ignore_index=True
     )
@@ -734,6 +736,35 @@ def test_event3_h4_site_level_by_hand(result: Any) -> None:
     assert h4["rmse_t"] == pytest.approx(0.05, abs=1e-12)
     caveats = res.documents["hypotheses"]["H4"]["caveats"]
     assert set(caveats["n_hat_by_chan_mat_cd"]) == {"SAND", "missing"}
+
+
+def test_event3_h4_f_s_stratum_is_null_with_reason(result: Any) -> None:
+    """F-C3c-1 / docs/3 13.13 u: in the F_S stratum S = S_floor, so rho(n-hat, S) is undefined.
+
+    The F_S stratum reports null with the reason; the other stratum and the full set (strict)
+    are computed; rho(n-hat, S) on the full set is checked by hand.
+    """
+    w, _, res = result
+    frame = analysis_frame(w.site_table, "primary")
+    fs = frame["F_S"].astype(bool).to_numpy()
+    assert fs.any()
+    assert (frame.loc[fs, "S"] == S_FLOOR_DATA).all()
+    h4 = res.documents["hypotheses"]["H4"]
+    want = spearmanr(np.exp(w.nu + 0.01), frame["S"].to_numpy())[0]
+    assert h4["S-ID"]["rho_n_s"] == pytest.approx(want, abs=1e-12)
+    by_fs = h4["caveats"]["by_F_S"]
+    assert by_fs["F_S"]["rho_n_s"] is None
+    assert by_fs["F_S"]["undefined"] == {"rho_n_s": event3.UNDEFINED_ZERO_VARIANCE}
+    assert by_fs["F_S"]["n_sites"] == int(fs.sum())
+    assert by_fs["F_S"]["rho_n_d50"] is not None
+    assert by_fs["not_F_S"]["rho_n_s"] is not None
+    assert "undefined" not in by_fs["not_F_S"]
+    ci = h4["caveats"]["rho_n_s_ci_by_F_S"]
+    assert ci["F_S"] == {"n_s": {"value": None, "reason": event3.UNDEFINED_ZERO_VARIANCE}}
+    sub = ~fs
+    want_sub = spearmanr(np.exp(w.nu[sub] + 0.01), frame.loc[sub, "S"].to_numpy())[0]
+    assert ci["not_F_S"]["n_s"]["estimate"] == pytest.approx(want_sub, abs=1e-12)
+    assert ci["not_F_S"]["n_s"]["lo"] <= ci["not_F_S"]["n_s"]["hi"]
 
 
 def test_event3_strata_rule(result: Any, monkeypatch: pytest.MonkeyPatch) -> None:

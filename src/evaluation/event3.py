@@ -87,6 +87,10 @@ SA_MODELS: Final[Mapping[str, tuple[str, ...]]] = {
 UQ_TARGETS: Final[tuple[str, ...]] = ("dbar", "W", "t", "A")
 #: docs/3 13.13 k: a far / not-nested stratum CI needs this many sites in every repeat.
 STRATUM_MIN_SITES: Final[int] = 30
+#: docs/3 13.13 u: reason recorded for a caveat-stratum correlation with a constant input.
+UNDEFINED_ZERO_VARIANCE: Final[str] = (
+    "undefined: an input is constant in this stratum (F_S: S = S_floor by definition)"
+)
 #: Protocol 4.7, verbatim (outcome, claim, venue).
 OUTCOME_TEXT: Final[Mapping[int, tuple[str, str, str]]] = {
     1: (
@@ -459,7 +463,24 @@ def _site_level(rows: pd.DataFrame, nu_col: str = "nu_mean") -> pd.DataFrame:
     return out
 
 
-def _h4_points(site: pd.DataFrame, protocol: ProtocolParams) -> dict[str, Any]:
+def _constant(a: FloatArray) -> bool:
+    return bool(a.size == 0 or np.ptp(a) == 0.0)
+
+
+def _stratum_rho(
+    x: FloatArray, y: FloatArray, undefined: dict[str, str], name: str
+) -> float | None:
+    """Spearman rho in a caveat stratum; null with a reason if an input is constant (13.13 u)."""
+    if _constant(x) or _constant(y):
+        undefined[name] = UNDEFINED_ZERO_VARIANCE
+        return None
+    return mt.spearman_rho(x, y)
+
+
+def _h4_points(
+    site: pd.DataFrame, protocol: ProtocolParams, *, strict: bool = True
+) -> dict[str, Any]:
+    """H4 point statistics; ``strict=False`` only for caveat strata (docs/3 13.13 u)."""
     dom, cfg = protocol.domain, protocol.evaluation.h4
     nu_b = (math.log(dom.n_bounds[0]), math.log(dom.n_bounds[1]))
     r_b = (math.log(dom.r_bounds[0]), math.log(dom.r_bounds[1]))
@@ -467,15 +488,23 @@ def _h4_points(site: pd.DataFrame, protocol: ProtocolParams) -> dict[str, Any]:
     lr = np.log(site["r_hat"].to_numpy(dtype=np.float64))
     n_hat = np.exp(nu)
     r_obs = 1.0 / np.expm1(site["o_t"].to_numpy(dtype=np.float64))
-    return {
+    pairs = {
+        "rho_n_d50": (n_hat, site["D50_m"].to_numpy(dtype=np.float64)),
+        "rho_n_s": (n_hat, site["S"].to_numpy(dtype=np.float64)),
+        "rho_r_robs": (site["r_hat"].to_numpy(dtype=np.float64), r_obs),
+    }
+    out: dict[str, Any] = {
         "n_sites": len(site),
         "pi_nu": hy.boundary_share(nu, nu_b, cfg.vartheta),
         "pi_r": hy.boundary_share(lr, r_b, cfg.vartheta),
         "pi_lit": hy.literature_share(n_hat, dom),
-        "rho_n_d50": mt.spearman_rho(n_hat, site["D50_m"].to_numpy(dtype=np.float64)),
-        "rho_n_s": mt.spearman_rho(n_hat, site["S"].to_numpy(dtype=np.float64)),
-        "rho_r_robs": mt.spearman_rho(site["r_hat"].to_numpy(dtype=np.float64), r_obs),
     }
+    undefined: dict[str, str] = {}
+    for name, (x, y) in pairs.items():
+        out[name] = mt.spearman_rho(x, y) if strict else _stratum_rho(x, y, undefined, name)
+    if undefined:
+        out["undefined"] = undefined
+    return out
 
 
 def _rho_design(
@@ -510,7 +539,7 @@ def _h4_extra(site: pd.DataFrame, protocol: ProtocolParams, qc: pd.DataFrame) ->
     by_fs: dict[str, Any] = {}
     for flag, sub in site.groupby("F_S"):
         by_fs["F_S" if flag else "not_F_S"] = (
-            _h4_points(sub, protocol) if len(sub) > 2 else {"n_sites": len(sub)}
+            _h4_points(sub, protocol, strict=False) if len(sub) > 2 else {"n_sites": len(sub)}
         )
     codes = qc.set_index("row_id")["chan_mat_cd"]
     chan = codes.reindex(site["row_id"]).astype("string").fillna("missing").to_numpy()
@@ -767,11 +796,16 @@ def _h4(
         "rmse_t": st.per_repeat(m5_sid, lambda d: mt.rmse(d["mu_t"], d["o_t"])),
         "bias_t": st.per_repeat(m5_sid, lambda d: mt.bias(d["mu_t"], d["o_t"])),
     }
-    fs_ci = {}
+    fs_ci: dict[str, Any] = {}
     for flag, sub in site.groupby("F_S"):
-        fs_ci["F_S" if flag else "not_F_S"] = _rho_design(
-            sub.reset_index(drop=True), protocol, n_boot, ("n_s",)
-        )
+        sub = sub.reset_index(drop=True)
+        key = "F_S" if flag else "not_F_S"
+        s_vals = sub["S"].to_numpy(dtype=np.float64)
+        nu_vals = sub["nu_hat"].to_numpy(dtype=np.float64)
+        if _constant(s_vals) or _constant(nu_vals):
+            fs_ci[key] = {"n_s": {"value": None, "reason": UNDEFINED_ZERO_VARIANCE}}
+            continue
+        fs_ci[key] = _rho_design(sub, protocol, n_boot, ("n_s",))
     lro_site = _site_level(sets.get("M5", "S-LRO"))
     lro = {
         **_h4_points(lro_site, protocol),
@@ -1018,9 +1052,13 @@ def _descriptive(
     for abl in M5_ABLATIONS:
         rows = sets.get("M5", "S-ID", ablation=abl)
         site = _site_level(rows)
-        pts = _h4_points(site, protocol)
+        pts = _h4_points(site, protocol, strict=False)  # descriptive (13.13 u)
         if abl == "A2":  # excluded from H4 (c) (protocol 4.1, proofs 9.5)
             pts.pop("rho_r_robs")
+            und = pts.pop("undefined", {})
+            und.pop("rho_r_robs", None)
+            if und:
+                pts["undefined"] = und
         entry: dict[str, Any] = {"H4_points_S-ID": pts}
         if abl == "A1":  # Proposition 7.6: nu(full kappa) = nu(A1) + (2/3) ln kappa
             k = log_kappa(
@@ -1030,9 +1068,11 @@ def _descriptive(
             )
             mapped = rows.assign(nu_mapped=rows["nu_mean"].to_numpy() + (2.0 / 3.0) * k)
             m_site = _site_level(mapped, "nu_mapped")
-            m_pts = _h4_points(m_site, protocol)
+            m_pts = _h4_points(m_site, protocol, strict=False)
             entry["H4_points_S-ID_prop_7_6_mapped"] = {
-                k2: m_pts[k2] for k2 in ("pi_nu", "pi_lit", "rho_n_d50", "rho_n_s")
+                k2: m_pts[k2]
+                for k2 in ("pi_nu", "pi_lit", "rho_n_d50", "rho_n_s", "undefined")
+                if k2 in m_pts
             }
         variants[f"M5_{abl}"] = entry
     no_sa1 = "identical to primary by construction (no Phi); not trained"
