@@ -4,10 +4,10 @@
   "uv": "ghcr.io/astral-sh/uv:0.12.1@sha256:cf4eedcaa81655197f625739489effcbe71b61ceb1506f332c3facae5deceded"
  },
  "docker": "29.8.2",
- "git_commit": "019e320f4d49587758a7c29046a7404eb345deb8",
+ "git_commit": "6be913812dce8586908a61c0f033b2fd34194350",
  "images": {
-  "capsule": "sha256:57152631843f464bce2abb7ff646088ad669f326062e89f300d6d0c34d4cac5b",
-  "check": "sha256:3e3b7bbe5a34bcc16c80d364925ea553f59d8156a4a039d2aa5d2bb5d5443738"
+  "capsule": "sha256:0082399500b4a82abeba4d0f3bc6b682f8c478931693732b7353a3a12977c608",
+  "check": "sha256:2abb1f9099a20dd817e59881ec0b82dfc0f78d5629c18a1e7b7307bfef3b5160"
  },
  "pilot_fit": {
   "family": "S-ID",
@@ -21,11 +21,11 @@
  "result": "pass",
  "schema_version": 1,
  "steps_s": {
-  "build_check": 10,
-  "build_runtime": 53,
-  "ci_local": 358,
-  "pilot_fit": 14,
-  "verify_models": 30
+  "build_check": 9,
+  "build_runtime": 51,
+  "ci_local": 362,
+  "pilot_fit": 13,
+  "verify_models": 26
  },
  "uv_lock_sha256": "85c69462b26510f2cd61bc4ba8f6ac0f6677a219715fbaf7220959b221da6e6d",
  "uv_lock_sha256_image": "85c69462b26510f2cd61bc4ba8f6ac0f6677a219715fbaf7220959b221da6e6d",
