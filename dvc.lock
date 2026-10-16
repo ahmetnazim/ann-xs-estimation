@@ -2997,8 +2997,8 @@ stages:
       size: 2899
     - path: figures/src/annxs_figures
       hash: md5
-      md5: 2586f34f600bc93ab86fa493b67420d4.dir
-      size: 310627
+      md5: 8922453c9605d5d4314ec993aaa2df7a.dir
+      size: 310936
       nfiles: 12
     - path: figures/uv.lock
       hash: md5
@@ -3071,11 +3071,11 @@ stages:
     outs:
     - path: docs/figures
       hash: md5
-      md5: 075fd6ae26f5158789197394eaed797e.dir
-      size: 20269754
+      md5: 569e74d74b5743bb037ad6574e0a2fa8.dir
+      size: 20266577
       nfiles: 34
     - path: docs/tables
       hash: md5
-      md5: 26e6d85e12ad93bc12dd826aafe44145.dir
-      size: 2846782
+      md5: 3c347453c22a8c6e5cc4995840729542.dir
+      size: 2846853
       nfiles: 11
