@@ -2997,9 +2997,9 @@ stages:
       size: 2899
     - path: figures/src/annxs_figures
       hash: md5
-      md5: 4c30ff4b81157e82c3b2d1370ae02b3e.dir
-      size: 95613
-      nfiles: 4
+      md5: 9675d01934e0619f53eec14a78f7f2ee.dir
+      size: 171520
+      nfiles: 8
     - path: figures/uv.lock
       hash: md5
       md5: 4aaf5ff26248acf759c23053f9241b82
@@ -3066,14 +3066,14 @@ stages:
       size: 21762
     - path: scripts/make_figures.py
       hash: md5
-      md5: 6cf566a74ae492c234f22cb1b3f0a7a6
-      size: 5143
+      md5: 8510c03d75ed873583049c78c9d3f59d
+      size: 5931
     outs:
     - path: docs/figures
       hash: md5
-      md5: fef0219c3760c9deaeeb8851a96010a9.dir
-      size: 6471
-      nfiles: 2
+      md5: dd679fdda73359fa1d873d7da82956a4.dir
+      size: 7896132
+      nfiles: 12
     - path: docs/tables
       hash: md5
       md5: 26e6d85e12ad93bc12dd826aafe44145.dir
