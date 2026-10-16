@@ -917,7 +917,9 @@ def build_t9_frame_and_data_summary(bundle: VerifiedBundle) -> pd.DataFrame:
             "item": "S-IND:A_J_dropped_rows",
             "stratum": "A_J|primary|S-IND",
             "value": int(desc["dropped_rows"]["A_J|primary|S-IND"]),
-            "status_or_note": "non-positive Q_E rows dropped for A_J on S-IND",
+            "status_or_note": (
+                "missing/non-positive member V_E (V0001E) rows dropped for A_J on S-IND"
+            ),
             "evidence_tier": TIER_DESCRIPTIVE,
             "source_file": "reports/results/event3_descriptive.json",
         }
@@ -1169,7 +1171,8 @@ def _render_benchmark_markdown(
             ),
             (
                 f"- **Split Notes:** `S-ID`: *{EVENT1_AUDIT_LABEL}*; "
-                f"`S-IND`: *{S_IND_PANEL_NOTE}* (`A_J` drops 81 rows with non-positive $Q_E$)."
+                f"`S-IND`: *{S_IND_PANEL_NOTE}* (`A_J` drops 81 rows lacking valid positive "
+                "member $V_E$ (`V0001E`))."
             ),
             "- **CSV Mirror:** `docs/tables/t2_metrics_matrix.csv`",
             "",

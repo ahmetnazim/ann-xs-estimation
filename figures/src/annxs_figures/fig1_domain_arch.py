@@ -446,7 +446,7 @@ def _draw_panel_b_architecture(
         0.41,
         (
             "I_blind n-Head\nLinear(d_blind -> 2)\n"
-            "z_n -> Bounded Sigmoid\nn_hat in [0.005, 0.40]\n(nu_hat = ln n_hat)"
+            "z_n -> Bounded Sigmoid\nn_hat in [0.005, 0.60]\n(nu_hat = ln n_hat)"
         ),
         fc="#FEF7E0",
         ec=OKABE_ITO["orange"],
@@ -461,7 +461,7 @@ def _draw_panel_b_architecture(
         0.38,
         (
             "Geometry & Shape Heads\nW_hat = exp(mu_W)\n"
-            "t_hat = ln(d_max/dbar)\nr_hat = 1/(exp(t_hat)-1)\nr_hat in [0.25, 10.0]"
+            "t_hat = ln(d_max/dbar)\nr_hat = 1/(exp(t_hat)-1)\nr_hat in [0.50, 10.0]"
         ),
         fc="#E6F4EA",
         ec=OKABE_ITO["bluish_green"],

@@ -8,7 +8,7 @@ Implements ``Fig. 3`` from ``.agents/prompts/PHASE_09.md`` §1 (P9-D4 (a)):
 - Panel (c) [Descriptive]: Hard-model Picard solver residual (<= tau_l = 1e-10) vs M4 soft-loss
   test-site Manning residual R_M across S-ID, S-LRO, and S-IND.
 - Panel (d) [Confirmatory (S-ID) / Descriptive (S-LRO & caveats)]: H4 latent n_hat distribution
-  vs N_lit = [0.012, 0.33] and box bounds [0.005, 0.40], chan_mat_cd quantiles, and Spearman
+  vs N_lit = [0.012, 0.33] and box bounds [0.005, 0.60], chan_mat_cd quantiles, and Spearman
   rank correlations rho_S(n_hat, D50), rho_S(n_hat, S) (caveat C2), rho_S(r_hat, r_obs) with
   95% bootstrap CIs.
 """
@@ -273,7 +273,7 @@ def _draw_panel_b_back_calc(
         0.02,
         0.81,
         (
-            "M3, M5 non-admissible share = 0.0000 (n_hat in [0.005, 0.40])\n"
+            "M3, M5 non-admissible share = 0.0000 (n_hat in [0.005, 0.60])\n"
             f"Shape viol. d_max <= dbar: M2-XGB S-LRO={m2xgb_shape_lro}, "
             f"S-ID={m2xgb_shape_sid} (M5=0)"
         ),
@@ -645,8 +645,8 @@ def _draw_panel_d_h4(
     )
     return (
         f"Panel (d) H4 Summary — Verdict: {h4_verdict} (rho_S(n_hat, D50) CI spans 0) | "
-        f"N_lit=[0.012, 0.33]: pi_lit={pi_lit_sid} (S-ID), {pi_lit_lro} (S-LRO) >= 0.90\n"
-        f"Boundary shares: pi_nu={pi_nu_sid}, pi_r={pi_r_sid} <= 0.05 | "
+        f"N_lit=[0.012, 0.33]: pi_lit={pi_lit_sid} (S-ID), {pi_lit_lro} (S-LRO) >= 0.80\n"
+        f"Boundary shares: pi_nu={pi_nu_sid}, pi_r={pi_r_sid} <= 0.10 | "
         f"chan_mat_cd med n_hat: SAND={sand_med}, CBLS={cbls_med} | "
         "F_S (n=821) rho_n_s: undefined (S=S_floor=1e-5)"
     )

@@ -400,7 +400,7 @@ def _generate_fig_s1(
 
     ax_d.set_xticks(x_d)
     ax_d.set_xticklabels([short for _, short in div_order], rotation=28, ha="right", fontsize=6.0)
-    ax_d.set_ylabel("Significant LISA sites ($p < 0.05$)", fontsize=7.0)
+    ax_d.set_ylabel("Significant LISA sites ($p < 0.01$)", fontsize=7.0)
     label_panel(
         ax_d,
         "d",
@@ -706,12 +706,12 @@ def _generate_fig_s3(
     sa_list = ["primary", "SA1", "SA2", "SA3", "SA4", "SA5", "SA6"]
     sa_labels = [
         "Primary",
-        "SA1\n(Alt init)",
-        "SA2\n(No flags)",
-        "SA3\n(Strict QC)",
+        "SA1\n(Q_C in Phi)",
+        "SA2\n(meas_q_va)",
+        "SA3\n(Keep R8/R9)",
         "SA4\n(Drop F_Qsel)",
-        "SA5\n(Strict eps)",
-        "SA6\n(Alt seed)",
+        "SA5\n(Drop F_S)",
+        "SA6\n(Keep F_DA)",
     ]
     sa_models = ["M5", "M2-XGB", "M2-MLP", "M1"]
     x_a = np.arange(len(sa_list))
@@ -1218,7 +1218,7 @@ def _generate_fig_s4(
         0.02,
         0.96,
         f"Training Picard max = {m5_train_picard} (M5/A1/wA1/A3/A4)\n"
-        f"Evaluation Picard max = {eval_pic_txt} (exact 1-step convergence)",
+        f"Evaluation Picard max = {eval_pic_txt} (<= 40 iter cap; 0 fallbacks)",
         transform=ax_c.transAxes,
         va="top",
         ha="left",

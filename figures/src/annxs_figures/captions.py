@@ -159,7 +159,7 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
         f"- **Pre-Registered §4.7 Row 4 Outcome:** `{VERBATIM_ROW4_OUTCOME}`.",
         f"- **Pre-Registered §4.7 Row 4 Action:** `{VERBATIM_ROW4_STATEMENT}`.",
         f"- **Event 1 S-ID Label:** `{EVENT1_AUDIT_LABEL}`.",
-        f"- **S-IND Scope Note:** `{S_IND_PANEL_NOTE}` (`UQ: {S_IND_UQ_NOTE}`).",
+        f"- **S-IND Scope Note:** `{S_IND_PANEL_NOTE}` (`{S_IND_UQ_NOTE}`).",
         "",
         "---",
         "",
@@ -179,8 +179,9 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
             f"- **Panel (b) [{TIER_DESCRIPTIVE}]:** `M5` hard-constrained physics-informed "
             "architecture (`I_blind` roughness head excluding `Q_E, S, F_S, V_E` + "
             "differentiable Manning + continuity projection layer "
-            "`Phi(W_hat, r_hat, n_hat; Q_E, S)` with `K = 8` Gauss-Legendre wet-perimeter "
-            "quadrature and Picard tolerance `tau_l = 1e-10`)."
+            "`Phi(W_hat, r_hat, n_hat; Q_E, S)` with `513`-node `tanh-sinh` wet-perimeter "
+            "quadrature (`quad_level = 6`, `quad_trunc = 4.0`) and Picard tolerance "
+            "`tau_l = 1e-10`)."
         ),
         (
             f"- **Panel (c) [{TIER_DESCRIPTIVE}]:** Pre-registered multi-regime validation "
@@ -212,8 +213,10 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
         (
             f"- **Panel (c) [{TIER_CONFIRMATORY} / {TIER_SECONDARY}]:** Confirmatory `H1` "
             "paired log-RMSE contrast `Delta_H1 = RMSE_log(M5) - RMSE_log(M*)` "
-            "(`M* = M2-XGB`, selected on `S-ID` mean `{{dbar, A}}` `RMSE_log = 0.5313`) with "
-            "95% division / river cluster-bootstrap CIs (`B = 2,000`):"
+            f"(`M* = M2-XGB`, selected per-target on `S-ID` OOF `RMSE_log`: "
+            f"`dbar = {m2_sid_dbar}`, `A = "
+            f"{format_num(float(bundle.mstar['rmse_log_mean']['M2-XGB']['A']), 'dec4')}`) with "
+            "95% division / river cluster-bootstrap CIs (`B = 10,000`):"
         ),
         (
             f"  - `S-LRO` (`{TIER_CONFIRMATORY}`, `n = 3,988`): `dbar` "
@@ -232,7 +235,7 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
             f"+{format_num(float(h1_sind_dbar['hi']), 'dec4')}]`; `A` "
             f"`Delta = {format_num(float(h1_sind_a['estimate']), 'dec4')} "
             f"[{format_num(float(h1_sind_a['lo']), 'dec4')}, "
-            f"+{format_num(float(h1_sind_a['hi']), 'dec4')}]`."
+            f"{format_num(float(h1_sind_a['hi']), 'dec4')}]`."
         ),
         f"  - Verdict: `H1 Falsified` (`{VERBATIM_ROW4_OUTCOME}`).",
         (
@@ -252,7 +255,7 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
         ),
         (
             f"- **Panel (b) [{TIER_DESCRIPTIVE}]:** Share of predictions with no admissible "
-            "back-calculated Manning roughness `n_back in [0.005, 0.40]` "
+            "back-calculated Manning roughness `n_back in [0.005, 0.60]` "
             f"(`docs/2_mathematical_proofs.md` Prop. 6.2 / §7.4; `M2-XGB` `S-LRO` share "
             f"outside = `{m2_back_lro}` vs `M3`/`M5` = `0.0000`) and Dingman shape bound "
             "violation share `P(d_max_hat <= dbar_hat)`."
@@ -265,7 +268,7 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
         (
             f"- **Panel (d) [{TIER_CONFIRMATORY} / {TIER_DESCRIPTIVE}]:** Confirmatory `H4` "
             f"parameter plausibility on `S-ID` (`{TIER_CONFIRMATORY}`, `{EVENT1_AUDIT_LABEL}`: "
-            f"`pi_lit = {format_num(float(h4_sid['pi_lit']), 'dec4')} >= 0.90`, "
+            f"`pi_lit = {format_num(float(h4_sid['pi_lit']), 'dec4')} >= 0.80`, "
             f"`rho_S(n_hat, D50) = {format_num(float(h4_sid['ci']['n_d50']['estimate']), 'dec4')} "
             f"[{format_num(float(h4_sid['ci']['n_d50']['lo']), 'dec4')}, "
             f"{format_num(float(h4_sid['ci']['n_d50']['hi']), 'dec4')}]`, "
@@ -299,9 +302,9 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
         ),
         (
             f"- **Panel (b) [{TIER_SECONDARY} / {TIER_DESCRIPTIVE}]:** Empirical 90% "
-            "split-conformal coverage `C_0.10(dbar)` with the pre-registered **`[0.85, 0.95]`** "
-            f"acceptance band across `S-ID` (`M5 = {m5_cov_sid}` in `[0.85, 0.95]`, "
-            f"`{EVENT1_AUDIT_LABEL}`), `S-LRO` (`M5 = {m5_cov_lro}`), `S-TAIL-DA`, "
+            "deep-ensemble Gaussian-mixture coverage `C_0.10(dbar)` with the pre-registered "
+            f"**`[0.85, 0.95]`** acceptance band across `S-ID` (`M5 = {m5_cov_sid}` in "
+            f"`[0.85, 0.95]`, `{EVENT1_AUDIT_LABEL}`), `S-LRO` (`M5 = {m5_cov_lro}`), `S-TAIL-DA`, "
             f"`S-TAIL-SO`, `S-IND` (`M5 = {m5_cov_ind}`, `{S_IND_UQ_NOTE}`), and `S-ID` "
             "drainage-area quintiles `Q1`-`Q5`."
         ),
@@ -397,7 +400,7 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
         ),
         (
             f"- **Panel (d) [{TIER_DESCRIPTIVE}]:** Significant Local Moran's `I` (`LISA`, "
-            f"`p < 0.05`) site counts by physiographic division; banner quotes Event 1 verdict "
+            f"`p < 0.01`) site counts by physiographic division; banner quotes Event 1 verdict "
             f"`{EVENT1_AUDIT_LABEL}`."
         ),
         "",
@@ -489,8 +492,8 @@ def generate_captions(bundle: VerifiedBundle, figures_dir: Path) -> Path:
         ),
         (
             f"- **Panel (d) [{TIER_SECONDARY} / {TIER_DESCRIPTIVE}]:** Sorted 90% "
-            "split-conformal prediction intervals for `ln dbar` across all `33` single-COMID "
-            f"`S-IND` locations for `M5` (`C_0.10 = {m5_cov_ind}`) and `M2-MLP`."
+            "deep-ensemble Gaussian-mixture prediction intervals for `ln dbar` across all `33` "
+            f"single-COMID `S-IND` locations for `M5` (`C_0.10 = {m5_cov_ind}`) and `M2-MLP`."
         ),
         "",
     ]

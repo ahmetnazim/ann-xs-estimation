@@ -684,7 +684,7 @@ def _draw_panel_d_ablation_h4(
             evidence_tier=tier,
         )
 
-    ax.axhline(0.90, color="#666666", linestyle=":", linewidth=0.8, label="H4 pi_lit >= 0.90")
+    ax.axhline(0.80, color="#666666", linestyle=":", linewidth=0.8, label="H4 pi_lit >= 0.80")
     ax.axhline(0.0, color="#111111", linestyle="-", linewidth=0.75)
 
     ax.bar(
