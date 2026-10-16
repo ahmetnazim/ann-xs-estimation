@@ -1,5 +1,17 @@
 {
   "audit_label": "optimistic under spatial/network dependence",
+  "figures_sha256": {
+    "docs/figures/fig1_domain_and_architecture.pdf": "8e7922d6e2ed91db31d4b7a915c49a5d39f98038b8cd4f0a90a25c6aeb7bf32f",
+    "docs/figures/fig1_domain_and_architecture.png": "b8e82aa2a2cde35a5a6cc9fa55ec2ce978ef2f56e072c6628871dc983189ba14",
+    "docs/figures/fig1_domain_and_architecture.svg": "9dd8917dc98d52396caf0f4a7392531cdc0c4b48ec7a20ce6900a1536c40983b",
+    "docs/figures/fig2_benchmark_performance.pdf": "804a60bbbd4c0ec2b15bf91617a43f6ef25856fc0d68c46a68cf2c04ff7b12a9",
+    "docs/figures/fig2_benchmark_performance.png": "711b506c313a7072c6221836a0da671029972cffcd74c864c56434ae6425d06b",
+    "docs/figures/fig2_benchmark_performance.svg": "18ef8ee284d2d1cbffb2e0a43ec50e87321c34c4f0623d5c15db0293f789cf27",
+    "docs/figures/fig3_physical_consistency_and_h4.pdf": "080ec41f611182b849709383cd5a270ea54d86d70aaf3a3fce7aad9494118d49",
+    "docs/figures/fig3_physical_consistency_and_h4.png": "9e7affab5d687036f208fcf749ed0bb42c3496d5fa2de9f9347cff1c3e91846d",
+    "docs/figures/fig3_physical_consistency_and_h4.svg": "4a7b5defed7f0fc7334cb4286bede6f3172f3d85d091709a6376e6d6409f4ad8",
+    "docs/figures/figure_annotations.json": "33da75b15c39dc3cfc9a7e063a2f261750da3fe79c8613c4d107c908768f1248"
+  },
   "frozen_tables_sha256": {
     "data/processed/ind/ehydro_ind.parquet": "a47bcd71e234a4dee69e8563c25b35d548f2a5030a04ca0b63ccf1ce0fff550c",
     "data/processed/site_table.parquet": "8d186b07aae165eddff23119b9bc67223705c8dff5cf50d7950711d2566d5470",
