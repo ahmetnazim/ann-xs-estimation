@@ -1,6 +1,7 @@
 {
   "audit_label": "optimistic under spatial/network dependence",
   "figures_sha256": {
+    "docs/figures/captions.md": "3a1d8e7d9935366f47341b6f380ed94720729fe248588c98ccc3e9c87d9bd4c7",
     "docs/figures/fig1_domain_and_architecture.pdf": "8e7922d6e2ed91db31d4b7a915c49a5d39f98038b8cd4f0a90a25c6aeb7bf32f",
     "docs/figures/fig1_domain_and_architecture.png": "b8e82aa2a2cde35a5a6cc9fa55ec2ce978ef2f56e072c6628871dc983189ba14",
     "docs/figures/fig1_domain_and_architecture.svg": "9dd8917dc98d52396caf0f4a7392531cdc0c4b48ec7a20ce6900a1536c40983b",
