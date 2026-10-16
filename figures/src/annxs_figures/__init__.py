@@ -9,6 +9,9 @@ from __future__ import annotations
 from annxs_figures.fig1_domain_arch import generate_fig1
 from annxs_figures.fig2_benchmark import generate_fig2
 from annxs_figures.fig3_consistency_h4 import generate_fig3
+from annxs_figures.fig4_ood_uq import generate_fig4
+from annxs_figures.fig5_row4_diagnosis import generate_fig5
+from annxs_figures.fig_supplementary import generate_supplementary_figures
 from annxs_figures.loader import (
     EXPECTED_MERKLE_ROOT,
     EXPECTED_PARAMS_SHA256,
@@ -102,6 +105,9 @@ __all__ = [
     "generate_fig1",
     "generate_fig2",
     "generate_fig3",
+    "generate_fig4",
+    "generate_fig5",
+    "generate_supplementary_figures",
     "label_panel",
     "load_verified_bundle",
     "metric_fmt_kind",

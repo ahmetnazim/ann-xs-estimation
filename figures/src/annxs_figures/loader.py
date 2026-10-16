@@ -458,7 +458,7 @@ class VerifiedBundle:
         return pd.read_parquet(full_path)
 
     def load_training_json(self, rel_path: str) -> dict[str, Any]:
-        """Load a training diagnostic JSON (e.g. ``reports/training/curves.json``)."""
+        """Load a training diagnostic JSON (e.g. ``reports/training/summary.json``)."""
         assert_no_forbidden_imports()
         full_path = self.repo_root / rel_path
         if not full_path.is_file():
@@ -466,6 +466,17 @@ class VerifiedBundle:
         data = json.loads(full_path.read_text(encoding="utf-8"))
         if not isinstance(data, dict):
             raise ProvenanceError(f"Training diagnostic {rel_path} must be a JSON object")
+        return data
+
+    def load_training_list(self, rel_path: str) -> list[dict[str, Any]]:
+        """Load a list-valued training diagnostic JSON (e.g. ``curves.json``, ``xi.json``)."""
+        assert_no_forbidden_imports()
+        full_path = self.repo_root / rel_path
+        if not full_path.is_file():
+            raise ProvenanceError(f"Training diagnostic file missing: {full_path}")
+        data = json.loads(full_path.read_text(encoding="utf-8"))
+        if not isinstance(data, list) or not all(isinstance(row, dict) for row in data):
+            raise ProvenanceError(f"Training diagnostic {rel_path} must be a JSON list of objects")
         return data
 
 

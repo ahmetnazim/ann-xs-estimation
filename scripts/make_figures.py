@@ -22,6 +22,9 @@ from annxs_figures import (
     generate_fig1,
     generate_fig2,
     generate_fig3,
+    generate_fig4,
+    generate_fig5,
+    generate_supplementary_figures,
     load_verified_bundle,
     sha256_file,
 )
@@ -129,6 +132,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         f1_paths = generate_fig1(bundle, repo_root, figures_dir, registry)
         f2_paths = generate_fig2(bundle, repo_root, figures_dir, registry)
         f3_paths = generate_fig3(bundle, repo_root, figures_dir, registry)
+        f4_paths = generate_fig4(bundle, repo_root, figures_dir, registry)
+        f5_paths = generate_fig5(bundle, repo_root, figures_dir, registry)
+        supp_paths = generate_supplementary_figures(bundle, repo_root, figures_dir, registry)
 
     ann_path = figures_dir / "figure_annotations.json"
     registry.write_json(ann_path)
@@ -145,7 +151,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     figures_sha256: dict[str, str] = {
         str(ann_path.relative_to(repo_root)): sha256_file(ann_path),
     }
-    for path_map in (f1_paths, f2_paths, f3_paths):
+    all_fig_maps = [f1_paths, f2_paths, f3_paths, f4_paths, f5_paths, *supp_paths.values()]
+    for path_map in all_fig_maps:
         for p in sorted(path_map.values()):
             figures_sha256[str(p.relative_to(repo_root))] = sha256_file(p)
     manifest["figures_sha256"] = dict(sorted(figures_sha256.items()))
