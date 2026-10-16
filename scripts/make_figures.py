@@ -15,9 +15,13 @@ from pathlib import Path
 from annxs_figures import (
     FROZEN_TABLES_SHA256,
     RESULTS_SHA256,
+    AnnotationRegistry,
     ForbiddenImportBlocker,
     assert_no_forbidden_imports,
     generate_all_tables,
+    generate_fig1,
+    generate_fig2,
+    generate_fig3,
     load_verified_bundle,
     sha256_file,
 )
@@ -118,9 +122,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     figures_dir.mkdir(parents=True, exist_ok=True)
     tables_dir.mkdir(parents=True, exist_ok=True)
 
+    registry = AnnotationRegistry()
     with ForbiddenImportBlocker.guard():
         bundle = load_verified_bundle(repo_root)
         generated_tables = generate_all_tables(bundle, tables_dir)
+        f1_paths = generate_fig1(bundle, repo_root, figures_dir, registry)
+        f2_paths = generate_fig2(bundle, repo_root, figures_dir, registry)
+        f3_paths = generate_fig3(bundle, repo_root, figures_dir, registry)
+
+    ann_path = figures_dir / "figure_annotations.json"
+    registry.write_json(ann_path)
 
     tables_sha256: dict[str, str] = {
         str(generated_tables.markdown_path.relative_to(repo_root)): sha256_file(
@@ -130,6 +141,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     for csv_path in sorted(generated_tables.csv_paths.values()):
         tables_sha256[str(csv_path.relative_to(repo_root))] = sha256_file(csv_path)
     manifest["tables_sha256"] = dict(sorted(tables_sha256.items()))
+
+    figures_sha256: dict[str, str] = {
+        str(ann_path.relative_to(repo_root)): sha256_file(ann_path),
+    }
+    for path_map in (f1_paths, f2_paths, f3_paths):
+        for p in sorted(path_map.values()):
+            figures_sha256[str(p.relative_to(repo_root))] = sha256_file(p)
+    manifest["figures_sha256"] = dict(sorted(figures_sha256.items()))
 
     manifest_path = figures_dir / "provenance_manifest.json"
     manifest_text = (

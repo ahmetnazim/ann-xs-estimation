@@ -6,6 +6,9 @@ provenance against ``reports/results/scoring_ledger.json`` and ``.agents/.resear
 
 from __future__ import annotations
 
+from annxs_figures.fig1_domain_arch import generate_fig1
+from annxs_figures.fig2_benchmark import generate_fig2
+from annxs_figures.fig3_consistency_h4 import generate_fig3
 from annxs_figures.loader import (
     EXPECTED_MERKLE_ROOT,
     EXPECTED_PARAMS_SHA256,
@@ -22,6 +25,22 @@ from annxs_figures.loader import (
     load_verified_bundle,
     sha256_file,
     verify_ledger_dict,
+)
+from annxs_figures.style import (
+    ASCE_DOUBLE_COL_IN,
+    ASCE_ONE_HALF_COL_IN,
+    ASCE_RASTER_DPI,
+    ASCE_SINGLE_COL_IN,
+    DIVISION_PALETTE,
+    MODEL_PALETTE,
+    OKABE_ITO,
+    SPLIT_PALETTE,
+    AnnotationRecord,
+    AnnotationRegistry,
+    apply_asce_style,
+    check_cvd_and_grayscale_distinguishability,
+    label_panel,
+    save_figure_bundle,
 )
 from annxs_figures.tables import (
     ROUNDING_RULES_TEXT,
@@ -43,19 +62,30 @@ from annxs_figures.tables import (
 assert_no_forbidden_imports()
 
 __all__ = [
+    "ASCE_DOUBLE_COL_IN",
+    "ASCE_ONE_HALF_COL_IN",
+    "ASCE_RASTER_DPI",
+    "ASCE_SINGLE_COL_IN",
+    "DIVISION_PALETTE",
     "EXPECTED_MERKLE_ROOT",
     "EXPECTED_PARAMS_SHA256",
     "EXPECTED_UV_LOCK_SHA256",
     "FORBIDDEN_MODULES",
     "FROZEN_TABLES_SHA256",
     "LEDGER_SEQUENCE",
+    "MODEL_PALETTE",
+    "OKABE_ITO",
     "RESULTS_SHA256",
     "ROUNDING_RULES_TEXT",
+    "SPLIT_PALETTE",
+    "AnnotationRecord",
+    "AnnotationRegistry",
     "ForbiddenImportBlocker",
     "GeneratedTables",
     "Outcome47",
     "ProvenanceError",
     "VerifiedBundle",
+    "apply_asce_style",
     "assert_no_forbidden_imports",
     "build_t1_hypotheses_and_outcome",
     "build_t2_metrics_matrix",
@@ -66,10 +96,16 @@ __all__ = [
     "build_t7_srnd_benchmark",
     "build_t8_s1_hyg_consistency",
     "build_t9_frame_and_data_summary",
+    "check_cvd_and_grayscale_distinguishability",
     "format_num",
     "generate_all_tables",
+    "generate_fig1",
+    "generate_fig2",
+    "generate_fig3",
+    "label_panel",
     "load_verified_bundle",
     "metric_fmt_kind",
+    "save_figure_bundle",
     "sha256_file",
     "verify_ledger_dict",
 ]
