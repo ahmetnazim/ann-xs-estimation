@@ -6,6 +6,7 @@ provenance against ``reports/results/scoring_ledger.json`` and ``.agents/.resear
 
 from __future__ import annotations
 
+from annxs_figures.captions import generate_captions
 from annxs_figures.fig1_domain_arch import generate_fig1
 from annxs_figures.fig2_benchmark import generate_fig2
 from annxs_figures.fig3_consistency_h4 import generate_fig3
@@ -102,6 +103,7 @@ __all__ = [
     "check_cvd_and_grayscale_distinguishability",
     "format_num",
     "generate_all_tables",
+    "generate_captions",
     "generate_fig1",
     "generate_fig2",
     "generate_fig3",

@@ -41,6 +41,14 @@ ASCE_ONE_HALF_COL_IN: Final[float] = 5.0
 ASCE_DOUBLE_COL_IN: Final[float] = 7.0
 ASCE_MAX_HEIGHT_IN: Final[float] = 8.5
 ASCE_RASTER_DPI: Final[int] = 600
+ASCE_FONT_FAMILY: Final[str] = "DejaVu Sans / Arial (sans-serif, 7-9 pt)"
+ASCE_ARTWORK_URL: Final[str] = (
+    "https://ascelibrary.org/author-center/proceedings-style-guide#figures"
+)
+WILEY_WRR_ARTWORK_URL: Final[str] = (
+    "https://authorservices.wiley.com/asset/Guidelines-for-Preparing-Figures.html"
+)
+ASCE_ARTWORK_ACCESS_DATE: Final[str] = "2026-10-15"
 SVG_HASHSALT: Final[str] = "annxs-phase9-2026"
 
 # ---------------------------------------------------------------------------

@@ -19,6 +19,7 @@ from annxs_figures import (
     ForbiddenImportBlocker,
     assert_no_forbidden_imports,
     generate_all_tables,
+    generate_captions,
     generate_fig1,
     generate_fig2,
     generate_fig3,
@@ -129,6 +130,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     with ForbiddenImportBlocker.guard():
         bundle = load_verified_bundle(repo_root)
         generated_tables = generate_all_tables(bundle, tables_dir)
+        captions_path = generate_captions(bundle, figures_dir)
         f1_paths = generate_fig1(bundle, repo_root, figures_dir, registry)
         f2_paths = generate_fig2(bundle, repo_root, figures_dir, registry)
         f3_paths = generate_fig3(bundle, repo_root, figures_dir, registry)
@@ -150,6 +152,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     figures_sha256: dict[str, str] = {
         str(ann_path.relative_to(repo_root)): sha256_file(ann_path),
+        str(captions_path.relative_to(repo_root)): sha256_file(captions_path),
     }
     all_fig_maps = [f1_paths, f2_paths, f3_paths, f4_paths, f5_paths, *supp_paths.values()]
     for path_map in all_fig_maps:
