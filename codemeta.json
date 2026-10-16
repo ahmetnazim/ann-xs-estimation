@@ -1,0 +1,142 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "ann-xs-estimation",
+  "version": "0.1.0",
+  "identifier": "https://doi.org/10.5281/zenodo.XXXXXXX",
+  "description": "Hard Manning + continuity hybrid for reach-scale channel cross-section geometry (HYDROSWOT -> NHDPlusV2.1, CONUS).",
+  "license": "https://spdx.org/licenses/BSD-3-Clause.html",
+  "codeRepository": "https://github.com/ansahin/ann-xs-estimation",
+  "dateCreated": "2026-10-08",
+  "dateModified": "2026-10-16",
+  "datePublished": "2026-10-16",
+  "developmentStatus": "active",
+  "applicationCategory": "Hydrology and Hydraulic Engineering",
+  "programmingLanguage": [
+    {
+      "@type": "ComputerLanguage",
+      "name": "Python",
+      "version": "==3.12.*",
+      "url": "https://www.python.org/"
+    }
+  ],
+  "runtimePlatform": "Python 3.12.13 (CPython)",
+  "operatingSystem": [
+    "Linux",
+    "macOS"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0009-0003-5171-7589",
+      "givenName": "Ahmet Nazim",
+      "familyName": "Sahin",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "National Center for Computational Hydroscience and Engineering (NCCHE), University of Mississippi"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Hakan",
+      "familyName": "Yasarer",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Department of Civil Engineering and National Center for Computational Hydroscience and Engineering (NCCHE), University of Mississippi"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Yavuz",
+      "familyName": "Ozeren",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "National Center for Computational Hydroscience and Engineering (NCCHE), University of Mississippi"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Eddy J.",
+      "familyName": "Langendoen",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "USDA-ARS National Sedimentation Laboratory"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Mohammad Z.",
+      "familyName": "Al-Hamdan",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "National Center for Computational Hydroscience and Engineering (NCCHE), University of Mississippi"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Matteo",
+      "familyName": "D'Alessio",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Department of Civil Engineering and National Center for Computational Hydroscience and Engineering (NCCHE), University of Mississippi"
+      }
+    }
+  ],
+  "funder": [
+    {
+      "@type": "Organization",
+      "name": "United States Department of Agriculture - Agricultural Research Service (USDA-ARS) National Sedimentation Laboratory",
+      "url": "https://www.ars.usda.gov/"
+    }
+  ],
+  "funding": "USDA-ARS Cooperative Agreement No. 6060-13000-030-00D",
+  "keywords": [
+    "river hydraulics",
+    "cross-section geometry",
+    "hydraulic geometry",
+    "bankfull channel geometry",
+    "physics-informed neural networks",
+    "Manning equation",
+    "Dingman cross-section",
+    "uncertainty quantification",
+    "deep ensembles",
+    "HYDROSWOT",
+    "NHDPlusV2.1",
+    "USACE eHydro",
+    "reproducible research"
+  ],
+  "softwareRequirements": [
+    "numpy==2.5.3",
+    "scipy==1.18.1",
+    "pandas==3.0.6",
+    "pyarrow==25.0.1",
+    "pydantic==2.14.0",
+    "pydantic-settings==2.15.0",
+    "pyyaml==6.0.3",
+    "torch==2.14.1",
+    "scikit-learn==1.9.1",
+    "xgboost==3.4.1",
+    "geopandas==1.2.0",
+    "shapely==2.2.0",
+    "pyproj==3.8.0",
+    "pyogrio==0.13.0",
+    "rasterio==1.5.2",
+    "pandera==0.34.1",
+    "esda==2.10.0",
+    "libpysal==4.15.0",
+    "requests==2.34.2",
+    "py7zr==1.1.3"
+  ],
+  "referencePublication": {
+    "@type": "ScholarlyArticle",
+    "name": "Physics-Informed Versus Unconstrained Machine Learning for Reach-Scale River Cross-Sectional Geometry Across the Continental United States: A Pre-Registered Multi-Regime Benchmark",
+    "isPartOf": {
+      "@type": "Periodical",
+      "name": "Journal of Hydrologic Engineering",
+      "publisher": {
+        "@type": "Organization",
+        "name": "American Society of Civil Engineers (ASCE)"
+      }
+    }
+  }
+}

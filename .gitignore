@@ -9,6 +9,7 @@ venv/
 # Large Artifacts & Data
 data/raw/
 data/processed/
+data/processed/runs/archives/
 data/checkpoints/
 *.nc
 *.h5

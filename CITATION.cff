@@ -1,0 +1,171 @@
+cff-version: "1.2.0"
+message: >-
+  If you use this software, benchmark protocol, or empirical cross-section
+  geometry artifacts, please cite both the software release and the companion
+  manuscript as below.
+title: >-
+  ann-xs-estimation: Hard Manning + Continuity Hybrid Versus Unconstrained
+  Machine Learning for Reach-Scale River Cross-Section Geometry Across the
+  Continental United States
+type: software
+version: "0.1.0"
+date-released: "2026-10-16"
+doi: "10.5281/zenodo.XXXXXXX"
+license: "BSD-3-Clause"
+repository-code: "https://github.com/ansahin/ann-xs-estimation"
+url: "https://doi.org/10.5281/zenodo.XXXXXXX"
+abstract: >-
+  Reproducible Scientific Software Development Life Cycle (S-SDLC) research
+  codebase evaluating whether a hard Manning + continuity physics-informed
+  neural hybrid (M5, combining an I_blind roughness head with a differentiable
+  Picard-solved Manning + Dingman projection layer Phi using 513-node
+  tanh-sinh wet-perimeter quadrature, quad_level = 6, quad_trunc = 4.0,
+  tau_l = 1e-10) improves reach-scale river cross-section geometry estimation
+  over unconstrained machine learning and empirical baselines across the
+  conterminous United States (CONUS). Implements the full model ladder
+  (M-null, M0, M1, M2-MLP, M2-XGB, M3, M4, M5, M6-NN, M6-XGB, and A_J Jobson
+  baseline) with deep-ensemble Gaussian-mixture uncertainty quantification,
+  evaluated across n = 3,988 ungauged HYDROSWOT sites (8 Fenneman & Johnson
+  physiographic divisions; n = 9,673 post-QC S-RND records) and 131 independent
+  USACE eHydro survey locations across 18 rivers (S-IND), under a
+  cryptographically hash-chained three-event scoring ledger.
+authors:
+  - family-names: "Sahin"
+    given-names: "Ahmet Nazim"
+    orcid: "https://orcid.org/0009-0003-5171-7589"
+    affiliation: >-
+      National Center for Computational Hydroscience and Engineering (NCCHE),
+      University of Mississippi, University, MS, USA
+  - family-names: "Yasarer"
+    given-names: "Hakan"
+    affiliation: >-
+      Department of Civil Engineering and National Center for Computational
+      Hydroscience and Engineering (NCCHE), University of Mississippi,
+      University, MS, USA
+  - family-names: "Ozeren"
+    given-names: "Yavuz"
+    affiliation: >-
+      National Center for Computational Hydroscience and Engineering (NCCHE),
+      University of Mississippi, University, MS, USA
+  - family-names: "Langendoen"
+    given-names: "Eddy J."
+    affiliation: >-
+      USDA-ARS National Sedimentation Laboratory, Oxford, MS, USA
+  - family-names: "Al-Hamdan"
+    given-names: "Mohammad Z."
+    affiliation: >-
+      National Center for Computational Hydroscience and Engineering (NCCHE),
+      University of Mississippi, University, MS, USA
+  - family-names: "D'Alessio"
+    given-names: "Matteo"
+    affiliation: >-
+      Department of Civil Engineering and National Center for Computational
+      Hydroscience and Engineering (NCCHE), University of Mississippi,
+      University, MS, USA
+keywords:
+  - "river hydraulics"
+  - "cross-section geometry"
+  - "hydraulic geometry"
+  - "bankfull channel geometry"
+  - "physics-informed neural networks"
+  - "Manning equation"
+  - "Dingman cross-section"
+  - "uncertainty quantification"
+  - "deep ensembles"
+  - "HYDROSWOT"
+  - "NHDPlusV2.1"
+  - "USACE eHydro"
+  - "reproducible research"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.XXXXXXX"
+    description: "Zenodo software release DOI placeholder (v1.0.0 / package v0.1.0)"
+  - type: doi
+    value: "10.5281/zenodo.YYYYYYY"
+    description: "Zenodo / HydroShare processed data and run-root archival capsule DOI placeholder"
+preferred-citation:
+  type: article
+  title: >-
+    Physics-Informed Versus Unconstrained Machine Learning for Reach-Scale
+    River Cross-Sectional Geometry Across the Continental United States: A
+    Pre-Registered Multi-Regime Benchmark
+  authors:
+    - family-names: "Sahin"
+      given-names: "Ahmet Nazim"
+      orcid: "https://orcid.org/0009-0003-5171-7589"
+      affiliation: >-
+        National Center for Computational Hydroscience and Engineering (NCCHE),
+        University of Mississippi, University, MS, USA
+    - family-names: "Yasarer"
+      given-names: "Hakan"
+      affiliation: >-
+        Department of Civil Engineering and National Center for Computational
+        Hydroscience and Engineering (NCCHE), University of Mississippi,
+        University, MS, USA
+    - family-names: "Ozeren"
+      given-names: "Yavuz"
+      affiliation: >-
+        National Center for Computational Hydroscience and Engineering (NCCHE),
+        University of Mississippi, University, MS, USA
+    - family-names: "Langendoen"
+      given-names: "Eddy J."
+      affiliation: >-
+        USDA-ARS National Sedimentation Laboratory, Oxford, MS, USA
+    - family-names: "Al-Hamdan"
+      given-names: "Mohammad Z."
+      affiliation: >-
+        National Center for Computational Hydroscience and Engineering (NCCHE),
+        University of Mississippi, University, MS, USA
+    - family-names: "D'Alessio"
+      given-names: "Matteo"
+      affiliation: >-
+        Department of Civil Engineering and National Center for Computational
+        Hydroscience and Engineering (NCCHE), University of Mississippi,
+        University, MS, USA
+  journal: "Journal of Hydrologic Engineering"
+  publisher:
+    name: "American Society of Civil Engineers (ASCE)"
+  year: 2026
+  status: "in-preparation"
+  notes: >-
+    Supported by the United States Department of Agriculture - Agricultural
+    Research Service (USDA-ARS) under Cooperative Agreement No.
+    6060-13000-030-00D between the USDA-ARS National Sedimentation Laboratory
+    and the National Center for Computational Hydroscience and Engineering
+    (NCCHE), University of Mississippi.
+references:
+  - type: article
+    title: "Analytical integration of the Manning equation in natural channels"
+    authors:
+      - family-names: "Dingman"
+        given-names: "S. Lawrence"
+    journal: "Water Resources Research"
+    year: 2007
+    volume: 43
+    issue: 4
+    doi: "10.1029/2006WR005206"
+  - type: data
+    title: >-
+      National Surface-Water-Quality Monitoring Network and Subsurface
+      Database (HYDRoSWOT)
+    authors:
+      - family-names: "Canova"
+        given-names: "Michael G."
+      - family-names: "Fulford"
+        given-names: "Janice M."
+      - family-names: "Boning"
+        given-names: "Charles W."
+    year: 2016
+    doi: "10.5066/F7D798H6"
+  - type: article
+    title: "Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles"
+    authors:
+      - family-names: "Lakshminarayanan"
+        given-names: "Balaji"
+      - family-names: "Pritzel"
+        given-names: "Alexander"
+      - family-names: "Blundell"
+        given-names: "Charles"
+    journal: "Advances in Neural Information Processing Systems"
+    year: 2017
+    volume: 30
