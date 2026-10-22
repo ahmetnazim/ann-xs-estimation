@@ -432,8 +432,8 @@ def _draw_panel_b_architecture(
         0.20,
         0.41,
         (
-            "Shared MLP Backbone\n3 x 128 SiLU\nLayerNorm\n"
-            "M = 10 Ensemble\n(Bagging + Distinct\nInit & ES Split)"
+            "Geometry Trunk (x_full)\n3 x 128 SiLU\nLayerNorm\n"
+            "M = 10 Ensemble\n(Distinct Seed &\nGrouped ES Split)"
         ),
         fc="#F1F3F4",
         ec="#444444",
@@ -445,8 +445,8 @@ def _draw_panel_b_architecture(
         0.20,
         0.41,
         (
-            "I_blind n-Head\nLinear(d_blind -> 2)\n"
-            "z_n -> Bounded Sigmoid\nn_hat in [0.005, 0.60]\n(nu_hat = ln n_hat)"
+            "I_blind Roughness Trunk\n3 x 128 SiLU + LayerNorm\n"
+            "Linear(128 -> 1): z_n\nz_n -> Bounded Sigmoid\nn_hat in [0.005, 0.60]"
         ),
         fc="#FEF7E0",
         ec=OKABE_ITO["orange"],
@@ -461,7 +461,7 @@ def _draw_panel_b_architecture(
         0.38,
         (
             "Geometry & Shape Heads\nW_hat = exp(mu_W)\n"
-            "t_hat = ln(d_max/dbar)\nr_hat = 1/(exp(t_hat)-1)\nr_hat in [0.50, 10.0]"
+            "z_r -> Bounded Sigmoid\nr_hat in [0.50, 10.0]\nt_hat = ln(1 + 1/r_hat)"
         ),
         fc="#E6F4EA",
         ec=OKABE_ITO["bluish_green"],
