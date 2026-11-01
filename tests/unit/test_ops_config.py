@@ -36,6 +36,13 @@ def test_committed_file_loads_with_provenance() -> None:
     assert len(s.sha256) == 64
 
 
+def test_pre_registration_is_frozen() -> None:
+    """params_operational.yaml is byte-identical to the pre-registered commit 8743c46."""
+    assert load_operational().sha256 == (
+        "839237d3d385bc9a54353bac8a9485cfd48118e80ffc33b8c86aec6ef30fc205"
+    )
+
+
 def test_unknown_key_rejected(tmp_path: Path) -> None:
     """extra='forbid' at every level."""
     data = _base()
