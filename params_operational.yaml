@@ -1,0 +1,38 @@
+# OPS-1 Operational Stage-Response Test -- pre-registered parameters (2026-11-01).
+# Rationale and derivations: docs/4_operational_stage_response.md (local, git-excluded).
+# This file is committed BEFORE any OPS-1 result is computed and is never edited afterwards;
+# a change requires a new version and a new ADL entry. params.yaml (v1.0.0) is not modified.
+version: 1
+
+predictions:
+  analysis: primary                       # 3.1: frozen out-of-fold predictions
+  primary_family: S-ID                    # 3.1: 3 repeats, averaged
+  families: [S-ID, S-LRO]                 # 3.1: S-LRO = secondary (spatial OOD)
+  models: [M-null, M0, M1, M2-MLP, M2-XGB, M3, M4, M5, M6-NN, M6-XGB]
+  fallback_shape_model: M3                # 3.1: models without dmax use M3's fold-median t
+  reference_model: M0                     # 3.4: operational-convention baseline (NWM-like)
+
+observations:
+  exclude_ad_site_cd: [VELQ, SLPQ]        # 3.2 (1): index-velocity / slope-rated gauges
+  channel_number: 1                       # 3.2 (2): whole-channel measurements only
+  window_years: 5.0                       # 3.2 (3): |t_i - t_a| <= 5 y
+  max_abs_dh_m: 70.0                      # 3.2 (4): = params.yaml qc.dmax_max_m
+
+rating:
+  newton_tol: 1.0e-12                     # 2: |lambda_k - lambda_(k-1)| stop
+  max_iter: 80                            # 2: safeguarded Newton-bisection cap
+  chunk_rows: 50000                       # numerical memory bound (513 quadrature nodes/row)
+
+metrics:
+  flow_bin_edges: [0.0, 0.5, 2.0, 5.0, 10.0, .inf]   # 3.4: Q_i / Q_a
+  high_flow_ratio: 2.0                    # 3.4: pooled high-flow set Q_i / Q_a >= 2
+  contrasts:                              # 3.4: paired cluster bootstrap, RMSE(e_h)
+    - [M5, M2-XGB]
+    - [M5, M0]
+    - [M2-XGB, M0]
+
+hypotheses:
+  noninferiority_margin_m: 0.05           # 3.5 H-OPS1
+
+sensitivity:
+  window_years_none: true                 # 3.2 (3): rerun without the time window
