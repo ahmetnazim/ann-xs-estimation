@@ -42,7 +42,7 @@ def _t(*xs: float) -> torch.Tensor:
 
 
 def test_anchor_is_reproduced() -> None:
-    """I1: L = 0 gives lam = 0 for any shape and aspect ratio."""
+    """I1 (ADL-155): L = 0 gives lam = 0 for any shape and aspect ratio (docs/2 Prop. 2.1)."""
     sol = solve_lambda(_t(0.0, 0.0, 0.0), _t(0.5, 1.0, 10.0), _t(-6.0, -2.0, -0.5), **KW)
     assert torch.equal(sol.lam, torch.zeros(3, dtype=torch.float64))
     assert np.all(stage_change([1.0, 2.0, 3.0], sol.lam.numpy()) == 0.0)
@@ -55,7 +55,7 @@ def test_anchor_is_reproduced() -> None:
     ln_a0=st.floats(math.log(1e-4), math.log(0.5)),
 )
 def test_round_trip_and_bracket(big_l: float, r: float, ln_a0: float) -> None:
-    """I2 and I3: forward(root) == L and the root lies inside the Prop. OPS-1 bracket."""
+    """I2, I3 (ADL-155): forward(root) == L; root inside the Prop. OPS-1 bracket (docs/2 2.7)."""
     lq, rr, la = _t(big_l), _t(r), _t(ln_a0)
     sol = solve_lambda(lq, rr, la, **KW)
     back = rating_log_q_ratio(sol.lam, rr, la, level=LEVEL, trunc=TRUNC)
@@ -67,7 +67,7 @@ def test_round_trip_and_bracket(big_l: float, r: float, ln_a0: float) -> None:
 
 @pytest.mark.parametrize("r", [0.5, 0.8, 1.0, 2.0, 5.0, 10.0])
 def test_forward_map_strictly_increasing(r: float) -> None:
-    """I3: f is strictly increasing in lam (unique root)."""
+    """I3 (ADL-155): f is strictly increasing in lam, unique root (docs/2 Prop. 2.7 eta < 1)."""
     lam = torch.linspace(-3.0, 4.0, 401, dtype=torch.float64)
     f = rating_log_q_ratio(
         lam, torch.full_like(lam, r), torch.full_like(lam, math.log(0.05)), level=LEVEL, trunc=TRUNC
@@ -77,7 +77,7 @@ def test_forward_map_strictly_increasing(r: float) -> None:
 
 @pytest.mark.parametrize("r", [0.5, 1.0, 3.0, 10.0])
 def test_wide_channel_limit(r: float) -> None:
-    """I4: as a -> 0, k -> 0 and lam = L / (1/r + 5/3)."""
+    """I4 (ADL-155): as a -> 0, k -> 0 and lam = L / (1/r + 5/3) (docs/2 Prop. 2.2)."""
     big_l = _t(-2.0, 0.7, 3.0)
     sol = solve_lambda(big_l, torch.full_like(big_l, r), torch.full_like(big_l, -25.0), **KW)
     expected = big_l / (1.0 / r + 5.0 / 3.0)
@@ -85,7 +85,7 @@ def test_wide_channel_limit(r: float) -> None:
 
 
 def test_rectangular_limit_exponent() -> None:
-    """I5: wide rectangle-like section (r large): y ~ Q^(3/5) to O(1/r)."""
+    """I5 (ADL-155): wide rectangle-like section (r large): y ~ Q^(3/5) to O(1/r) (docs/2)."""
     r = 1.0e4
     lam = solve_lambda(_t(math.log(10.0)), _t(r), _t(-25.0), **KW).lam
     assert abs(float(lam[0]) - 0.6 * math.log(10.0)) < 1e-3
@@ -93,7 +93,7 @@ def test_rectangular_limit_exponent() -> None:
 
 @pytest.mark.parametrize(("n", "s"), [(0.02, 1e-4), (0.05, 3e-3), (0.2, 0.05)])
 def test_roughness_and_slope_cancel(n: float, s: float) -> None:
-    """I6: an explicit Manning curve calibrated at the anchor gives the solver's stage."""
+    """I6 (ADL-155): anchor-calibrated Manning curve gives the solver's stage (docs/2 6.2)."""
     w0, dbar0, r = 40.0, 1.2, 1.7
     dmax0 = dbar0 * (r + 1.0) / r
 
@@ -117,7 +117,7 @@ def test_roughness_and_slope_cancel(n: float, s: float) -> None:
 
 
 def test_width_response_monotone_and_np_wrapper() -> None:
-    """I7 and the chunked NumPy wrapper (chunking does not change results)."""
+    """I7 (ADL-155) and the chunked NumPy wrapper (chunking does not change results)."""
     big_l = np.linspace(-2.0, 3.0, 23)
     r = np.full(23, 2.5)
     la = np.full(23, math.log(0.03))
@@ -131,7 +131,7 @@ def test_width_response_monotone_and_np_wrapper() -> None:
 
 
 def test_np_wrapper_empty_and_bad_inputs() -> None:
-    """Empty input returns empty output; malformed inputs raise."""
+    """ADL-155: empty input returns empty output; malformed inputs raise."""
     lam, it = solve_lambda_np([], [], [], chunk_rows=10, **KW)
     assert lam.size == 0
     assert it == 0
@@ -142,7 +142,7 @@ def test_np_wrapper_empty_and_bad_inputs() -> None:
 
 
 def test_solver_input_validation_and_nonconvergence() -> None:
-    """Invalid r / tol raise ValueError; an impossible iteration cap raises RuntimeError."""
+    """ADL-155: invalid r / tol raise ValueError; an impossible cap raises RuntimeError."""
     with pytest.raises(ValueError, match="r must be > 0"):
         solve_lambda(_t(1.0), _t(-1.0), _t(-3.0), **KW)
     with pytest.raises(ValueError, match="tol"):
