@@ -237,3 +237,216 @@ stages:
       md5: 686203b7140c39f402890ddcbe7dde2d.dir
       size: 192273672
       nfiles: 4207
+  ops2:
+    cmd: python -m scripts.ops2
+    deps:
+    - path: data/processed/predictions/M-null.parquet
+      hash: md5
+      md5: dc653058cb895d7307f93401ed28c420
+      size: 172512
+    - path: data/processed/predictions/M0.parquet
+      hash: md5
+      md5: 99693d9109fb9e7ba6e43379912b45c6
+      size: 759620
+    - path: data/processed/predictions/M1.parquet
+      hash: md5
+      md5: c24229c74e5eb820813328bccdea748b
+      size: 23806754
+    - path: data/processed/predictions/M2-MLP.parquet
+      hash: md5
+      md5: a12833ff5f7517f7984d077090578559
+      size: 119274290
+    - path: data/processed/predictions/M2-XGB.parquet
+      hash: md5
+      md5: 872c613f9b6f85c8565aa108431bb75a
+      size: 33673551
+    - path: data/processed/predictions/M3.parquet
+      hash: md5
+      md5: d5eb70b573928dba44a55d648f65df73
+      size: 6543537
+    - path: data/processed/predictions/M4.parquet
+      hash: md5
+      md5: c6e102bd16bc3516e2e9e34bdc3ad923
+      size: 17405621
+    - path: data/processed/predictions/M5.parquet
+      hash: md5
+      md5: 4ecb2122f62a0b904f04cbe0b64d9937
+      size: 115970236
+    - path: data/processed/predictions/M6-NN.parquet
+      hash: md5
+      md5: 431724f309044ffefab18aec132233a4
+      size: 8763824
+    - path: data/processed/predictions/M6-XGB.parquet
+      hash: md5
+      md5: 2e0e111506c0494086089fa806c4fb9a
+      size: 7347343
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/processed/unit_mapped/hydroswot.parquet
+      hash: md5
+      md5: b7e5857ee5cb2871229bd122061fa84f
+      size: 7380187
+    - path: data/raw/hydroswot/SWOT_ADCP_Dataset.txt
+      hash: md5
+      md5: 41de09def1fc85e3dc3b04cdf47c5217
+      size: 87445985
+    - path: data/raw/ops_transects
+      hash: md5
+      md5: 686203b7140c39f402890ddcbe7dde2d.dir
+      size: 192273672
+      nfiles: 4207
+    - path: scripts/ops2.py
+      hash: md5
+      md5: 8c8afe2b5ba6ae510eb0881a2aae56b2
+      size: 12284
+    - path: src/evaluation/bootstrap.py
+      hash: md5
+      md5: a97761cd10e32bf29e5a32037d13217d
+      size: 11248
+    - path: src/operational/config.py
+      hash: md5
+      md5: e3ea97880134170f6c7e9235134865d3
+      size: 6010
+    - path: src/operational/config_v2.py
+      hash: md5
+      md5: 0641a1e339bf5a357ef640a657ec98ee
+      size: 4716
+    - path: src/operational/evaluate.py
+      hash: md5
+      md5: 30642705135d697acf09bb89e4ccc374
+      size: 17163
+    - path: src/operational/evaluate_v2.py
+      hash: md5
+      md5: fd8363c55990ef610c66b57355b9d010
+      size: 12659
+    - path: src/operational/floodplain.py
+      hash: md5
+      md5: a127173a115d5f25bcc20e62bf9c384c
+      size: 8044
+    - path: src/operational/observations.py
+      hash: md5
+      md5: c9000ec1e2313c4b324b2ae3fe99e555
+      size: 8031
+    - path: src/operational/transects.py
+      hash: md5
+      md5: 06fc38bf34303669f9fb694d47d6345d
+      size: 15632
+    params:
+      params.yaml:
+        domain.r_bounds:
+        - 0.5
+        - 10.0
+        evaluation.bootstrap:
+          b: 10000
+          alpha_b: 0.05
+          seed: 20261008
+          stratify: division
+      params_operational.yaml:
+        hypotheses:
+          noninferiority_margin_m: 0.05
+        metrics:
+          flow_bin_edges:
+          - 0.0
+          - 0.5
+          - 2.0
+          - 5.0
+          - 10.0
+          - .inf
+          high_flow_ratio: 2.0
+          contrasts:
+          - - M5
+            - M2-XGB
+          - - M5
+            - M0
+          - - M2-XGB
+            - M0
+        observations:
+          exclude_ad_site_cd:
+          - VELQ
+          - SLPQ
+          channel_number: 1
+          window_years: 5.0
+          max_abs_dh_m: 70.0
+        predictions:
+          analysis: primary
+          primary_family: S-ID
+          families:
+          - S-ID
+          - S-LRO
+          models:
+          - M-null
+          - M0
+          - M1
+          - M2-MLP
+          - M2-XGB
+          - M3
+          - M4
+          - M5
+          - M6-NN
+          - M6-XGB
+          fallback_shape_model: M3
+          reference_model: M0
+        rating:
+          newton_tol: 1e-12
+          max_iter: 80
+          chunk_rows: 50000
+        sensitivity:
+          window_years_none: true
+        version: 1
+      params_operational_v2.yaml:
+        acquisition:
+          workers: 6
+          timeout_s: 60.0
+          retries: 3
+        datum:
+          accepted:
+          - NAVD88
+          - NGVD29
+          ncat_url: https://geodesy.noaa.gov/api/ncat/llh
+          anchor_dem_max_offset_m: 5.0
+        inherits:
+          file: params_operational.yaml
+          sha256: 
+            839237d3d385bc9a54353bac8a9485cfd48118e80ffc33b8c86aec6ef30fc205
+        scoring:
+          variants:
+          - control
+          - floodplain
+          families:
+          - S-ID
+          - S-LRO
+          noninferiority_margin_m: 0.05
+        section:
+          channel_points: 401
+          z_levels: 300
+        transect:
+          service_url: 
+            https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/getSamples
+          n_samples: 1000
+          length_factor_w: 40.0
+          length_min_m: 400.0
+          length_max_m: 8000.0
+          offset_factor_w: 3.0
+          offset_min_m: 150.0
+          bearing_half_window_m: 50.0
+          channel_search_factor_w: 3.0
+          channel_search_min_m: 100.0
+          flat_tol_m: 0.05
+          max_flowline_offset_m: 500.0
+          max_nodata_share: 0.05
+        version: 2
+    outs:
+    - path: reports/operational/ops2_results.json
+      hash: md5
+      md5: 02179c164ebb84a9676d975402fddf38
+      size: 100669
+    - path: reports/operational/ops2_site_bins.parquet
+      hash: md5
+      md5: bfdd222f0b48c1c0be4158df77e8b4cd
+      size: 17645064
+    - path: reports/operational/ops2_summary.md
+      hash: md5
+      md5: b397f1163849158abd9e10dbe8e1840f
+      size: 22149
