@@ -1,0 +1,46 @@
+# ops/dvc.yaml -- OPS-1 Operational Stage-Response Test (post-release extension of v1.0.0).
+# Kept separate from the frozen root dvc.yaml/dvc.lock (reports/archival_manifest.json).
+# Pre-registration: params_operational.yaml (commit 8743c46); rationale in
+# docs/4_operational_stage_response.md (local). Outputs are git-tracked (cache: false), like
+# reports/results/*. Run from the repo root:  uv run dvc repro --single-item ops/dvc.yaml:ops1
+stages:
+  ops1:
+    wdir: ..
+    cmd: python -m scripts.operational
+    deps:
+      - scripts/operational.py
+      - src/operational/__init__.py
+      - src/operational/config.py
+      - src/operational/rating.py
+      - src/operational/observations.py
+      - src/operational/evaluate.py
+      - src/physics/shape.py
+      - src/physics/quadrature.py
+      - src/evaluation/bootstrap.py
+      - src/data/readers.py
+      - data/raw/hydroswot/SWOT_ADCP_Dataset.txt
+      - data/processed/unit_mapped/hydroswot.parquet
+      - data/processed/site_table.parquet
+      - data/processed/predictions/M-null.parquet
+      - data/processed/predictions/M0.parquet
+      - data/processed/predictions/M1.parquet
+      - data/processed/predictions/M2-MLP.parquet
+      - data/processed/predictions/M2-XGB.parquet
+      - data/processed/predictions/M3.parquet
+      - data/processed/predictions/M4.parquet
+      - data/processed/predictions/M5.parquet
+      - data/processed/predictions/M6-NN.parquet
+      - data/processed/predictions/M6-XGB.parquet
+    params:
+      - params.yaml:
+          - solver.quad_level
+          - solver.quad_trunc
+          - domain.r_bounds
+          - evaluation.bootstrap
+      - params_operational.yaml:
+    outs:
+      - reports/operational/ops1_observations.parquet: {cache: false}
+      - reports/operational/ops1_site_bins.parquet: {cache: false}
+      - reports/operational/ops1_summary.md: {cache: false}
+    metrics:
+      - reports/operational/ops1_results.json: {cache: false}
