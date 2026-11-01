@@ -271,7 +271,7 @@ def main(argv: list[str] | None = None) -> int:
         res["truncated_share"] = {m: float(np.mean(trunc_n[(fam, m)])) for m in models}
         fam_out[fam] = res
     inputs = {
-        str(p.relative_to(REPO_ROOT)): sha256_file(p)
+        str(p.relative_to(REPO_ROOT) if p.is_relative_to(REPO_ROOT) else p): sha256_file(p)
         for p in [
             SITE_TABLE,
             UNIT,
