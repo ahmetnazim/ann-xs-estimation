@@ -1,8 +1,9 @@
 # ops/dvc.yaml -- OPS-1 Operational Stage-Response Test (post-release extension of v1.0.0).
 # Kept separate from the frozen root dvc.yaml/dvc.lock (reports/archival_manifest.json).
 # Pre-registration: params_operational.yaml (commit 8743c46); rationale in
-# docs/4_operational_stage_response.md (local). Outputs are git-tracked (cache: false), like
-# reports/results/*. Run from the repo root:  uv run dvc repro --single-item ops/dvc.yaml:ops1
+# docs/4_operational_stage_response.md (local). JSON/Markdown results are git-tracked (cache: false),
+# like reports/results/*; the large Parquet tables are DVC-cached.
+# Run from the repo root:  uv run dvc repro --single-item ops/dvc.yaml:ops1
 stages:
   ops1:
     wdir: ..
@@ -39,8 +40,8 @@ stages:
           - evaluation.bootstrap
       - params_operational.yaml:
     outs:
-      - reports/operational/ops1_observations.parquet: {cache: false}
-      - reports/operational/ops1_site_bins.parquet: {cache: false}
+      - reports/operational/ops1_observations.parquet
+      - reports/operational/ops1_site_bins.parquet
       - reports/operational/ops1_summary.md: {cache: false}
     metrics:
       - reports/operational/ops1_results.json: {cache: false}
