@@ -45,3 +45,62 @@ stages:
       - reports/operational/ops1_summary.md: {cache: false}
     metrics:
       - reports/operational/ops1_results.json: {cache: false}
+
+  # OPS-1 v2 (floodplain). Pre-registration: params_operational_v2.yaml (commit c1b6c19);
+  # rationale in docs/5_operational_floodplain_v2.md (local). ops2_acquire needs network access
+  # (3DEP, NOAA NCAT, NWIS site service); its records are DVC-cached and reused on rerun.
+  ops2_acquire:
+    wdir: ..
+    cmd: python -m scripts.ops2_acquire --workers 16
+    deps:
+      - scripts/ops2_acquire.py
+      - src/operational/transects.py
+      - src/operational/config_v2.py
+      - data/processed/site_table.parquet
+      - data/raw/hydroswot/SWOT_ADCP_Dataset.txt
+      - data/raw/nhdplusv21
+    params:
+      - params_operational_v2.yaml:
+          - datum
+          - transect
+          - acquisition
+    outs:
+      - data/raw/ops_transects
+  ops2:
+    wdir: ..
+    cmd: python -m scripts.ops2
+    deps:
+      - scripts/ops2.py
+      - src/operational/evaluate_v2.py
+      - src/operational/floodplain.py
+      - src/operational/evaluate.py
+      - src/operational/observations.py
+      - src/operational/transects.py
+      - src/operational/config.py
+      - src/operational/config_v2.py
+      - src/evaluation/bootstrap.py
+      - data/raw/ops_transects
+      - data/raw/hydroswot/SWOT_ADCP_Dataset.txt
+      - data/processed/unit_mapped/hydroswot.parquet
+      - data/processed/site_table.parquet
+      - data/processed/predictions/M-null.parquet
+      - data/processed/predictions/M0.parquet
+      - data/processed/predictions/M1.parquet
+      - data/processed/predictions/M2-MLP.parquet
+      - data/processed/predictions/M2-XGB.parquet
+      - data/processed/predictions/M3.parquet
+      - data/processed/predictions/M4.parquet
+      - data/processed/predictions/M5.parquet
+      - data/processed/predictions/M6-NN.parquet
+      - data/processed/predictions/M6-XGB.parquet
+    params:
+      - params.yaml:
+          - domain.r_bounds
+          - evaluation.bootstrap
+      - params_operational.yaml:
+      - params_operational_v2.yaml:
+    outs:
+      - reports/operational/ops2_site_bins.parquet
+      - reports/operational/ops2_summary.md: {cache: false}
+    metrics:
+      - reports/operational/ops2_results.json: {cache: false}
