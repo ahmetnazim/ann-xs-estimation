@@ -176,3 +176,64 @@ stages:
       hash: md5
       md5: deaa410afab434b83b457220825d8bdf
       size: 17152
+  ops2_acquire:
+    cmd: python -m scripts.ops2_acquire --workers 16
+    deps:
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/raw/hydroswot/SWOT_ADCP_Dataset.txt
+      hash: md5
+      md5: 41de09def1fc85e3dc3b04cdf47c5217
+      size: 87445985
+    - path: data/raw/nhdplusv21
+      hash: md5
+      md5: 69b67b8e05ee2f8fc888e9a3399b7b67.dir
+      size: 43848085319
+      nfiles: 2331
+    - path: scripts/ops2_acquire.py
+      hash: md5
+      md5: fe1dd7b791573c7369c2e67d02fcf77f
+      size: 4839
+    - path: src/operational/config_v2.py
+      hash: md5
+      md5: 0641a1e339bf5a357ef640a657ec98ee
+      size: 4716
+    - path: src/operational/transects.py
+      hash: md5
+      md5: 06fc38bf34303669f9fb694d47d6345d
+      size: 15632
+    params:
+      params_operational_v2.yaml:
+        acquisition:
+          workers: 6
+          timeout_s: 60.0
+          retries: 3
+        datum:
+          accepted:
+          - NAVD88
+          - NGVD29
+          ncat_url: https://geodesy.noaa.gov/api/ncat/llh
+          anchor_dem_max_offset_m: 5.0
+        transect:
+          service_url: 
+            https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/getSamples
+          n_samples: 1000
+          length_factor_w: 40.0
+          length_min_m: 400.0
+          length_max_m: 8000.0
+          offset_factor_w: 3.0
+          offset_min_m: 150.0
+          bearing_half_window_m: 50.0
+          channel_search_factor_w: 3.0
+          channel_search_min_m: 100.0
+          flat_tol_m: 0.05
+          max_flowline_offset_m: 500.0
+          max_nodata_share: 0.05
+    outs:
+    - path: data/raw/ops_transects
+      hash: md5
+      md5: 686203b7140c39f402890ddcbe7dde2d.dir
+      size: 192273672
+      nfiles: 4207
