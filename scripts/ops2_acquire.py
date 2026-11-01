@@ -46,6 +46,12 @@ def main(argv: list[str] | None = None) -> int:
     """Acquire all sites and write the manifest; return the exit code."""
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--limit", type=int, default=None, help="first N sites (development only)")
+    ap.add_argument(
+        "--workers",
+        type=int,
+        default=None,
+        help="override acquisition.workers (throughput only; recorded in the manifest)",
+    )
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     s2 = load_operational_v2()
@@ -89,7 +95,8 @@ def main(argv: list[str] | None = None) -> int:
         return requests_get_json(url, params, timeout=p.acquisition.timeout_s)
 
     records: list[dict[str, Any]] = []
-    with ThreadPoolExecutor(max_workers=p.acquisition.workers) as pool:
+    workers = args.workers or p.acquisition.workers
+    with ThreadPoolExecutor(max_workers=workers) as pool:
         futs = [
             pool.submit(acquire_site, row, lines.get(int(row["comid"])), p, CACHE, get_json)
             for row in anchors.to_dict(orient="records")
@@ -104,6 +111,7 @@ def main(argv: list[str] | None = None) -> int:
     manifest = {
         "params_operational_v2_sha256": s2.sha256,
         "n_sites": len(records),
+        "workers": workers,
         "status_counts": {str(k): int(v) for k, v in status.items()},
         "files_sha256": {
             f.name: hashlib.sha256(f.read_bytes()).hexdigest()
