@@ -1,0 +1,178 @@
+schema: '2.0'
+stages:
+  ops1:
+    cmd: python -m scripts.operational
+    deps:
+    - path: data/processed/predictions/M-null.parquet
+      hash: md5
+      md5: dc653058cb895d7307f93401ed28c420
+      size: 172512
+    - path: data/processed/predictions/M0.parquet
+      hash: md5
+      md5: 99693d9109fb9e7ba6e43379912b45c6
+      size: 759620
+    - path: data/processed/predictions/M1.parquet
+      hash: md5
+      md5: c24229c74e5eb820813328bccdea748b
+      size: 23806754
+    - path: data/processed/predictions/M2-MLP.parquet
+      hash: md5
+      md5: a12833ff5f7517f7984d077090578559
+      size: 119274290
+    - path: data/processed/predictions/M2-XGB.parquet
+      hash: md5
+      md5: 872c613f9b6f85c8565aa108431bb75a
+      size: 33673551
+    - path: data/processed/predictions/M3.parquet
+      hash: md5
+      md5: d5eb70b573928dba44a55d648f65df73
+      size: 6543537
+    - path: data/processed/predictions/M4.parquet
+      hash: md5
+      md5: c6e102bd16bc3516e2e9e34bdc3ad923
+      size: 17405621
+    - path: data/processed/predictions/M5.parquet
+      hash: md5
+      md5: 4ecb2122f62a0b904f04cbe0b64d9937
+      size: 115970236
+    - path: data/processed/predictions/M6-NN.parquet
+      hash: md5
+      md5: 431724f309044ffefab18aec132233a4
+      size: 8763824
+    - path: data/processed/predictions/M6-XGB.parquet
+      hash: md5
+      md5: 2e0e111506c0494086089fa806c4fb9a
+      size: 7347343
+    - path: data/processed/site_table.parquet
+      hash: md5
+      md5: fb578787e6b6da5c5d803c81852b7c18
+      size: 2347209
+    - path: data/processed/unit_mapped/hydroswot.parquet
+      hash: md5
+      md5: b7e5857ee5cb2871229bd122061fa84f
+      size: 7380187
+    - path: data/raw/hydroswot/SWOT_ADCP_Dataset.txt
+      hash: md5
+      md5: 41de09def1fc85e3dc3b04cdf47c5217
+      size: 87445985
+    - path: scripts/operational.py
+      hash: md5
+      md5: 11a99b2e0f29b5dfd411dacdfa48a2c6
+      size: 10545
+    - path: src/data/readers.py
+      hash: md5
+      md5: be8bd1a4f6450a6b4a2026005825d004
+      size: 6589
+    - path: src/evaluation/bootstrap.py
+      hash: md5
+      md5: a97761cd10e32bf29e5a32037d13217d
+      size: 11248
+    - path: src/operational/__init__.py
+      hash: md5
+      md5: 71f8a6513e30af4b31a2350dca9e964e
+      size: 623
+    - path: src/operational/config.py
+      hash: md5
+      md5: e3ea97880134170f6c7e9235134865d3
+      size: 6010
+    - path: src/operational/evaluate.py
+      hash: md5
+      md5: 30642705135d697acf09bb89e4ccc374
+      size: 17163
+    - path: src/operational/observations.py
+      hash: md5
+      md5: c9000ec1e2313c4b324b2ae3fe99e555
+      size: 8031
+    - path: src/operational/rating.py
+      hash: md5
+      md5: cce4b866c0701ba8798f3aa124db1dc4
+      size: 6956
+    - path: src/physics/quadrature.py
+      hash: md5
+      md5: 06d09f71e287bdfacc680c70c2adcae7
+      size: 8123
+    - path: src/physics/shape.py
+      hash: md5
+      md5: 7448c08c975e1d8ce209f82ab789d8a2
+      size: 6198
+    params:
+      params.yaml:
+        domain.r_bounds:
+        - 0.5
+        - 10.0
+        evaluation.bootstrap:
+          b: 10000
+          alpha_b: 0.05
+          seed: 20261008
+          stratify: division
+        solver.quad_level: 6
+        solver.quad_trunc: 4.0
+      params_operational.yaml:
+        hypotheses:
+          noninferiority_margin_m: 0.05
+        metrics:
+          flow_bin_edges:
+          - 0.0
+          - 0.5
+          - 2.0
+          - 5.0
+          - 10.0
+          - .inf
+          high_flow_ratio: 2.0
+          contrasts:
+          - - M5
+            - M2-XGB
+          - - M5
+            - M0
+          - - M2-XGB
+            - M0
+        observations:
+          exclude_ad_site_cd:
+          - VELQ
+          - SLPQ
+          channel_number: 1
+          window_years: 5.0
+          max_abs_dh_m: 70.0
+        predictions:
+          analysis: primary
+          primary_family: S-ID
+          families:
+          - S-ID
+          - S-LRO
+          models:
+          - M-null
+          - M0
+          - M1
+          - M2-MLP
+          - M2-XGB
+          - M3
+          - M4
+          - M5
+          - M6-NN
+          - M6-XGB
+          fallback_shape_model: M3
+          reference_model: M0
+        rating:
+          newton_tol: 1e-12
+          max_iter: 80
+          chunk_rows: 50000
+        sensitivity:
+          window_years_none: true
+        version: 1
+    outs:
+    - path: reports/operational/ops1_observations.parquet
+      hash: md5
+      md5: 9c5b958f39633c678c623bf088c1a20d
+      size: 5623421
+    - path: reports/operational/ops1_results.json
+      hash: md5
+      md5: 3ceab2d81686129bb814809084ea447e
+      size: 114649
+    - path: reports/operational/ops1_site_bins.parquet
+      hash: md5
+      md5: 69d93bae1f15a7211df7d34fae22d426
+      size: 38857605
+    - path: reports/operational/ops1_summary.md
+      hash: md5
+      md5: deaa410afab434b83b457220825d8bdf
+      size: 17152
