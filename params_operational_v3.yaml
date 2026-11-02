@@ -1,0 +1,36 @@
+# OPS-1 v3 Operational Diagnostics, Dynamic-Resistance & CCHE1D Readiness Benchmark -- pre-registered (2026-11-01).
+# Rationale and derivations: docs/6_operational_diagnostics_v3.md (local, git-excluded).
+# Committed BEFORE any v3 result; never edited afterwards. Observation rules, bins, models,
+# fallback shape and bootstrap are inherited unchanged from params_operational.yaml (v1) and
+# params_operational_v2.yaml (v2).
+version: 3
+inherits:
+  v1_file: params_operational.yaml
+  v1_sha256: 839237d3d385bc9a54353bac8a9485cfd48118e80ffc33b8c86aec6ef30fc205
+  v2_file: params_operational_v2.yaml
+  v2_sha256: 4923cd32d6a613ae09d591343fc3d2b92cdd75a5c52b8f214023ec62b6945e68
+
+dynamic_roughness:
+  min_abs_ln_q_ratio: 0.2                   # 2.2: |ln(Q_i / Q_a)| >= 0.2 for exponent estimation
+  oracle_const_bias_min_m: 0.50             # 3: H-V3-2 constant-n Oracle high-flow bias threshold
+  oracle_dyn_abs_bias_max_m: 0.15           # 3: H-V3-2 dynamic-n |Oracle bias| threshold
+
+cche1d:
+  shape_ratio_floor: 1.01                   # 2.4: dmax0 >= 1.01 * dbar0 (r0 <= 100)
+  continuity_rel_tol: 0.05                  # 2.4: |ln A - (ln W + ln dbar)| > ln(1 + 0.05)
+  splits: [S-ID, S-LRO, S-TAIL-DA, S-TAIL-SO]
+  in_domain_model: M2-XGB
+  tail_model: M1
+
+ablation_models:
+  - M5_A1
+  - M5_wA1
+  - M5_A2
+  - M5_A3-SP
+  - M5_A3-SR
+  - M5_A4
+
+scoring:
+  families: [S-ID, S-LRO]
+  noninferiority_margin_m: 0.05             # 3: H-V3-1 non-inferiority margin on not_F_S
+  fs_penalty_min_m: 1.00                    # 3: H-V3-1 minimum F_S penalty (M5 - M2-XGB on F_S)
