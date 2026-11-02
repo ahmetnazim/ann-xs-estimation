@@ -94,14 +94,9 @@ def add_all_flows_bin(bins_df: pd.DataFrame) -> pd.DataFrame:
 def load_ablation_predictions(
     pred_dir: Path, ablation: str, family: str, analysis: str = "primary"
 ) -> pd.DataFrame:
-    """Load one M5 ablation's site-level predictions from ``M5.parquet``."""
-    df = pd.read_parquet(pred_dir / "M5.parquet")
-    keep = (
-        (df["analysis"] == analysis)
-        & (df["family"] == family)
-        & (df["unit"] == "site")
-        & df["ablation"].fillna("").astype(str).eq(ablation)
-    )
+    """Load one M5 ablation's site-level predictions from ``{ablation}.parquet``."""
+    df = pd.read_parquet(pred_dir / f"{ablation}.parquet")
+    keep = (df["analysis"] == analysis) & (df["family"] == family) & (df["unit"] == "site")
     df = df.loc[keep].copy()
     if df.empty:
         raise ValueError(f"M5/{ablation}: no {analysis}/{family} site predictions")

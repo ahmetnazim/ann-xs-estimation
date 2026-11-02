@@ -136,6 +136,12 @@ stages:
       - data/processed/predictions/M5.parquet
       - data/processed/predictions/M6-NN.parquet
       - data/processed/predictions/M6-XGB.parquet
+      - data/processed/predictions/M5_A1.parquet
+      - data/processed/predictions/M5_wA1.parquet
+      - data/processed/predictions/M5_A2.parquet
+      - data/processed/predictions/M5_A3-SP.parquet
+      - data/processed/predictions/M5_A3-SR.parquet
+      - data/processed/predictions/M5_A4.parquet
     params:
       - params.yaml:
           - solver.quad_level

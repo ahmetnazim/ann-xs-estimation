@@ -210,25 +210,25 @@ def test_dynamic_roughness_and_off_anchor_states(tmp_path: Path) -> None:
                         "mu_t": np.log(1.5),
                     }
                 )
-        if m == "M5":
-            for s in sites:
-                rows_p.append(
-                    {
-                        "analysis": "primary",
-                        "family": "S-ID",
-                        "unit": "site",
-                        "ablation": "M5_A3-SR",
-                        "repeat": 0,
-                        "site_no": s,
-                        "mu_W": np.log(40.0),
-                        "mu_dbar": np.log(1.6),
-                        "mu_A": np.log(64.0),
-                        "mu_dmax": np.log(2.4),
-                        "mu_t": np.log(1.5),
-                    }
-                )
         pd.DataFrame(rows_p).to_parquet(tmp_path / f"{m}.parquet", index=False)
 
+    abl_rows = [
+        {
+            "analysis": "primary",
+            "family": "S-ID",
+            "unit": "site",
+            "ablation": "A3-SR",
+            "repeat": 0,
+            "site_no": s,
+            "mu_W": np.log(40.0),
+            "mu_dbar": np.log(1.6),
+            "mu_A": np.log(64.0),
+            "mu_dmax": np.log(2.4),
+            "mu_t": np.log(1.5),
+        }
+        for s in sites
+    ]
+    pd.DataFrame(abl_rows).to_parquet(tmp_path / "M5_A3-SR.parquet", index=False)
     abl_df = load_ablation_predictions(tmp_path, "M5_A3-SR", "S-ID")
     assert len(abl_df) == 12
 

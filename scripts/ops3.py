@@ -339,6 +339,7 @@ def main(argv: list[str] | None = None) -> int:
             OPS1_OBS,
             OPS2_BINS,
             *[PRED_DIR / f"{m}.parquet" for m in models],
+            *[PRED_DIR / f"{ab}.parquet" for ab in p3.ablation_models],
         ]
     }
     bundle = {
