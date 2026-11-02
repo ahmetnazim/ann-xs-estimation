@@ -363,6 +363,33 @@ def score_all_models_v2(
     }
 
 
+def _normalize_obs_and_unit(
+    obs: pd.DataFrame, unit: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Normalize ``ops1_observations`` and ``hydroswot`` column names for joining."""
+    o = obs.loc[obs["variant"] == "primary"].copy() if "variant" in obs.columns else obs.copy()
+    if "row_id" in o.columns and "meas_id" not in o.columns:
+        o = o.rename(columns={"row_id": "meas_id"})
+    o["site_no"] = o["site_no"].astype(str)
+    o["meas_id"] = o["meas_id"].astype(str)
+
+    u = unit.copy()
+    rename_map = {
+        "row_id": "meas_id",
+        "W": "w_m",
+        "dbar": "dbar_m",
+        "dmax": "dmax_m",
+        "A": "a_m2",
+        "V": "v_ms",
+    }
+    u = u.rename(
+        columns={k: v for k, v in rename_map.items() if k in u.columns and v not in u.columns}
+    )
+    u["site_no"] = u["site_no"].astype(str)
+    u["meas_id"] = u["meas_id"].astype(str)
+    return o, u
+
+
 def evaluate_dynamic_roughness_and_oracle(
     obs: pd.DataFrame,
     unit: pd.DataFrame,
@@ -379,10 +406,10 @@ def evaluate_dynamic_roughness_and_oracle(
     n_boot: int | None = None,
 ) -> dict[str, Any]:
     """Estimate Leopold-Maddock dynamic roughness and score Oracle + 10 models + 6 M5 ablations."""
+    obs, unit = _normalize_obs_and_unit(obs, unit)
     # 1. Empirical at-a-station exponents and leave-one-division-out gamma_{-d}
     u_cols = ["site_no", "meas_id", "w_m", "dbar_m", "dmax_m", "a_m2", "v_ms"]
     u_sub = unit[u_cols].drop_duplicates(["site_no", "meas_id"]).copy()
-    u_sub["site_no"] = u_sub["site_no"].astype(str)
     p_sub = (
         prim[["site_no", "W", "dbar", "dmax", "A", "V"]]
         .drop_duplicates("site_no")
@@ -640,9 +667,9 @@ def evaluate_off_anchor_states(
     n_boot: int | None = None,
 ) -> dict[str, Any]:
     """Score Oracle + 10 models on off-anchor absolute hydraulic states and test H-V3-3."""
+    obs, unit = _normalize_obs_and_unit(obs, unit)
     u_cols = ["site_no", "meas_id", "w_m", "dbar_m", "dmax_m", "a_m2"]
     u_sub = unit[u_cols].drop_duplicates(["site_no", "meas_id"]).copy()
-    u_sub["site_no"] = u_sub["site_no"].astype(str)
     p_sub = (
         prim[["site_no", "dmax"]].drop_duplicates("site_no").rename(columns={"dmax": "dmax_a_obs"})
     )
