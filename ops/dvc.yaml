@@ -104,3 +104,48 @@ stages:
       - reports/operational/ops2_summary.md: {cache: false}
     metrics:
       - reports/operational/ops2_results.json: {cache: false}
+
+  # OPS-1 v3 (all-model regime diagnostics, dynamic-n Oracle, off-anchor states & CCHE1D readiness).
+  # Pre-registration: params_operational_v3.yaml (commit 578b342); rationale in
+  # docs/6_operational_diagnostics_v3.md (local).
+  ops3:
+    wdir: ..
+    cmd: python -m scripts.ops3
+    deps:
+      - scripts/ops3.py
+      - src/operational/evaluate_v3.py
+      - src/operational/evaluate_v2.py
+      - src/operational/evaluate.py
+      - src/operational/rating.py
+      - src/operational/config.py
+      - src/operational/config_v2.py
+      - src/operational/config_v3.py
+      - src/physics/shape.py
+      - src/evaluation/bootstrap.py
+      - reports/operational/ops1_observations.parquet
+      - reports/operational/ops2_site_bins.parquet
+      - data/processed/unit_mapped/hydroswot.parquet
+      - data/processed/site_table.parquet
+      - data/processed/predictions/M-null.parquet
+      - data/processed/predictions/M0.parquet
+      - data/processed/predictions/M1.parquet
+      - data/processed/predictions/M2-MLP.parquet
+      - data/processed/predictions/M2-XGB.parquet
+      - data/processed/predictions/M3.parquet
+      - data/processed/predictions/M4.parquet
+      - data/processed/predictions/M5.parquet
+      - data/processed/predictions/M6-NN.parquet
+      - data/processed/predictions/M6-XGB.parquet
+    params:
+      - params.yaml:
+          - solver.quad_level
+          - solver.quad_trunc
+          - domain.r_bounds
+          - evaluation.bootstrap
+      - params_operational.yaml:
+      - params_operational_v2.yaml:
+      - params_operational_v3.yaml:
+    outs:
+      - reports/operational/ops3_summary.md: {cache: false}
+    metrics:
+      - reports/operational/ops3_results.json: {cache: false}
