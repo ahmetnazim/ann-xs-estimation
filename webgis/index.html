@@ -10,46 +10,31 @@
         localStorage.getItem("color-scheme") ?? "light dark";
     } catch (_) {}
   </script>
-  <title>USGS-Style National Cross-Section Dashboard | ANN-XS Estimation &amp; Operational Routing</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&amp;family=Merriweather:wght@400;700&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <title>ANN-XS Estimation WebGIS | Continental River Cross-Section &amp; Operational Routing Benchmark</title>
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin="anonymous">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="app-header" id="ViewerNav">
+  <header class="app-header">
     <div class="brand-block">
-      <div class="usgs-emblem-wrap" title="Styled after USGS National Water Dashboard · NCCHE &amp; USDA-ARS 6060-13000-030-00D">
-        <svg class="usgs-logo-svg" viewBox="0 0 155 56" role="img" aria-label="USGS Water Data Emblem">
-          <path fill="#ffffff" d="M12.4 8.2h7.6v22.8c0 5.1 2.2 7.6 6.7 7.6 4.5 0 6.7-2.5 6.7-7.6V8.2h7.6v22.2c0 9.6-5.2 14.5-14.3 14.5-9.1 0-14.3-4.9-14.3-14.5V8.2zm34.8 26.1h7.4c.4 3.4 2.8 5.1 7.1 5.1 3.8 0 6.2-1.5 6.2-4.1 0-2.2-1.6-3.3-5.8-4.2l-5.3-1.1c-6.8-1.4-10.1-4.3-10.1-9.8 0-6.5 5.4-10.7 13.4-10.7 8.2 0 13.2 4.1 13.5 10.4h-7.3c-.4-2.9-2.5-4.5-6.3-4.5-3.5 0-5.7 1.4-5.7 3.8 0 2 1.5 3.1 5.4 3.9l5.4 1.2c7.4 1.6 10.6 4.4 10.6 10.1 0 7-5.6 11.2-14.3 11.2-9.1 0-14-4.2-14.2-11.3zm33.1-7.8c0-11.2 6.5-18 16.9-18 7.9 0 13.5 4.1 14.6 11h-7.6c-.8-3.1-3.4-4.9-7-4.9-6 0-9.2 4.3-9.2 11.9 0 7.7 3.3 11.9 9.5 11.9 4.7 0 7.7-2.6 8.1-6.9h-8.4v-5.7h15.5v18.4h-5.8l-.8-4.1c-2.2 3.1-5.6 4.8-10.1 4.8-9.5 0-15.6-6.6-15.6-18.4zm35.2 7.8h7.4c.4 3.4 2.8 5.1 7.1 5.1 3.8 0 6.2-1.5 6.2-4.1 0-2.2-1.6-3.3-5.8-4.2l-5.3-1.1c-6.8-1.4-10.1-4.3-10.1-9.8 0-6.5 5.4-10.7 13.4-10.7 8.2 0 13.2 4.1 13.5 10.4h-7.3c-.4-2.9-2.5-4.5-6.3-4.5-3.5 0-5.7 1.4-5.7 3.8 0 2 1.5 3.1 5.4 3.9l5.4 1.2c7.4 1.6 10.6 4.4 10.6 10.1 0 7-5.6 11.2-14.3 11.2-9.1 0-14-4.2-14.2-11.3z"/>
-          <rect x="12" y="48.5" width="131" height="2.2" fill="#00bde3"/>
-        </svg>
-      </div>
-      <div class="brand-titles">
-        <h1 class="_font-fancy">National Cross-Section Dashboard</h1>
-        <span class="agency-pill" title="USDA-ARS Cooperative Agreement No. 6060-13000-030-00D · NCCHE, University of Mississippi">
-          NCCHE · USDA-ARS · CONUS River Geometry &amp; Flood-Stage Benchmark
-        </span>
-      </div>
+      <span class="agency-pill" title="USDA-ARS Cooperative Agreement No. 6060-13000-030-00D · NCCHE, University of Mississippi">
+        NCCHE · USDA-ARS 6060-13000-030-00D
+      </span>
+      <h1>River Cross-Section Geometry &amp; Operational Stage Benchmark</h1>
     </div>
 
     <nav class="view-nav" aria-label="Primary workspace views">
       <button type="button" class="nav-tab is-active" data-view="map" aria-pressed="true">
-        <span aria-hidden="true">🗺️</span> Layers &amp; XS Map
-        <span class="nwd-nav-badge" title="4,119 total river reaches mapped">4,119</span>
+        <span aria-hidden="true">🗺️</span> WebGIS &amp; XS Explorer
       </button>
       <button type="button" class="nav-tab" data-view="geometry" aria-pressed="false">
-        <span aria-hidden="true">📐</span> Geometry Benchmark
-        <span class="nwd-nav-badge" title="11 model rungs across Events 1–3">Event 1–3</span>
+        <span aria-hidden="true">📐</span> Geometry Benchmark (Event 1–3)
       </button>
       <button type="button" class="nav-tab" data-view="operational" aria-pressed="false">
-        <span aria-hidden="true">🌊</span> Flood Routing &amp; CCHE1D
-        <span class="nwd-nav-badge" title="Operational Stage-Response v1–v3">OPS-1</span>
+        <span aria-hidden="true">🌊</span> Operational Routing &amp; CCHE1D (OPS-1)
       </button>
       <button type="button" class="nav-tab" data-view="provenance" aria-pressed="false">
-        <span aria-hidden="true">🗄️</span> Data &amp; Provenance
-        <span class="nwd-nav-badge" title="QA/QC cascade and 4,119-reach explorer">QA/QC</span>
+        <span aria-hidden="true">🗄️</span> Data Availability &amp; Provenance
       </button>
     </nav>
 
@@ -61,7 +46,7 @@
             type="search"
             id="site-search-input"
             list="site-suggestions"
-            placeholder="Find Monitoring Location, COMID, River…"
+            placeholder="Jump to Gauge ID, COMID, or River…"
           >
           <datalist id="site-suggestions"></datalist>
           <button type="submit" class="btn-subtle">Go</button>
@@ -69,10 +54,10 @@
       </search>
 
       <button type="button" id="open-ledger-btn" class="btn-badge" aria-haspopup="dialog">
-        <span aria-hidden="true">🔒</span> Ledger
+        <span aria-hidden="true">🔒</span> v1.0.0 + OPS-1 Ledger
       </button>
 
-      <button type="button" id="theme-toggle-btn" class="btn-icon" aria-label="Toggle color theme" title="Toggle Light / Dark Dashboard Theme">
+      <button type="button" id="theme-toggle-btn" class="btn-icon" aria-label="Toggle color theme">
         <span class="theme-icon-light" aria-hidden="true">☀️</span>
         <span class="theme-icon-dark" aria-hidden="true">🌙</span>
         <span class="sr-only">Switch theme</span>
@@ -88,119 +73,95 @@
       <div class="map-stage">
         <div id="map-canvas" class="map-canvas" role="application" aria-label="Interactive CONUS and USACE eHydro River Reach Map"></div>
 
-        <!-- Floating Map Layer & Filter Controls (USGS NWD ViewerLayers Aesthetic) -->
+        <!-- Floating Map Layer & Filter Controls -->
         <aside class="map-controls-card" aria-label="Map layer and filter controls">
-          <div class="nwd-panel-title-row">
-            <span id="visible-count-badge" class="nwd-nav-badge">3,988 gauges · 131 eHydro</span>
-            <h2 class="_font-fancy nwd-panel-heading">Layers &amp; Filters ☷</h2>
+          <div class="card-header-compact">
+            <h2>Map Layers &amp; Filters</h2>
+            <span id="visible-count-badge" class="pill-count">3,988 gauges · 131 eHydro</span>
           </div>
 
-          <div class="nwd-subgroup-bar success">
-            <span class="nwd-chevron" aria-hidden="true">▾</span>
-            <span>USGS &amp; USACE STATIONS — SYMBOLOGY</span>
-            <span class="nwd-nav-badge ms-auto">8 modes</span>
+          <div class="control-group">
+            <label for="map-color-mode">Color Reaches By</label>
+            <select id="map-color-mode">
+              <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dmax)</option>
+              <option value="win_op_dyn">Best Model: Flood Stage — Dynamic n (OPS-1 v3)</option>
+              <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain, Const. n (OPS-1 v2)</option>
+              <option value="model_rmse">Single-Model Reach Error (RMSE_log or Stage m)</option>
+              <option value="slope_regime">NHDPlus Slope-Floor Regime (F_S: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
+              <option value="data_tier">Data Availability Tier (3DEP / OPS-1 / eHydro)</option>
+              <option value="latent_n">Predicted Manning Roughness n̂ (M5 Physics Layer)</option>
+              <option value="latent_r">Predicted Dingman Shape Exponent r̂ (M5 Physics Layer)</option>
+            </select>
           </div>
-          <div class="nwd-subgroup-body">
+
+          <div id="single-model-control" class="control-group is-hidden">
+            <label for="map-single-model">Select Model to Inspect</label>
+            <select id="map-single-model">
+              <option value="M2-XGB">M2-XGB (M* Selected Baseline)</option>
+              <option value="M2-MLP">M2-MLP (Deep Ensemble Neural Network)</option>
+              <option value="M5">M5 (Hard Manning + Continuity Φ)</option>
+              <option value="M1">M1 (Retrained Zarrabi et al. 2025 XGB)</option>
+              <option value="M4">M4 (Soft-Constrained PINN)</option>
+              <option value="M3">M3 (Physics Only — Empirical n)</option>
+              <option value="M0">M0 (Regional Power Law)</option>
+            </select>
+          </div>
+
+          <div class="control-row-split">
             <div class="control-group">
-              <label for="map-color-mode">Color Reaches By</label>
-              <select id="map-color-mode">
-                <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dmax)</option>
-                <option value="win_op_dyn">Best Model: Flood Stage — Dynamic n (OPS-1 v3)</option>
-                <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain, Const. n (OPS-1 v2)</option>
-                <option value="model_rmse">Single-Model Reach Error (RMSE_log or Stage m)</option>
-                <option value="slope_regime">NHDPlus Slope-Floor Regime (F_S: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
-                <option value="data_tier">Data Availability Tier (3DEP / OPS-1 / eHydro)</option>
-                <option value="latent_n">Predicted Manning Roughness n̂ (M5 Physics Layer)</option>
-                <option value="latent_r">Predicted Dingman Shape Exponent r̂ (M5 Physics Layer)</option>
+              <label for="filter-division">Physiographic Division</label>
+              <select id="filter-division">
+                <option value="ALL">All 8 CONUS Divisions</option>
               </select>
             </div>
-
-            <div id="single-model-control" class="control-group is-hidden">
-              <label for="map-single-model">Select Model to Inspect</label>
-              <select id="map-single-model">
-                <option value="M2-XGB">M2-XGB (M* Selected Baseline)</option>
-                <option value="M2-MLP">M2-MLP (Deep Ensemble Neural Network)</option>
-                <option value="M5">M5 (Hard Manning + Continuity Φ)</option>
-                <option value="M1">M1 (Retrained Zarrabi et al. 2025 XGB)</option>
-                <option value="M4">M4 (Soft-Constrained PINN)</option>
-                <option value="M3">M3 (Physics Only — Empirical n)</option>
-                <option value="M0">M0 (Regional Power Law)</option>
+            <div class="control-group">
+              <label for="filter-slope">Slope Regime</label>
+              <select id="filter-slope">
+                <option value="ALL">All Slopes (100%)</option>
+                <option value="NORMAL">Normal S &gt; 10⁻⁵ (79.1%)</option>
+                <option value="FLOORED">Floored S = 10⁻⁵ (20.9%)</option>
               </select>
             </div>
           </div>
 
-          <div class="nwd-subgroup-bar primary">
-            <span class="nwd-chevron" aria-hidden="true">▾</span>
-            <span>HYDROLOGY &amp; PHYSIOGRAPHIC FILTERS</span>
-            <span class="nwd-nav-badge ms-auto">CONUS</span>
-          </div>
-          <div class="nwd-subgroup-body">
-            <div class="control-row-split">
-              <div class="control-group">
-                <label for="filter-division">Physiographic Division</label>
-                <select id="filter-division">
-                  <option value="ALL">All 8 CONUS Divisions</option>
-                </select>
-              </div>
-              <div class="control-group">
-                <label for="filter-slope">Slope Regime</label>
-                <select id="filter-slope">
-                  <option value="ALL">All Slopes (100%)</option>
-                  <option value="NORMAL">Normal S &gt; 10⁻⁵ (79.1%)</option>
-                  <option value="FLOORED">Floored S = 10⁻⁵ (20.9%)</option>
-                </select>
-              </div>
+          <div class="control-row-split">
+            <div class="control-group">
+              <label for="filter-availability">Data Availability</label>
+              <select id="filter-availability">
+                <option value="ALL">All Benchmark Sites</option>
+                <option value="3DEP">Has 3DEP Lidar Transect (n = 3,282)</option>
+                <option value="OPS1">Has Multi-Stage Series (n = 3,643)</option>
+                <option value="TAIL_DA">Extrapolation Tail DA (S-TAIL-DA)</option>
+                <option value="TAIL_SO">Extrapolation Tail Order (S-TAIL-SO)</option>
+              </select>
             </div>
-
-            <div class="control-row-split">
-              <div class="control-group">
-                <label for="filter-availability">Data Availability</label>
-                <select id="filter-availability">
-                  <option value="ALL">All Benchmark Sites</option>
-                  <option value="3DEP">Has 3DEP Lidar Transect (n = 3,282)</option>
-                  <option value="OPS1">Has Multi-Stage Series (n = 3,643)</option>
-                  <option value="TAIL_DA">Extrapolation Tail DA (S-TAIL-DA)</option>
-                  <option value="TAIL_SO">Extrapolation Tail Order (S-TAIL-SO)</option>
-                </select>
-              </div>
-              <div class="control-group">
-                <label for="map-basemap">Base Map</label>
-                <select id="map-basemap">
-                  <option value="positron">Light Gray Canvas (Positron)</option>
-                  <option value="dark">Dark Gray Canvas (Dark Matter)</option>
-                  <option value="topo">USGS National Map Topo</option>
-                </select>
-              </div>
+            <div class="control-group">
+              <label for="map-basemap">Basemap</label>
+              <select id="map-basemap">
+                <option value="positron">Carto Positron (Light)</option>
+                <option value="dark">Carto Dark Matter</option>
+                <option value="topo">USGS National Map Topo</option>
+              </select>
             </div>
           </div>
 
-          <div class="nwd-subgroup-bar info">
-            <span class="nwd-chevron" aria-hidden="true">▾</span>
-            <span>ACTIVE MAP OVERLAYS</span>
-            <span class="nwd-nav-badge ms-auto">3 layers</span>
-          </div>
-          <div class="nwd-subgroup-body">
-            <div class="checkbox-row">
-              <label class="check-label">
-                <input type="checkbox" id="toggle-decisive-only" checked>
-                <span>Grey out non-decisive ties (≤ 0.05 log / ≤ 5 cm)</span>
-              </label>
-              <label class="check-label">
-                <input type="checkbox" id="toggle-physio-layer" checked>
-                <span>Show 8 F&amp;J Physiographic Division polygons</span>
-              </label>
-              <label class="check-label">
-                <input type="checkbox" id="toggle-ehydro-layer" checked>
-                <span>Show 131 USACE eHydro survey locations (▲)</span>
-              </label>
-            </div>
+          <div class="checkbox-row">
+            <label class="check-label">
+              <input type="checkbox" id="toggle-decisive-only" checked>
+              <span>Grey out non-decisive ties (≤ 0.05 log / ≤ 5 cm)</span>
+            </label>
+            <label class="check-label">
+              <input type="checkbox" id="toggle-physio-layer" checked>
+              <span>Show 8 F&amp;J Physiographic Division polygons</span>
+            </label>
+            <label class="check-label">
+              <input type="checkbox" id="toggle-ehydro-layer" checked>
+              <span>Show 131 USACE eHydro survey locations (▲)</span>
+            </label>
           </div>
 
-          <div class="nwd-subgroup-bar warning">
-            <span class="nwd-chevron" aria-hidden="true">▾</span>
-            <span>DIAGNOSTIC SHOWCASE REACHES</span>
-          </div>
-          <div class="nwd-subgroup-body showcase-presets">
+          <div class="showcase-presets">
+            <span class="preset-title">Diagnostic Showcase Reaches:</span>
             <div class="preset-pills" id="showcase-buttons"></div>
           </div>
         </aside>
@@ -209,15 +170,12 @@
         <div id="map-legend" class="map-legend" aria-live="polite"></div>
       </div>
 
-      <!-- Right Docked Inspector: Predicted XS Profile + Stage Routing + Site Telemetry (NWD ViewerPanel Aesthetic) -->
-      <aside class="xs-inspector" id="ViewerPanel" aria-label="Selected Reach Cross-Section and Stage Routing Inspector">
-        <div class="nwd-panel-title-row">
-          <div class="inspector-badges" id="xs-site-badges"></div>
-          <h3 class="_font-fancy nwd-panel-heading">Station XS Inspector 📐</h3>
-        </div>
+      <!-- Right Docked Inspector: Predicted XS Profile + Stage Routing + Site Telemetry -->
+      <aside class="xs-inspector" aria-label="Selected Reach Cross-Section and Stage Routing Inspector">
         <div class="inspector-header">
           <div>
-            <h2 id="xs-site-title" class="_font-fancy">Select a Reach on the Map</h2>
+            <div class="inspector-badges" id="xs-site-badges"></div>
+            <h2 id="xs-site-title">Select a Reach on the Map</h2>
             <p id="xs-site-subtitle" class="muted-sub">Click any USGS gauge (●) or USACE eHydro survey (▲) to inspect observed vs. predicted cross-sections.</p>
           </div>
           <div class="inspector-header-controls">
@@ -226,15 +184,10 @@
               <option value="sid">Split: S-ID (3×5 Grouped CV)</option>
               <option value="slro">Split: S-LRO (Held-Out Division)</option>
             </select>
-            <button type="button" id="export-site-btn" class="btn-outline-info" title="Download site cross-section and predictions as JSON">
+            <button type="button" id="export-site-btn" class="btn-subtle" title="Download site cross-section and predictions as JSON">
               Export JSON
             </button>
           </div>
-        </div>
-
-        <div class="nwd-subgroup-bar primary">
-          <span class="nwd-chevron" aria-hidden="true">▾</span>
-          <span>ANALYTICAL DINGMAN CROSS-SECTION &amp; 3DEP LIDAR VALLEY</span>
         </div>
 
         <!-- Model Toggles for XS Plot -->
@@ -256,11 +209,6 @@
           <svg id="xs-svg" viewBox="0 0 680 310" role="img" aria-labelledby="xs-plot-caption"></svg>
         </figure>
 
-        <div class="nwd-subgroup-bar success">
-          <span class="nwd-chevron" aria-hidden="true">▾</span>
-          <span>STAGE–DISCHARGE ROUTING SIMULATOR (OPS-1)</span>
-        </div>
-
         <!-- Interactive OPS-1 Stage-Discharge Routing Simulator -->
         <section class="routing-simulator" aria-labelledby="routing-sim-heading">
           <div class="sim-header">
@@ -277,11 +225,6 @@
           </div>
           <svg id="rating-svg" viewBox="0 0 680 185" role="img" aria-label="Synthetic stage-change rating curve across flow ratios"></svg>
         </section>
-
-        <div class="nwd-subgroup-bar info">
-          <span class="nwd-chevron" aria-hidden="true">▾</span>
-          <span>STATION TELEMETRY &amp; MODEL COMPARISON TABLE</span>
-        </div>
 
         <!-- Site Physical Covariates & Model Comparison Table -->
         <div class="site-telemetry-grid" id="site-covariate-cards"></div>
@@ -580,46 +523,12 @@
     </section>
   </main>
 
-  <!-- USGS National Water Dashboard Style Bottom Banner Footer (#ViewerFooter) -->
-  <footer class="nwd-footer" id="ViewerFooter">
-    <div class="nwd-footer-inner">
-      <div class="nwd-footer-links">
-        <div class="nwd-footer-row">
-          <span>S-SDLC Master Protocol v1.0.0+ops1.v3</span>
-          <span class="vr" aria-hidden="true"></span>
-          <span>USDA-ARS Agreement 6060-13000-030-00D</span>
-          <span class="vr" aria-hidden="true"></span>
-          <span>NCCHE · University of Mississippi</span>
-          <span class="vr" aria-hidden="true"></span>
-          <span>SPDX: BSD-3-Clause</span>
-        </div>
-        <div class="nwd-footer-row nwd-footer-row-bottom">
-          <span>Event 1 Variogram Audit (ρ̂ = 500 km)</span>
-          <span class="vr" aria-hidden="true"></span>
-          <span>Event 2 Baseline (M* = M2-XGB)</span>
-          <span class="vr" aria-hidden="true"></span>
-          <span>Event 3 Confirmatory (§4.7 Row 4)</span>
-          <span class="vr" aria-hidden="true"></span>
-          <span>OPS-1 v1–v3 &amp; CCHE1D Solver Readiness</span>
-        </div>
-      </div>
-      <div class="nwd-footer-sources">
-        <div class="nwd-sources-label">Federal &amp; Benchmark<br>Data Sources Include</div>
-        <span class="nwd-source-chip">USGS HYDROSWOT</span>
-        <span class="nwd-source-chip">NHDPlusV2.1</span>
-        <span class="nwd-source-chip">USACE eHydro</span>
-        <span class="nwd-source-chip">USGS 3DEP</span>
-        <span class="nwd-source-chip">StreamCat</span>
-      </div>
-    </div>
-  </footer>
-
   <!-- Native Modal Dialog for Cryptographic Scoring Ledger (Rule 1 from dialog guide) -->
   <dialog id="ledger-dialog" closedby="any" aria-labelledby="ledger-dialog-title">
     <div class="dialog-header">
-      <h2 id="ledger-dialog-title" class="_font-fancy">Cryptographic 3-Event Scoring Ledger &amp; S-SDLC Provenance</h2>
+      <h2 id="ledger-dialog-title">Cryptographic 3-Event Scoring Ledger &amp; S-SDLC Provenance</h2>
       <form method="dialog">
-        <button value="close" autofocus class="btn-outline-danger" aria-label="Close cryptographic ledger modal">✕ Close</button>
+        <button value="close" autofocus class="btn-subtle" aria-label="Close cryptographic ledger modal">Close ✕</button>
       </form>
     </div>
     <div class="dialog-body">
@@ -650,4 +559,3 @@
   <script type="module" src="app.js"></script>
 </body>
 </html>
-
