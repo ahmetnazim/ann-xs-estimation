@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content =
+        localStorage.getItem("color-scheme") ?? "light dark";
+    } catch (_) {}
+  </script>
+  <title>ANN-XS Estimation WebGIS | Continental River Cross-Section &amp; Operational Routing Benchmark</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-block">
+      <span class="agency-pill" title="USDA-ARS Cooperative Agreement No. 6060-13000-030-00D · NCCHE, University of Mississippi">
+        NCCHE · USDA-ARS 6060-13000-030-00D
+      </span>
+      <h1>River Cross-Section Geometry &amp; Operational Stage Benchmark</h1>
+    </div>
+
+    <nav class="view-nav" aria-label="Primary workspace views">
+      <button type="button" class="nav-tab is-active" data-view="map" aria-pressed="true">
+        <span aria-hidden="true">🗺️</span> WebGIS &amp; XS Explorer
+      </button>
+      <button type="button" class="nav-tab" data-view="geometry" aria-pressed="false">
+        <span aria-hidden="true">📐</span> Geometry Benchmark (Event 1–3)
+      </button>
+      <button type="button" class="nav-tab" data-view="operational" aria-pressed="false">
+        <span aria-hidden="true">🌊</span> Operational Routing &amp; CCHE1D (OPS-1)
+      </button>
+      <button type="button" class="nav-tab" data-view="provenance" aria-pressed="false">
+        <span aria-hidden="true">🗄️</span> Data Availability &amp; Provenance
+      </button>
+    </nav>
+
+    <div class="header-actions">
+      <search class="site-search">
+        <form id="site-search-form">
+          <label for="site-search-input" class="sr-only">Search USGS gauge, COMID, or river</label>
+          <input
+            type="search"
+            id="site-search-input"
+            list="site-suggestions"
+            placeholder="Jump to Gauge ID, COMID, or River…"
+          >
+          <datalist id="site-suggestions"></datalist>
+          <button type="submit" class="btn-subtle">Go</button>
+        </form>
+      </search>
+
+      <button type="button" id="open-ledger-btn" class="btn-badge" aria-haspopup="dialog">
+        <span aria-hidden="true">🔒</span> v1.0.0 + OPS-1 Ledger
+      </button>
+
+      <button type="button" id="theme-toggle-btn" class="btn-icon" aria-label="Toggle color theme">
+        <span class="theme-icon-light" aria-hidden="true">☀️</span>
+        <span class="theme-icon-dark" aria-hidden="true">🌙</span>
+        <span class="sr-only">Switch theme</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace-shell">
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: INTERACTIVE WEBGIS & CROSS-SECTION (XS) EXPLORER              -->
+    <!-- ===================================================================== -->
+    <section id="view-map" class="workspace-view is-active" aria-label="Interactive WebGIS and Cross-Section Explorer">
+      <div class="map-stage">
+        <div id="map-canvas" class="map-canvas" role="application" aria-label="Interactive CONUS and USACE eHydro River Reach Map"></div>
+
+        <!-- Floating Map Layer & Filter Controls -->
+        <aside class="map-controls-card" aria-label="Map layer and filter controls">
+          <div class="card-header-compact">
+            <h2>Map Layers &amp; Filters</h2>
+            <span id="visible-count-badge" class="pill-count">3,988 gauges · 131 eHydro</span>
+          </div>
+
+          <div class="control-group">
+            <label for="map-color-mode">Color Reaches By</label>
+            <select id="map-color-mode">
+              <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dmax)</option>
+              <option value="win_op_dyn">Best Model: Flood Stage — Dynamic n (OPS-1 v3)</option>
+              <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain, Const. n (OPS-1 v2)</option>
+              <option value="model_rmse">Single-Model Reach Error (RMSE_log or Stage m)</option>
+              <option value="slope_regime">NHDPlus Slope-Floor Regime (F_S: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
+              <option value="data_tier">Data Availability Tier (3DEP / OPS-1 / eHydro)</option>
+              <option value="latent_n">Predicted Manning Roughness n̂ (M5 Physics Layer)</option>
+              <option value="latent_r">Predicted Dingman Shape Exponent r̂ (M5 Physics Layer)</option>
+            </select>
+          </div>
+
+          <div id="single-model-control" class="control-group is-hidden">
+            <label for="map-single-model">Select Model to Inspect</label>
+            <select id="map-single-model">
+              <option value="M2-XGB">M2-XGB (M* Selected Baseline)</option>
+              <option value="M2-MLP">M2-MLP (Deep Ensemble Neural Network)</option>
+              <option value="M5">M5 (Hard Manning + Continuity Φ)</option>
+              <option value="M1">M1 (Retrained Zarrabi et al. 2025 XGB)</option>
+              <option value="M4">M4 (Soft-Constrained PINN)</option>
+              <option value="M3">M3 (Physics Only — Empirical n)</option>
+              <option value="M0">M0 (Regional Power Law)</option>
+            </select>
+          </div>
+
+          <div class="control-row-split">
+            <div class="control-group">
+              <label for="filter-division">Physiographic Division</label>
+              <select id="filter-division">
+                <option value="ALL">All 8 CONUS Divisions</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="filter-slope">Slope Regime</label>
+              <select id="filter-slope">
+                <option value="ALL">All Slopes (100%)</option>
+                <option value="NORMAL">Normal S &gt; 10⁻⁵ (79.1%)</option>
+                <option value="FLOORED">Floored S = 10⁻⁵ (20.9%)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control-row-split">
+            <div class="control-group">
+              <label for="filter-availability">Data Availability</label>
+              <select id="filter-availability">
+                <option value="ALL">All Benchmark Sites</option>
+                <option value="3DEP">Has 3DEP Lidar Transect (n = 3,282)</option>
+                <option value="OPS1">Has Multi-Stage Series (n = 3,643)</option>
+                <option value="TAIL_DA">Extrapolation Tail DA (S-TAIL-DA)</option>
+                <option value="TAIL_SO">Extrapolation Tail Order (S-TAIL-SO)</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="map-basemap">Basemap</label>
+              <select id="map-basemap">
+                <option value="positron">Carto Positron (Light)</option>
+                <option value="dark">Carto Dark Matter</option>
+                <option value="topo">USGS National Map Topo</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <label class="check-label">
+              <input type="checkbox" id="toggle-decisive-only" checked>
+              <span>Grey out non-decisive ties (≤ 0.05 log / ≤ 5 cm)</span>
+            </label>
+            <label class="check-label">
+              <input type="checkbox" id="toggle-physio-layer" checked>
+              <span>Show 8 F&amp;J Physiographic Division polygons</span>
+            </label>
+            <label class="check-label">
+              <input type="checkbox" id="toggle-ehydro-layer" checked>
+              <span>Show 131 USACE eHydro survey locations (▲)</span>
+            </label>
+          </div>
+
+          <div class="showcase-presets">
+            <span class="preset-title">Diagnostic Showcase Reaches:</span>
+            <div class="preset-pills" id="showcase-buttons"></div>
+          </div>
+        </aside>
+
+        <!-- Dynamic Map Legend -->
+        <div id="map-legend" class="map-legend" aria-live="polite"></div>
+      </div>
+
+      <!-- Right Docked Inspector: Predicted XS Profile + Stage Routing + Site Telemetry -->
+      <aside class="xs-inspector" aria-label="Selected Reach Cross-Section and Stage Routing Inspector">
+        <div class="inspector-header">
+          <div>
+            <div class="inspector-badges" id="xs-site-badges"></div>
+            <h2 id="xs-site-title">Select a Reach on the Map</h2>
+            <p id="xs-site-subtitle" class="muted-sub">Click any USGS gauge (●) or USACE eHydro survey (▲) to inspect observed vs. predicted cross-sections.</p>
+          </div>
+          <div class="inspector-header-controls">
+            <label for="xs-split-select" class="sr-only">Validation Split</label>
+            <select id="xs-split-select" title="Switch between In-Distribution (S-ID) and Leave-One-Region-Out (S-LRO) out-of-fold predictions">
+              <option value="sid">Split: S-ID (3×5 Grouped CV)</option>
+              <option value="slro">Split: S-LRO (Held-Out Division)</option>
+            </select>
+            <button type="button" id="export-site-btn" class="btn-subtle" title="Download site cross-section and predictions as JSON">
+              Export JSON
+            </button>
+          </div>
+        </div>
+
+        <!-- Model Toggles for XS Plot -->
+        <div class="model-chip-bar" id="xs-model-toggles" role="group" aria-label="Toggle models on cross-section plot"></div>
+
+        <!-- SVG Analytical Dingman Cross-Section & 3DEP Floodplain Plot -->
+        <figure class="xs-figure">
+          <div class="xs-figure-toolbar">
+            <figcaption id="xs-plot-caption">Analytical Dingman Profile z(x) = −d_max(1 − |2x/W|^r) &amp; 90% UQ Bounds</figcaption>
+            <label class="check-label-inline">
+              <input type="checkbox" id="toggle-uq-band" checked>
+              <span>90% Deep-Ensemble UQ Band</span>
+            </label>
+            <label class="check-label-inline">
+              <input type="checkbox" id="toggle-3dep-inset" checked>
+              <span>3DEP Lidar Valley Inset</span>
+            </label>
+          </div>
+          <svg id="xs-svg" viewBox="0 0 680 310" role="img" aria-labelledby="xs-plot-caption"></svg>
+        </figure>
+
+        <!-- Interactive OPS-1 Stage-Discharge Routing Simulator -->
+        <section class="routing-simulator" aria-labelledby="routing-sim-heading">
+          <div class="sim-header">
+            <h3 id="routing-sim-heading">Interactive Stage–Discharge Routing (OPS-1 Simulator)</h3>
+            <span id="sim-q-readout" class="sim-readout">Q / Q_a = 3.5× (High Flow)</span>
+          </div>
+          <div class="sim-controls">
+            <label for="sim-q-slider">Flow Ratio Q / Q_a:</label>
+            <input type="range" id="sim-q-slider" min="0.4" max="10.0" step="0.1" value="3.5">
+            <select id="sim-roughness-mode" aria-label="Roughness regime">
+              <option value="dyn">Dynamic n ∝ Q^γ̂ (OPS-1 v3 LODO)</option>
+              <option value="const">Constant n (γ = 0, OPS-1 v1/v2)</option>
+            </select>
+          </div>
+          <svg id="rating-svg" viewBox="0 0 680 185" role="img" aria-label="Synthetic stage-change rating curve across flow ratios"></svg>
+        </section>
+
+        <!-- Site Physical Covariates & Model Comparison Table -->
+        <div class="site-telemetry-grid" id="site-covariate-cards"></div>
+
+        <div tabindex="0" role="region" aria-labelledby="site-model-table-cap" class="table-wrapper compact-table-wrapper">
+          <table class="data-table" id="site-model-table">
+            <caption id="site-model-table-cap">Reach-level observed vs. predicted geometry, continuity closure |ε_A|, and stage RMSE</caption>
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col">W (m)</th>
+                <th scope="col">d̄ (m)</th>
+                <th scope="col">d_max (m)</th>
+                <th scope="col">A (m²)</th>
+                <th scope="col">r̂</th>
+                <th scope="col">n̂ / n_back</th>
+                <th scope="col">|ε_A|</th>
+                <th scope="col">Geom RMSE</th>
+                <th scope="col">Stage FP (m)</th>
+                <th scope="col">Stage Dyn (m)</th>
+              </tr>
+            </thead>
+            <tbody id="site-model-tbody"></tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: CONFIRMATORY GEOMETRY BENCHMARK (EVENT 1-3)                   -->
+    <!-- ===================================================================== -->
+    <section id="view-geometry" class="workspace-view" aria-label="Confirmatory Geometry Benchmark Dashboard" hidden>
+      <div class="dashboard-container">
+        <div class="kpi-banner-grid">
+          <article class="kpi-card accent-teal">
+            <span class="kpi-eyebrow">Event 2 Selected Baseline (M*)</span>
+            <strong class="kpi-value">M2-XGB (#1) &amp; M2-MLP (#2)</strong>
+            <p class="kpi-desc">Beat retrained Zarrabi M1 across all S-ID &amp; S-LRO dimensions (S-ID d̄ RMSE_log 0.4396 &amp; 0.4520 vs. 0.4745).</p>
+          </article>
+          <article class="kpi-card accent-orange">
+            <span class="kpi-eyebrow">Pre-Registered §4.7 Verdict</span>
+            <strong class="kpi-value">Row 4 Realized (H1–H4 Falsified)</strong>
+            <p class="kpi-desc">Hard Manning inversion (M5) propagates NHDPlus slope-floor &amp; Q_E errors into d̄ (+0.2502 log units on S-LRO).</p>
+          </article>
+          <article class="kpi-card accent-navy">
+            <span class="kpi-eyebrow">Independent USACE eHydro (S-IND)</span>
+            <strong class="kpi-value">M5 #1 on Flow Area A (0.9495)</strong>
+            <p class="kpi-desc">Across 131 navigation surveys on 18 rivers, M5 achieves lowest Area RMSE_log (0.9495, MdAPE 44.3%) &amp; exact |ε_A| = 0.</p>
+          </article>
+          <article class="kpi-card accent-green">
+            <span class="kpi-eyebrow">Deep-Ensemble 90% UQ Calibration</span>
+            <strong class="kpi-value">0.8997 (S-ID) · 0.9025 (S-LRO)</strong>
+            <p class="kpi-desc">Both M5 and M2-MLP (0.8961 / 0.8965) land squarely inside the pre-registered [0.85, 0.95] coverage band without conformal post-hoc scaling.</p>
+          </article>
+        </div>
+
+        <div class="dashboard-split-row">
+          <!-- Interactive Multi-Split Metrics Explorer -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2>Multi-Regime Accuracy &amp; Continuity Matrix (Table T2 / T7)</h2>
+                <p class="muted-sub">Compare all 11 model rungs across 6 validation splits and 5 cross-section targets.</p>
+              </div>
+              <div class="filter-bar-inline">
+                <label for="bench-split-select">Split:</label>
+                <select id="bench-split-select">
+                  <option value="S-LRO">S-LRO (8 Held-Out Divisions, n = 3,988)</option>
+                  <option value="S-ID">S-ID (3×5 Grouped CV, n = 3,988 · Optimistic)</option>
+                  <option value="S-IND">S-IND (131 USACE eHydro Locations / 18 Rivers)</option>
+                  <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Deciles 1 &amp; 10, n = 678)</option>
+                  <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Extrapolation, n = 339)</option>
+                  <option value="S-RND">S-RND (Legacy Random 75:25 Split, n = 9,673)</option>
+                </select>
+                <label for="bench-target-select">Target:</label>
+                <select id="bench-target-select">
+                  <option value="dbar">Mean Depth d̄ (m)</option>
+                  <option value="A">Cross-Sectional Area A (m²)</option>
+                  <option value="W">Wetted Top Width W (m)</option>
+                  <option value="dmax">Maximum Depth d_max (m)</option>
+                </select>
+              </div>
+            </div>
+
+            <svg id="bench-bar-svg" viewBox="0 0 760 290" role="img" aria-label="Interactive model comparison bar chart"></svg>
+
+            <div tabindex="0" role="region" aria-labelledby="bench-table-caption" class="table-wrapper">
+              <table class="data-table" id="bench-metrics-table">
+                <caption id="bench-table-caption">Primary and secondary evaluation metrics for selected validation split and target</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Model</th>
+                    <th scope="col">RMSE_log</th>
+                    <th scope="col">MdAPE (%)</th>
+                    <th scope="col">NSE_log</th>
+                    <th scope="col">Bias_log</th>
+                    <th scope="col">RMSE_raw</th>
+                    <th scope="col">KGE</th>
+                    <th scope="col">Median |ε_A|</th>
+                    <th scope="col">Inadmissible n (%)</th>
+                  </tr>
+                </thead>
+                <tbody id="bench-metrics-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Pre-Registered Hypotheses H1-H4 & Row-4 Ablations -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2>Pre-Registered Hypotheses (H1–H4) &amp; Row-4 Mechanism Diagnosis</h2>
+                <p class="muted-sub">Division-stratified paired cluster bootstrap (B = 10,000) and ablations A1–A4, SA1–SA6.</p>
+              </div>
+            </div>
+
+            <div id="hypotheses-cards-list" class="hypothesis-stack"></div>
+
+            <h3 class="sub-heading">Row-4 Diagnostic Ablations on Mean Depth d̄ (RMSE_log)</h3>
+            <svg id="ablation-svg" viewBox="0 0 620 260" role="img" aria-label="Ablation and sensitivity analysis comparison for M5"></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: OPERATIONAL STAGE ROUTING & CCHE1D READINESS (OPS-1 v1-v3)    -->
+    <!-- ===================================================================== -->
+    <section id="view-operational" class="workspace-view" aria-label="Operational Stage-Response and CCHE1D Readiness Benchmark" hidden>
+      <div class="dashboard-container">
+        <div class="kpi-banner-grid">
+          <article class="kpi-card accent-teal">
+            <span class="kpi-eyebrow">H-FP1 Supported (OPS-1 v2)</span>
+            <strong class="kpi-value">−0.401 m Flood-Stage RMSE Drop</strong>
+            <p class="kpi-desc">Burning predicted channels into 3,282 USGS 3DEP 10 m Lidar floodplain transects cuts high-flow stage RMSE from 1.874 m to 1.473 m (95% CI [−0.547, −0.253]).</p>
+          </article>
+          <article class="kpi-card accent-green">
+            <span class="kpi-eyebrow">H-V3-1 Supported (Normal Slopes S &gt; 10⁻⁵)</span>
+            <strong class="kpi-value">M4 (1.321 m) &amp; M5 (1.333 m) Win</strong>
+            <p class="kpi-desc">On the 79.1% of CONUS reaches without NHDPlus S = 10⁻⁵ clamping, physics-informed M4 &amp; M5 beat M2-XGB (1.400 m; Δ = −0.068 m) and M1 (1.572 m).</p>
+          </article>
+          <article class="kpi-card accent-navy">
+            <span class="kpi-eyebrow">H-V3-2 Supported (Dynamic Roughness γ̂ = −0.325)</span>
+            <strong class="kpi-value">Oracle Bias +1.011 m → −0.065 m</strong>
+            <p class="kpi-desc">LODO dynamic resistance n ∝ Q^−0.325 eliminates constant-n rating overshoot and restores M2-MLP (1.246 m) ≈ M2-XGB (1.248 m) &gt; M1 (1.263 m) ≫ M3 (1.513 m).</p>
+          </article>
+          <article class="kpi-card accent-orange">
+            <span class="kpi-eyebrow">H-V3-4 Supported (CCHE1D 1D Solver Readiness)</span>
+            <strong class="kpi-value">0.0% Continuity Error + #1 R_0 (0.4289)</strong>
+            <p class="kpi-desc">Reconstructing Â_0 = Ŵ_0 d̄̂_0 eliminates M2-XGB continuity violations (49.6% → 0%), while CCHE1D-Hybrid beats standalone M2-XGB in S-TAIL-DA (−0.051) &amp; S-TAIL-SO (−0.109).</p>
+          </article>
+        </div>
+
+        <div class="dashboard-split-row">
+          <!-- Left: Progression v1 -> v2 -> v3 + Slope Stratification -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2>High-Flow Stage RMSE (Q_i / Q_a ≥ 2) Across Regimes (Table T11)</h2>
+                <p class="muted-sub">75,343 off-anchor stage observations · 3,282 3DEP lidar floodplains · 29,174 dynamic-n ADCP rows.</p>
+              </div>
+              <div class="filter-bar-inline">
+                <label for="ops-regime-select">Regime View:</label>
+                <select id="ops-regime-select">
+                  <option value="slope_strat">OPS-1 v3: Normal Slope (S &gt; 10⁻⁵) vs. Floored Slope (S = 10⁻⁵)</option>
+                  <option value="const_vs_dyn">OPS-1 v3: Constant n (γ = 0) vs. Dynamic n (LODO γ̂ = −0.325)</option>
+                  <option value="v1_vs_v2">OPS-1 v1 vs. v2: In-Channel Power Law vs. 3DEP Lidar Floodplain</option>
+                </select>
+              </div>
+            </div>
+
+            <svg id="ops-stage-svg" viewBox="0 0 740 300" role="img" aria-label="Operational flood-stage RMSE comparison chart"></svg>
+
+            <div tabindex="0" role="region" aria-labelledby="ops-table-cap" class="table-wrapper">
+              <table class="data-table" id="ops-stage-table">
+                <caption id="ops-table-cap">Operational high-flow stage-response RMSE (m) across v1, v2, slope regimes, and dynamic roughness</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Model</th>
+                    <th scope="col">v1 In-Channel (m)</th>
+                    <th scope="col">v2 3DEP Pooled (m)</th>
+                    <th scope="col">v2 Normal S &gt; 10⁻⁵ (79.1%)</th>
+                    <th scope="col">v2 Floored S = 10⁻⁵ (20.9%)</th>
+                    <th scope="col">v3 Dynamic-n LODO (m)</th>
+                    <th scope="col">Win Share (Geom)</th>
+                    <th scope="col">Near-Best ≤ 0.05</th>
+                  </tr>
+                </thead>
+                <tbody id="ops-stage-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: CCHE1D 1D Solver Readiness & Off-Anchor Dynamic States -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2>CCHE1D 1D Saint-Venant Readiness &amp; Off-Anchor States (Table T10)</h2>
+                <p class="muted-sub">Hydraulic radius R_0 = A_0/P_0, 99th-percentile thalweg invert shock P_99(|d̂_max − d_max|), and 31,367 off-anchor ADCP states.</p>
+              </div>
+              <div class="filter-bar-inline">
+                <label for="cche-split-select">Split:</label>
+                <select id="cche-split-select">
+                  <option value="S-ID">S-ID (In-Domain CONUS, n = 3,988)</option>
+                  <option value="S-LRO">S-LRO (Held-Out Divisions, n = 3,988)</option>
+                  <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Extrapolation, n = 678)</option>
+                  <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Tail, n = 339)</option>
+                </select>
+              </div>
+            </div>
+
+            <div tabindex="0" role="region" aria-labelledby="cche-table-cap" class="table-wrapper">
+              <table class="data-table" id="cche-table">
+                <caption id="cche-table-cap">CCHE1D 1D solver readiness metrics across validation regimes</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Model</th>
+                    <th scope="col">RMSE_log(R_0)</th>
+                    <th scope="col">RMSE_raw(R_0) (m)</th>
+                    <th scope="col">RMSE_log(Â_cons)</th>
+                    <th scope="col">RMSE_log(A_direct)</th>
+                    <th scope="col">Orig. |ε_A| &gt; 0.05 (%)</th>
+                    <th scope="col">P_99(|Δd_max|) (m)</th>
+                  </tr>
+                </thead>
+                <tbody id="cche-tbody"></tbody>
+              </table>
+            </div>
+
+            <h3 class="sub-heading">Off-Anchor Absolute ADCP States (n = 31,367 Surveys, OPS-1 v3 H-V3-3)</h3>
+            <div tabindex="0" role="region" aria-labelledby="offanchor-table-cap" class="table-wrapper">
+              <table class="data-table" id="offanchor-table">
+                <caption id="offanchor-table-cap">Dynamic off-anchor cross-section geometry accuracy at Q_i ≠ Q_a</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Model</th>
+                    <th scope="col">RMSE(ln d̄(Q_i))</th>
+                    <th scope="col">RMSE(ln d_max(Q_i))</th>
+                    <th scope="col">RMSE(ln W(Q_i))</th>
+                    <th scope="col">RMSE(ln A(Q_i))</th>
+                    <th scope="col">High-Flow Raw d_max(Q_i) (m)</th>
+                  </tr>
+                </thead>
+                <tbody id="offanchor-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 4: DATA AVAILABILITY, QA/QC CASCADE & PROVENANCE                 -->
+    <!-- ===================================================================== -->
+    <section id="view-provenance" class="workspace-view" aria-label="Data Availability, QA/QC Funnel, and Provenance Matrix" hidden>
+      <div class="dashboard-container">
+        <div class="dashboard-split-row">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2>Deterministic 14-Rule QA/QC &amp; Topological Link Funnel</h2>
+                <p class="muted-sub">From 223,022 raw USGS HYDROSWOT ADCP measurements to 3,988 analysis-ready CONUS anchor gauges and 3,282 3DEP floodplain transects.</p>
+              </div>
+            </div>
+            <div id="qc-funnel-list" class="funnel-stack"></div>
+
+            <h3 class="sub-heading">Event 1 Spatial &amp; Stream-Network Dependence Audit (S-ID)</h3>
+            <div id="event1-audit-cards" class="site-telemetry-grid"></div>
+          </div>
+
+          <div class="panel-card">
+            <div class="panel-header">
+              <div>
+                <h2>Federal &amp; Open Scientific Data Provenance Matrix</h2>
+                <p class="muted-sub">100% open-access inputs tracked via DVC cryptographic lockfiles (`dvc.lock` &amp; `ops/dvc.lock`).</p>
+              </div>
+            </div>
+            <div tabindex="0" role="region" aria-labelledby="prov-table-cap" class="table-wrapper">
+              <table class="data-table" id="prov-table">
+                <caption id="prov-table-cap">Third-party dataset provenance, persistent identifiers, sample sizes, and licensing</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Dataset</th>
+                    <th scope="col">Agency / Source</th>
+                    <th scope="col">Benchmark Role &amp; Coverage</th>
+                    <th scope="col">License</th>
+                    <th scope="col">DOI / Persistent Link</th>
+                  </tr>
+                </thead>
+                <tbody id="prov-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Native Modal Dialog for Cryptographic Scoring Ledger (Rule 1 from dialog guide) -->
+  <dialog id="ledger-dialog" closedby="any" aria-labelledby="ledger-dialog-title">
+    <div class="dialog-header">
+      <h2 id="ledger-dialog-title">Cryptographic 3-Event Scoring Ledger &amp; S-SDLC Provenance</h2>
+      <form method="dialog">
+        <button value="close" autofocus class="btn-subtle" aria-label="Close cryptographic ledger modal">Close ✕</button>
+      </form>
+    </div>
+    <div class="dialog-body">
+      <p class="muted-sub">
+        All confirmatory results are sealed in a hash-chained 7-record ledger (<code>reports/results/scoring_ledger.json</code>) with zero dirty working-tree events (<code>git_dirty: false</code>) and a 51,508-leaf Phase 8 Merkle root.
+      </p>
+      <div id="ledger-meta-pills" class="ledger-meta-pills"></div>
+      <div tabindex="0" role="region" aria-labelledby="ledger-table-cap" class="table-wrapper">
+        <table class="data-table" id="ledger-table">
+          <caption id="ledger-table-cap">Hash-chained scoring ledger events</caption>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Event</th>
+              <th scope="col">Timestamp (UTC)</th>
+              <th scope="col">Git Commit</th>
+              <th scope="col">Clean Tree</th>
+              <th scope="col">Prev Hash → Entry SHA-256</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
