@@ -39,7 +39,7 @@
     </nav>
 
     <div class="header-actions">
-      <search class="site-search">
+      <search class="site-search" id="navbar-site-search">
         <form id="site-search-form">
           <label for="site-search-input" class="sr-only">Search USGS gauge, COMID, or river</label>
           <input
@@ -83,11 +83,11 @@
           <div class="control-group">
             <label for="map-color-mode">Color Reaches By</label>
             <select id="map-color-mode">
-              <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dmax)</option>
+              <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dₘₐₓ)</option>
               <option value="win_op_dyn">Best Model: Flood Stage — Dynamic n (OPS-1 v3)</option>
               <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain, Const. n (OPS-1 v2)</option>
-              <option value="model_rmse">Single-Model Reach Error (RMSE_log or Stage m)</option>
-              <option value="slope_regime">NHDPlus Slope-Floor Regime (F_S: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
+              <option value="model_rmse">Single-Model Reach Error (RMSEₗₒ₉ or Stage m)</option>
+              <option value="slope_regime">NHDPlus Slope-Floor Regime (Fₛ: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
               <option value="data_tier">Data Availability Tier (3DEP / OPS-1 / eHydro)</option>
               <option value="latent_n">Predicted Manning Roughness n̂ (M5 Physics Layer)</option>
               <option value="latent_r">Predicted Dingman Shape Exponent r̂ (M5 Physics Layer)</option>
@@ -102,8 +102,11 @@
               <option value="M5">M5 (Hard Manning + Continuity Φ)</option>
               <option value="M1">M1 (Retrained Zarrabi et al. 2025 XGB)</option>
               <option value="M4">M4 (Soft-Constrained PINN)</option>
+              <option value="M6-NN">M6-NN (Two-Stage Back-Calculated n)</option>
+              <option value="M6-XGB">M6-XGB (Two-Stage GBDT Roughness)</option>
               <option value="M3">M3 (Physics Only — Empirical n)</option>
               <option value="M0">M0 (Regional Power Law)</option>
+              <option value="M-null">M-null (Unconditional Mean Baseline)</option>
             </select>
           </div>
 
@@ -196,7 +199,7 @@
         <!-- SVG Analytical Dingman Cross-Section & 3DEP Floodplain Plot -->
         <figure class="xs-figure">
           <div class="xs-figure-toolbar">
-            <figcaption id="xs-plot-caption">Analytical Dingman Profile z(x) = −d_max(1 − |2x/W|^r) &amp; 90% UQ Bounds</figcaption>
+            <figcaption id="xs-plot-caption">Analytical Dingman Profile z(x) = −d<sub>max</sub>(1 − |2x/W|<sup>r</sup>) &amp; 90% UQ Bounds</figcaption>
             <label class="check-label-inline">
               <input type="checkbox" id="toggle-uq-band" checked>
               <span>90% Deep-Ensemble UQ Band</span>
@@ -213,17 +216,17 @@
         <section class="routing-simulator" aria-labelledby="routing-sim-heading">
           <div class="sim-header">
             <h3 id="routing-sim-heading">Interactive Stage–Discharge Routing (OPS-1 Simulator)</h3>
-            <span id="sim-q-readout" class="sim-readout">Q / Q_a = 3.5× (High Flow)</span>
+            <span id="sim-q-readout" class="sim-readout">Q / Q<sub>a</sub> = 3.5× (High Flow)</span>
           </div>
           <div class="sim-controls">
-            <label for="sim-q-slider">Flow Ratio Q / Q_a:</label>
+            <label for="sim-q-slider">Flow Ratio Q / Q<sub>a</sub>:</label>
             <input type="range" id="sim-q-slider" min="0.4" max="10.0" step="0.1" value="3.5">
             <select id="sim-roughness-mode" aria-label="Roughness regime">
               <option value="dyn">Dynamic n ∝ Q^γ̂ (OPS-1 v3 LODO)</option>
               <option value="const">Constant n (γ = 0, OPS-1 v1/v2)</option>
             </select>
           </div>
-          <svg id="rating-svg" viewBox="0 0 680 185" role="img" aria-label="Synthetic stage-change rating curve across flow ratios"></svg>
+          <svg id="rating-svg" viewBox="0 0 680 195" role="img" aria-label="Synthetic stage-change rating curve across flow ratios"></svg>
         </section>
 
         <!-- Site Physical Covariates & Model Comparison Table -->
@@ -231,20 +234,20 @@
 
         <div tabindex="0" role="region" aria-labelledby="site-model-table-cap" class="table-wrapper compact-table-wrapper">
           <table class="data-table" id="site-model-table">
-            <caption id="site-model-table-cap">Reach-level observed vs. predicted geometry, continuity closure |ε_A|, and stage RMSE</caption>
+            <caption id="site-model-table-cap">Reach-level observed vs. predicted geometry, continuity closure |ε<sub>A</sub>|, and stage RMSE</caption>
             <thead>
               <tr>
-                <th scope="col">Model</th>
-                <th scope="col">W (m)</th>
-                <th scope="col">d̄ (m)</th>
-                <th scope="col">d_max (m)</th>
-                <th scope="col">A (m²)</th>
-                <th scope="col">r̂</th>
-                <th scope="col">n̂ / n_back</th>
-                <th scope="col">|ε_A|</th>
-                <th scope="col">Geom RMSE</th>
-                <th scope="col">Stage FP (m)</th>
-                <th scope="col">Stage Dyn (m)</th>
+                <th scope="col" class="col-text">Model</th>
+                <th scope="col" class="col-num">W (m)</th>
+                <th scope="col" class="col-num">d̄ (m)</th>
+                <th scope="col" class="col-num">d<sub>max</sub> (m)</th>
+                <th scope="col" class="col-num">A (m²)</th>
+                <th scope="col" class="col-num">r̂</th>
+                <th scope="col" class="col-num">n̂ / n<sub>back</sub></th>
+                <th scope="col" class="col-num">|ε<sub>A</sub>|</th>
+                <th scope="col" class="col-num">Geom RMSE</th>
+                <th scope="col" class="col-num">Stage FP (m)</th>
+                <th scope="col" class="col-num">Stage Dyn (m)</th>
               </tr>
             </thead>
             <tbody id="site-model-tbody"></tbody>
@@ -262,22 +265,22 @@
           <article class="kpi-card accent-teal">
             <span class="kpi-eyebrow">Event 2 Selected Baseline (M*)</span>
             <strong class="kpi-value">M2-XGB (#1) &amp; M2-MLP (#2)</strong>
-            <p class="kpi-desc">Beat retrained Zarrabi M1 across all S-ID &amp; S-LRO dimensions (S-ID d̄ RMSE_log 0.4396 &amp; 0.4520 vs. 0.4745).</p>
+            <p class="kpi-desc">Beat retrained Zarrabi M1 across all S-ID &amp; S-LRO dimensions (S-ID d̄ RMSE<sub>log</sub> <strong class="metric-em">0.4396</strong> &amp; <strong class="metric-em">0.4520</strong> vs. <strong class="metric-em">0.4745</strong>).</p>
           </article>
           <article class="kpi-card accent-orange">
             <span class="kpi-eyebrow">Pre-Registered §4.7 Verdict</span>
             <strong class="kpi-value">Row 4 Realized (H1–H4 Falsified)</strong>
-            <p class="kpi-desc">Hard Manning inversion (M5) propagates NHDPlus slope-floor &amp; Q_E errors into d̄ (+0.2502 log units on S-LRO).</p>
+            <p class="kpi-desc">Hard Manning inversion (M5) propagates NHDPlus slope-floor &amp; Q<sub>E</sub> errors into d̄ (<strong class="metric-em">+0.2502</strong> log units on S-LRO).</p>
           </article>
           <article class="kpi-card accent-navy">
             <span class="kpi-eyebrow">Independent USACE eHydro (S-IND)</span>
             <strong class="kpi-value">M5 #1 on Flow Area A (0.9495)</strong>
-            <p class="kpi-desc">Across 131 navigation surveys on 18 rivers, M5 achieves lowest Area RMSE_log (0.9495, MdAPE 44.3%) &amp; exact |ε_A| = 0.</p>
+            <p class="kpi-desc">Across 131 navigation surveys on 18 rivers, M5 achieves lowest Area RMSE<sub>log</sub> (<strong class="metric-em">0.9495</strong>, MdAPE <strong class="metric-em">44.3%</strong>) &amp; exact |ε<sub>A</sub>| = 0.</p>
           </article>
           <article class="kpi-card accent-green">
             <span class="kpi-eyebrow">Deep-Ensemble 90% UQ Calibration</span>
             <strong class="kpi-value">0.8997 (S-ID) · 0.9025 (S-LRO)</strong>
-            <p class="kpi-desc">Both M5 and M2-MLP (0.8961 / 0.8965) land squarely inside the pre-registered [0.85, 0.95] coverage band without conformal post-hoc scaling.</p>
+            <p class="kpi-desc">Both M5 and M2-MLP (<strong class="metric-em">0.8961</strong> / <strong class="metric-em">0.8965</strong>) land squarely inside the pre-registered [0.85, 0.95] coverage band without conformal post-hoc scaling.</p>
           </article>
         </div>
 
@@ -304,7 +307,8 @@
                   <option value="dbar">Mean Depth d̄ (m)</option>
                   <option value="A">Cross-Sectional Area A (m²)</option>
                   <option value="W">Wetted Top Width W (m)</option>
-                  <option value="dmax">Maximum Depth d_max (m)</option>
+                  <option value="dmax">Maximum Depth dₘₐₓ (m)</option>
+                  <option value="t">Thalweg Excess t = dₘₐₓ − d̄ (m)</option>
                 </select>
               </div>
             </div>
@@ -316,15 +320,15 @@
                 <caption id="bench-table-caption">Primary and secondary evaluation metrics for selected validation split and target</caption>
                 <thead>
                   <tr>
-                    <th scope="col">Model</th>
-                    <th scope="col">RMSE_log</th>
-                    <th scope="col">MdAPE (%)</th>
-                    <th scope="col">NSE_log</th>
-                    <th scope="col">Bias_log</th>
-                    <th scope="col">RMSE_raw</th>
-                    <th scope="col">KGE</th>
-                    <th scope="col">Median |ε_A|</th>
-                    <th scope="col">Inadmissible n (%)</th>
+                    <th scope="col" class="col-text">Model</th>
+                    <th scope="col" class="col-num">RMSE<sub>log</sub></th>
+                    <th scope="col" class="col-num">MdAPE (%)</th>
+                    <th scope="col" class="col-num">NSE<sub>log</sub></th>
+                    <th scope="col" class="col-num">Bias<sub>log</sub></th>
+                    <th scope="col" class="col-num">RMSE<sub>raw</sub></th>
+                    <th scope="col" class="col-num">KGE</th>
+                    <th scope="col" class="col-num">Median |ε<sub>A</sub>|</th>
+                    <th scope="col" class="col-num">Inadmissible n (%)</th>
                   </tr>
                 </thead>
                 <tbody id="bench-metrics-tbody"></tbody>
@@ -343,8 +347,8 @@
 
             <div id="hypotheses-cards-list" class="hypothesis-stack"></div>
 
-            <h3 class="sub-heading">Row-4 Diagnostic Ablations on Mean Depth d̄ (RMSE_log)</h3>
-            <svg id="ablation-svg" viewBox="0 0 620 260" role="img" aria-label="Ablation and sensitivity analysis comparison for M5"></svg>
+            <h3 class="sub-heading">Row-4 Diagnostic Ablations on Mean Depth d̄ (RMSE<sub>log</sub>)</h3>
+            <svg id="ablation-svg" viewBox="0 0 640 250" role="img" aria-label="Ablation and sensitivity analysis comparison for M5"></svg>
           </div>
         </div>
       </div>
@@ -359,22 +363,22 @@
           <article class="kpi-card accent-teal">
             <span class="kpi-eyebrow">H-FP1 Supported (OPS-1 v2)</span>
             <strong class="kpi-value">−0.401 m Flood-Stage RMSE Drop</strong>
-            <p class="kpi-desc">Burning predicted channels into 3,282 USGS 3DEP 10 m Lidar floodplain transects cuts high-flow stage RMSE from 1.874 m to 1.473 m (95% CI [−0.547, −0.253]).</p>
+            <p class="kpi-desc">Burning predicted channels into 3,282 USGS 3DEP 10 m Lidar floodplain transects cuts high-flow stage RMSE from <strong class="metric-em">1.874 m</strong> to <strong class="metric-em">1.473 m</strong> (95% CI <strong class="metric-em">[−0.547, −0.253]</strong>).</p>
           </article>
           <article class="kpi-card accent-green">
-            <span class="kpi-eyebrow">H-V3-1 Supported (Normal Slopes S &gt; 10⁻⁵)</span>
+            <span class="kpi-eyebrow">H-V3-1 Supported <span class="math-preserve">(Normal Slopes S &gt; 10<sup>−5</sup>)</span></span>
             <strong class="kpi-value">M4 (1.321 m) &amp; M5 (1.333 m) Win</strong>
-            <p class="kpi-desc">On the 79.1% of CONUS reaches without NHDPlus S = 10⁻⁵ clamping, physics-informed M4 &amp; M5 beat M2-XGB (1.400 m; Δ = −0.068 m) and M1 (1.572 m).</p>
+            <p class="kpi-desc">On the 79.1% of CONUS reaches without NHDPlus S = 10<sup>−5</sup> clamping, physics-informed M4 &amp; M5 beat M2-XGB (<strong class="metric-em">1.400 m</strong>; Δ = <strong class="metric-em">−0.068 m</strong>) and M1 (<strong class="metric-em">1.572 m</strong>).</p>
           </article>
           <article class="kpi-card accent-navy">
-            <span class="kpi-eyebrow">H-V3-2 Supported (Dynamic Roughness γ̂ = −0.325)</span>
+            <span class="kpi-eyebrow">H-V3-2 Supported <span class="math-preserve">(Dynamic Roughness γ̂ = −0.325)</span></span>
             <strong class="kpi-value">Oracle Bias +1.011 m → −0.065 m</strong>
-            <p class="kpi-desc">LODO dynamic resistance n ∝ Q^−0.325 eliminates constant-n rating overshoot and restores M2-MLP (1.246 m) ≈ M2-XGB (1.248 m) &gt; M1 (1.263 m) ≫ M3 (1.513 m).</p>
+            <p class="kpi-desc">LODO dynamic resistance n ∝ Q<sup>−0.325</sup> eliminates constant-n rating overshoot and restores M2-MLP (<strong class="metric-em">1.246 m</strong>) ≈ M2-XGB (<strong class="metric-em">1.248 m</strong>) &gt; M1 (<strong class="metric-em">1.263 m</strong>) ≫ M3 (<strong class="metric-em">1.513 m</strong>).</p>
           </article>
           <article class="kpi-card accent-orange">
             <span class="kpi-eyebrow">H-V3-4 Supported (CCHE1D 1D Solver Readiness)</span>
-            <strong class="kpi-value">0.0% Continuity Error + #1 R_0 (0.4289)</strong>
-            <p class="kpi-desc">Reconstructing Â_0 = Ŵ_0 d̄̂_0 eliminates M2-XGB continuity violations (49.6% → 0%), while CCHE1D-Hybrid beats standalone M2-XGB in S-TAIL-DA (−0.051) &amp; S-TAIL-SO (−0.109).</p>
+            <strong class="kpi-value">0.0% Continuity Error + #1 R<sub>0</sub> (0.4289)</strong>
+            <p class="kpi-desc">Reconstructing Â<sub>0</sub> = Ŵ<sub>0</sub> d̂<sub>mean,0</sub> eliminates M2-XGB continuity violations (<strong class="metric-em">49.6% → 0%</strong>), while CCHE1D-Hybrid beats standalone M2-XGB in S-TAIL-DA (<strong class="metric-em">−0.051</strong>) &amp; S-TAIL-SO (<strong class="metric-em">−0.109</strong>).</p>
           </article>
         </div>
 
@@ -383,7 +387,7 @@
           <div class="panel-card">
             <div class="panel-header">
               <div>
-                <h2>High-Flow Stage RMSE (Q_i / Q_a ≥ 2) Across Regimes (Table T11)</h2>
+                <h2>High-Flow Stage RMSE (Q<sub>i</sub> / Q<sub>a</sub> ≥ 2) Across Regimes (Table T11)</h2>
                 <p class="muted-sub">75,343 off-anchor stage observations · 3,282 3DEP lidar floodplains · 29,174 dynamic-n ADCP rows.</p>
               </div>
               <div class="filter-bar-inline">
@@ -403,14 +407,14 @@
                 <caption id="ops-table-cap">Operational high-flow stage-response RMSE (m) across v1, v2, slope regimes, and dynamic roughness</caption>
                 <thead>
                   <tr>
-                    <th scope="col">Model</th>
-                    <th scope="col">v1 In-Channel (m)</th>
-                    <th scope="col">v2 3DEP Pooled (m)</th>
-                    <th scope="col">v2 Normal S &gt; 10⁻⁵ (79.1%)</th>
-                    <th scope="col">v2 Floored S = 10⁻⁵ (20.9%)</th>
-                    <th scope="col">v3 Dynamic-n LODO (m)</th>
-                    <th scope="col">Win Share (Geom)</th>
-                    <th scope="col">Near-Best ≤ 0.05</th>
+                    <th scope="col" class="col-text">Model</th>
+                    <th scope="col" class="col-num">v1 In-Channel (m)</th>
+                    <th scope="col" class="col-num">v2 3DEP Pooled (m)</th>
+                    <th scope="col" class="col-num">v2 Normal S &gt; 10<sup>−5</sup> (79.1%)</th>
+                    <th scope="col" class="col-num">v2 Floored S = 10<sup>−5</sup> (20.9%)</th>
+                    <th scope="col" class="col-num">v3 Dynamic-n LODO (m)</th>
+                    <th scope="col" class="col-num">Win Share (Geom)</th>
+                    <th scope="col" class="col-num">Near-Best ≤ 0.05</th>
                   </tr>
                 </thead>
                 <tbody id="ops-stage-tbody"></tbody>
@@ -423,7 +427,7 @@
             <div class="panel-header">
               <div>
                 <h2>CCHE1D 1D Saint-Venant Readiness &amp; Off-Anchor States (Table T10)</h2>
-                <p class="muted-sub">Hydraulic radius R_0 = A_0/P_0, 99th-percentile thalweg invert shock P_99(|d̂_max − d_max|), and 31,367 off-anchor ADCP states.</p>
+                <p class="muted-sub">Hydraulic radius R<sub>0</sub> = A<sub>0</sub> / P<sub>0</sub>, 99th-percentile thalweg invert shock P<sub>99</sub>(|d̂<sub>max</sub> − d<sub>max</sub>|), and 31,367 off-anchor ADCP states.</p>
               </div>
               <div class="filter-bar-inline">
                 <label for="cche-split-select">Split:</label>
@@ -441,13 +445,13 @@
                 <caption id="cche-table-cap">CCHE1D 1D solver readiness metrics across validation regimes</caption>
                 <thead>
                   <tr>
-                    <th scope="col">Model</th>
-                    <th scope="col">RMSE_log(R_0)</th>
-                    <th scope="col">RMSE_raw(R_0) (m)</th>
-                    <th scope="col">RMSE_log(Â_cons)</th>
-                    <th scope="col">RMSE_log(A_direct)</th>
-                    <th scope="col">Orig. |ε_A| &gt; 0.05 (%)</th>
-                    <th scope="col">P_99(|Δd_max|) (m)</th>
+                    <th scope="col" class="col-text">Model</th>
+                    <th scope="col" class="col-num">RMSE<sub>log</sub>(R<sub>0</sub>)</th>
+                    <th scope="col" class="col-num">RMSE<sub>raw</sub>(R<sub>0</sub>) (m)</th>
+                    <th scope="col" class="col-num">RMSE<sub>log</sub>(Â<sub>cons</sub>)</th>
+                    <th scope="col" class="col-num">RMSE<sub>log</sub>(A<sub>direct</sub>)</th>
+                    <th scope="col" class="col-num">Orig. |ε<sub>A</sub>| &gt; 0.05 (%)</th>
+                    <th scope="col" class="col-num">P<sub>99</sub>(|Δd<sub>max</sub>|) (m)</th>
                   </tr>
                 </thead>
                 <tbody id="cche-tbody"></tbody>
@@ -457,15 +461,15 @@
             <h3 class="sub-heading">Off-Anchor Absolute ADCP States (n = 31,367 Surveys, OPS-1 v3 H-V3-3)</h3>
             <div tabindex="0" role="region" aria-labelledby="offanchor-table-cap" class="table-wrapper">
               <table class="data-table" id="offanchor-table">
-                <caption id="offanchor-table-cap">Dynamic off-anchor cross-section geometry accuracy at Q_i ≠ Q_a</caption>
+                <caption id="offanchor-table-cap">Dynamic off-anchor cross-section geometry accuracy at Q<sub>i</sub> ≠ Q<sub>a</sub></caption>
                 <thead>
                   <tr>
-                    <th scope="col">Model</th>
-                    <th scope="col">RMSE(ln d̄(Q_i))</th>
-                    <th scope="col">RMSE(ln d_max(Q_i))</th>
-                    <th scope="col">RMSE(ln W(Q_i))</th>
-                    <th scope="col">RMSE(ln A(Q_i))</th>
-                    <th scope="col">High-Flow Raw d_max(Q_i) (m)</th>
+                    <th scope="col" class="col-text">Model</th>
+                    <th scope="col" class="col-num">RMSE(ln d̄(Q<sub>i</sub>))</th>
+                    <th scope="col" class="col-num">RMSE(ln d<sub>max</sub>(Q<sub>i</sub>))</th>
+                    <th scope="col" class="col-num">RMSE(ln W(Q<sub>i</sub>))</th>
+                    <th scope="col" class="col-num">RMSE(ln A(Q<sub>i</sub>))</th>
+                    <th scope="col" class="col-num">High-Flow Raw d<sub>max</sub>(Q<sub>i</sub>) (m)</th>
                   </tr>
                 </thead>
                 <tbody id="offanchor-tbody"></tbody>
@@ -499,7 +503,7 @@
             <div class="panel-header">
               <div>
                 <h2>Federal &amp; Open Scientific Data Provenance Matrix</h2>
-                <p class="muted-sub">100% open-access inputs tracked via DVC cryptographic lockfiles (`dvc.lock` &amp; `ops/dvc.lock`).</p>
+                <p class="muted-sub">100% open-access inputs tracked via DVC cryptographic lockfiles (<code>dvc.lock</code> &amp; <code>ops/dvc.lock</code>).</p>
               </div>
             </div>
             <div tabindex="0" role="region" aria-labelledby="prov-table-cap" class="table-wrapper">
@@ -507,11 +511,11 @@
                 <caption id="prov-table-cap">Third-party dataset provenance, persistent identifiers, sample sizes, and licensing</caption>
                 <thead>
                   <tr>
-                    <th scope="col">Dataset</th>
-                    <th scope="col">Agency / Source</th>
-                    <th scope="col">Benchmark Role &amp; Coverage</th>
-                    <th scope="col">License</th>
-                    <th scope="col">DOI / Persistent Link</th>
+                    <th scope="col" class="col-text">Dataset</th>
+                    <th scope="col" class="col-text">Agency / Source</th>
+                    <th scope="col" class="col-text">Benchmark Role &amp; Coverage</th>
+                    <th scope="col" class="col-text">License</th>
+                    <th scope="col" class="col-text">DOI / Persistent Link</th>
                   </tr>
                 </thead>
                 <tbody id="prov-tbody"></tbody>
@@ -541,12 +545,12 @@
           <caption id="ledger-table-cap">Hash-chained scoring ledger events</caption>
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">Event</th>
-              <th scope="col">Timestamp (UTC)</th>
-              <th scope="col">Git Commit</th>
-              <th scope="col">Clean Tree</th>
-              <th scope="col">Prev Hash → Entry SHA-256</th>
+              <th scope="col" class="col-text">#</th>
+              <th scope="col" class="col-text">Event</th>
+              <th scope="col" class="col-text">Timestamp (UTC)</th>
+              <th scope="col" class="col-text">Git Commit</th>
+              <th scope="col" class="col-text">Clean Tree</th>
+              <th scope="col" class="col-text">Prev Hash → Entry SHA-256</th>
             </tr>
           </thead>
           <tbody id="ledger-tbody"></tbody>

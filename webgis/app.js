@@ -22,11 +22,11 @@ const MODEL_COLORS = {
   "M6-NN": "#8B5CF6",
   "M6-XGB": "#EC4899",
   "A_J": "#14B8A6",
-  "Oracle": "#111827",
+  "Oracle": "#38BDF8",
   "CCHE1D-Hybrid": "#0F7C80",
 };
 
-const HEADLINE_MODELS = ["M2-XGB", "M2-MLP", "M1", "M5", "M4", "M3", "M0"];
+const HEADLINE_MODELS = ["M2-XGB", "M2-MLP", "M1", "M5", "M4", "M6-NN", "M6-XGB", "M3", "M0", "M-null"];
 const ALL_TEN_MODELS = ["M-null", "M0", "M1", "M2-MLP", "M2-XGB", "M3", "M4", "M5", "M6-NN", "M6-XGB"];
 
 const BASEMAP_STYLES = {
@@ -57,6 +57,8 @@ const state = {
   selectedIsEhydro: false,
   xsSplit: "sid",
   activeModels: new Set(["M2-XGB", "M2-MLP", "M5", "M1"]),
+  autoWinnerModel: null,
+  prevAutoAddedWinner: null,
   showUqBand: true,
   show3depInset: true,
   simQRatio: 3.5,
@@ -75,6 +77,38 @@ const state = {
 function fmt(val, digits = 3, fallback = "—") {
   if (val === null || val === undefined || Number.isNaN(Number(val))) return fallback;
   return Number(val).toFixed(digits);
+}
+
+function fmtUnit(val, digits = 2, unit = "", fallback = "—") {
+  if (val === null || val === undefined || Number.isNaN(Number(val))) return fallback;
+  return `${Number(val).toFixed(digits)}${unit}`;
+}
+
+function isDarkMode() {
+  const meta = typeof document !== "undefined" ? document.querySelector('meta[name="color-scheme"]') : null;
+  if (meta && meta.content === "dark") return true;
+  if (meta && meta.content === "light") return false;
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+}
+
+let _measureCtx = null;
+function measureSvgTextWidth(text, font = "700 10.5px -apple-system, BlinkMacSystemFont, sans-serif") {
+  try {
+    if (!_measureCtx && typeof document !== "undefined") {
+      const c = document.createElement("canvas");
+      _measureCtx = c.getContext("2d");
+    }
+    if (_measureCtx) {
+      _measureCtx.font = font;
+      const m = _measureCtx.measureText(String(text));
+      if (m && m.width > 0) return m.width;
+    }
+  } catch (_) {}
+  return String(text).length * 6.4;
 }
 
 function svgEl(tag, attrs = {}, text = null) {
@@ -159,11 +193,28 @@ function setupThemeToggle() {
     } catch (_) {
       meta.content = target === sysPref ? "light dark" : target;
     }
+    if (state.selectedSite) {
+      renderXsPlot();
+      renderRatingSimulator();
+    }
   });
+
+  if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (state.selectedSite) {
+        renderXsPlot();
+        renderRatingSimulator();
+      }
+    });
+  }
 
   window.addEventListener("storage", (e) => {
     if (e.key === "color-scheme") {
       meta.content = e.newValue ?? "light dark";
+      if (state.selectedSite) {
+        renderXsPlot();
+        renderRatingSimulator();
+      }
     }
   });
 }
@@ -198,6 +249,7 @@ function setupDialogFallbacks() {
 
 function setupNavigation() {
   const tabs = document.querySelectorAll(".nav-tab");
+  const searchBar = document.getElementById("navbar-site-search");
   const views = {
     map: document.getElementById("view-map"),
     geometry: document.getElementById("view-geometry"),
@@ -222,6 +274,9 @@ function setupNavigation() {
           el.setAttribute("hidden", "");
           el.classList.remove("is-active");
         }
+      }
+      if (searchBar) {
+        searchBar.classList.toggle("is-hidden", target !== "map");
       }
       if (target === "map" && state.map) {
         setTimeout(() => state.map.resize(), 60);
@@ -261,20 +316,29 @@ function populateFiltersAndSearch() {
 
   const form = document.getElementById("site-search-form");
   const input = document.getElementById("site-search-input");
+  const activateMapTab = () => {
+    const mapTab = document.querySelector('.nav-tab[data-view="map"]');
+    if (mapTab && !mapTab.classList.contains("is-active")) {
+      mapTab.click();
+    }
+  };
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const q = input.value.trim();
     if (!q) return;
     if (state.siteById.has(q)) {
+      activateMapTab();
       selectReach(q, false, true);
       return;
     }
     if (state.ehydroById.has(q)) {
+      activateMapTab();
       selectReach(q, true, true);
       return;
     }
     const byComid = state.conus.sites.find((s) => String(s.c) === q);
     if (byComid) {
+      activateMapTab();
       selectReach(byComid.id, false, true);
       return;
     }
@@ -282,6 +346,7 @@ function populateFiltersAndSearch() {
       (l) => l.river.toLowerCase().includes(q.toLowerCase()) || l.id.toLowerCase().includes(q.toLowerCase())
     );
     if (byRiver) {
+      activateMapTab();
       selectReach(byRiver.id, true, true);
     }
   });
@@ -444,25 +509,25 @@ function updateMapLegend() {
       win_op_fp: "Reach Winner: Flood Stage 3DEP Const. n (OPS-1 v2)",
     };
     title = labelMap[mode];
-    items = ["M2-XGB", "M2-MLP", "M1", "M5", "M4", "M3", "M0", "M-null"].map((m) => ({
+    items = ["M2-XGB", "M2-MLP", "M1", "M5", "M4", "M6-NN", "M6-XGB", "M3", "M0", "M-null"].map((m) => ({
       label: m,
       color: MODEL_COLORS[m],
     }));
     if (state.decisiveOnly) {
-      items.push({ label: "Tie (≤ margin)", color: "#94A3B8" });
+      items.push({ label: "Tie (≤ margin)", color: "#94A3B8", wide: true });
     }
   } else if (mode === "slope_regime") {
-    title = "NHDPlusV2.1 Slope-Floor Regime (F_S)";
+    title = "NHDPlusV2.1 Slope-Floor Regime (F<sub>S</sub>)";
     items = [
-      { label: "Normal S > 10⁻⁵ (79.1% · M4/M5 win)", color: "#0F7C80" },
-      { label: "Floored S = 10⁻⁵ (20.9% · Clamped)", color: "#D55E00" },
+      { label: "Normal S > 10<sup>−5</sup> (79.1% · M4/M5 win)", color: "#0F7C80", wide: true },
+      { label: "Floored S = 10<sup>−5</sup> (20.9% · Clamped)", color: "#D55E00", wide: true },
     ];
   } else if (mode === "data_tier") {
     title = "Reach Data Availability Tier";
     items = [
-      { label: "3DEP Lidar + Stage (n = 3,282)", color: "#0F7C80" },
-      { label: "OPS-1 Multi-Stage (n = 3,643)", color: "#0072B2" },
-      { label: "Anchor ADCP Only (n = 345)", color: "#94A3B8" },
+      { label: "3DEP Lidar + Stage (n = 3,282)", color: "#0F7C80", wide: true },
+      { label: "OPS-1 Multi-Stage (n = 3,643)", color: "#0072B2", wide: true },
+      { label: "Anchor ADCP Only (n = 345)", color: "#94A3B8", wide: true },
     ];
   } else if (mode === "latent_n") {
     title = "M5 Predicted Manning Roughness n̂";
@@ -481,7 +546,7 @@ function updateMapLegend() {
       { label: "r̂ > 2.5 (Wide/Flat)", color: "#E69F00" },
     ];
   } else if (mode === "model_rmse") {
-    title = `${state.singleModel} Anchor Geometry RMSE_log`;
+    title = `${state.singleModel} Anchor Geometry RMSE<sub>log</sub>`;
     items = [
       { label: "< 0.25 (Excellent)", color: "#1B7F3B" },
       { label: "0.25 – 0.45", color: "#0F7C80" },
@@ -491,7 +556,7 @@ function updateMapLegend() {
   }
 
   if (state.showEhydro) {
-    items.push({ label: "USACE eHydro S-IND (◆)", color: "#D55E00", triangle: true });
+    items.push({ label: "USACE eHydro S-IND (◆)", color: "#D55E00", triangle: true, wide: true });
   }
 
   legend.innerHTML = `
@@ -500,7 +565,7 @@ function updateMapLegend() {
       ${items
         .map(
           (it) => `
-        <div class="legend-item">
+        <div class="legend-item ${it.wide ? "is-wide" : ""}">
           <span class="legend-swatch ${it.triangle ? "is-triangle" : ""}" style="background-color:${it.color}"></span>
           <span>${it.label}</span>
         </div>`
@@ -751,21 +816,39 @@ function updateSelectedMapHighlight() {
    5. Predicted Cross-Section (XS) & Stage-Discharge Routing Inspector
    ========================================================================== */
 
+function syncModelChipStates() {
+  const chipBar = document.getElementById("xs-model-toggles");
+  if (!chipBar) return;
+  for (const btn of chipBar.querySelectorAll(".model-chip")) {
+    const m = btn.dataset.model;
+    const isActive = state.activeModels.has(m);
+    const isWin = m === state.autoWinnerModel;
+    btn.classList.toggle("is-active", isActive);
+    btn.classList.toggle("is-winner", isWin);
+    const lbl = btn.querySelector(".chip-label");
+    if (lbl) lbl.textContent = isWin ? `${m} ★` : m;
+  }
+}
+
 function setupXsControls() {
   const chipBar = document.getElementById("xs-model-toggles");
   for (const m of HEADLINE_MODELS) {
     const btn = document.createElement("button");
     btn.type = "button";
+    btn.dataset.model = m;
     btn.className = `model-chip ${state.activeModels.has(m) ? "is-active" : ""}`;
     btn.style.setProperty("--chip-color", MODEL_COLORS[m]);
-    btn.innerHTML = `<span class="chip-dot"></span><span>${m}</span>`;
+    btn.innerHTML = `<span class="chip-dot"></span><span class="chip-label">${m}</span>`;
     btn.addEventListener("click", () => {
       if (state.activeModels.has(m)) {
-        if (state.activeModels.size > 1) state.activeModels.delete(m);
+        if (state.activeModels.size > 1) {
+          state.activeModels.delete(m);
+          if (state.prevAutoAddedWinner === m) state.prevAutoAddedWinner = null;
+        }
       } else {
         state.activeModels.add(m);
       }
-      btn.classList.toggle("is-active", state.activeModels.has(m));
+      syncModelChipStates();
       renderXsInspector();
     });
     chipBar.appendChild(btn);
@@ -818,6 +901,19 @@ function selectReach(id, isEhydro = false, fly = false) {
   if (!site) return;
   state.selectedSite = site;
   state.selectedIsEhydro = isEhydro;
+
+  // Ensure the reach's Geom Winner is automatically plotted and highlighted in the toggle bar
+  if (state.prevAutoAddedWinner) {
+    state.activeModels.delete(state.prevAutoAddedWinner);
+    state.prevAutoAddedWinner = null;
+  }
+  const winGeom = !isEhydro && site.w && site.w[0] ? site.w[0][0] : site.best_area_model || null;
+  state.autoWinnerModel = winGeom;
+  if (winGeom && HEADLINE_MODELS.includes(winGeom) && !state.activeModels.has(winGeom)) {
+    state.activeModels.add(winGeom);
+    state.prevAutoAddedWinner = winGeom;
+  }
+  syncModelChipStates();
   updateSelectedMapHighlight();
 
   if (fly && state.map) {
@@ -860,7 +956,7 @@ function renderXsInspector() {
     subEl.textContent = `${s.d} · Stream Order ${s.so} · Drainage Area ${Number(s.da).toLocaleString()} km² · (${s.la}°, ${s.lo}°)`;
     const slopeBadge =
       s.fs === 1
-        ? `<span class="badge-pill is-warn" title="NHDPlusV2.1 slope clamped at S = 10⁻⁵">Floored Slope S = 10⁻⁵ (F_S=1)</span>`
+        ? `<span class="badge-pill is-warn" title="NHDPlusV2.1 slope clamped at S = 10⁻⁵">Floored Slope S = 10<sup>−5</sup> (F<sub>S</sub>=1)</span>`
         : `<span class="badge-pill is-good">Normal Slope S = ${s.s}</span>`;
     const fpBadge = s.fp
       ? `<span class="badge-pill is-good">3DEP Lidar Transect (${s.fp[0]} m)</span>`
@@ -869,16 +965,16 @@ function renderXsInspector() {
     badgesEl.innerHTML = `${slopeBadge}${fpBadge}<span class="badge-pill">${winGeom}</span>`;
   }
 
-  // Telemetry boxes
+  // Telemetry boxes (2×4 consistent grid)
   const covEl = document.getElementById("site-covariate-cards");
   const [wObs, dbarObs, dmaxObs, aObs, vObs, rObs] = s.obs;
   covEl.innerHTML = `
     <div class="telemetry-box"><span>Obs Width W</span><strong>${fmt(wObs, 1)} m</strong></div>
     <div class="telemetry-box"><span>Obs Mean d̄</span><strong>${fmt(dbarObs, 2)} m</strong></div>
-    <div class="telemetry-box"><span>Obs Max d_max</span><strong>${fmt(dmaxObs, 2)} m</strong></div>
+    <div class="telemetry-box"><span>Obs Max d<sub>max</sub></span><strong>${fmt(dmaxObs, 2)} m</strong></div>
     <div class="telemetry-box"><span>Obs Area A</span><strong>${fmt(aObs, 1)} m²</strong></div>
-    <div class="telemetry-box"><span>EROM Q_E / V_E</span><strong>${fmt(isEh ? s.qe : s.qe, 1)} m³/s · ${fmt(isEh ? s.ve : s.ve, 2)} m/s</strong></div>
-    <div class="telemetry-box"><span>Bed D₅₀ / Aridity</span><strong>${fmt(s.d50, 1)} mm · AI ${fmt(s.ai, 2)}</strong></div>
+    <div class="telemetry-box"><span>EROM Q<sub>E</sub> / V<sub>E</sub></span><strong>${fmt(s.qe, 1)} m³/s · ${fmt(s.ve, 2)} m/s</strong></div>
+    <div class="telemetry-box"><span>Bed D<sub>50</sub> / Aridity</span><strong>${fmt(s.d50, 1)} mm · AI ${fmt(s.ai, 2)}</strong></div>
     <div class="telemetry-box"><span>ADCP / Stage Obs</span><strong>${isEh ? "USACE Bathy" : `${s.ns} ADCP · ${s.nh} Flood`}</strong></div>
     <div class="telemetry-box"><span>Obs Shape r / V</span><strong>r = ${fmt(rObs, 2)} · ${vObs ? `${fmt(vObs, 2)} m/s` : "—"}</strong></div>
   `;
@@ -896,10 +992,11 @@ function renderXsPlot() {
 
   const isEh = state.selectedIsEhydro;
   const [wObs, dbarObs, dmaxObs, , , rObs] = s.obs;
+  const obsColor = isDarkMode() ? "#f8fafc" : "#0f172a";
 
   // Gather active models + Observed to determine scales
   const profiles = [
-    { name: "Observed", W: wObs, dbar: dbarObs, dmax: dmaxObs, r: rObs || 2.0, color: "#0f172a", dashed: false, lw: 2.8 },
+    { name: "Observed", W: wObs, dbar: dbarObs, dmax: dmaxObs, r: rObs || 2.0, color: obsColor, dashed: false, lw: 2.8 },
   ];
 
   for (const m of HEADLINE_MODELS) {
@@ -914,7 +1011,7 @@ function renderXsPlot() {
       A: entry[3],
       r: entry[4] || 2.0,
       n: entry[5],
-      uq: entry.length >= 10 ? { wLo: entry[6], wHi: entry[7], dLo: entry[8], dHi: entry[9] } : null,
+      uq: entry.length >= 10 && entry[6] !== null ? { wLo: entry[6], wHi: entry[7], dLo: entry[8], dHi: entry[9] } : null,
       color: MODEL_COLORS[m],
       dashed: m !== "M5" && m !== "M2-XGB",
       lw: m === "M5" || m === "M2-XGB" ? 2.3 : 1.7,
@@ -924,7 +1021,7 @@ function renderXsPlot() {
   const maxW = Math.max(...profiles.map((p) => (p.uq ? Math.max(p.W, p.uq.wHi * 0.85) : p.W))) * 1.12;
   const maxD = Math.max(...profiles.map((p) => (p.uq ? Math.max(p.dmax, p.uq.dHi * 1.25) : p.dmax))) * 1.18;
 
-  const pad = { l: 54, r: 22, t: 24, b: 38 };
+  const pad = { l: 58, r: 22, t: 30, b: 38 };
   const W_px = 680 - pad.l - pad.r;
   const H_px = 310 - pad.t - pad.b;
 
@@ -992,6 +1089,21 @@ function renderXsPlot() {
       "Lateral Distance from Channel Centerline x (m)"
     )
   );
+  svg.appendChild(
+    svgEl(
+      "text",
+      {
+        x: 13,
+        y: pad.t + H_px / 2,
+        "text-anchor": "middle",
+        fill: "#64748b",
+        "font-size": "11",
+        "font-weight": "600",
+        transform: `rotate(-90 13 ${pad.t + H_px / 2})`,
+      },
+      "Channel Depth z (m)"
+    )
+  );
 
   // Water Surface Line (z = 0)
   svg.appendChild(
@@ -1056,25 +1168,33 @@ function renderXsPlot() {
     );
   }
 
-  // Legend inside SVG top-left
-  let legX = pad.l + 8;
+  // Legend inside SVG top-left with measured text widths and 18px inter-item spacing
+  let legX = pad.l + 4;
+  let legY = 12;
+  const maxLegX = pad.l + W_px - 6;
   for (const p of profiles) {
+    const labelText = p.name === "Observed" ? `Obs (W=${fmt(p.W, 0)}m, d̄=${fmt(p.dbar, 2)}m)` : p.name;
+    const textW = measureSvgTextWidth(labelText);
+    const itemW = 22 + textW + 18;
+    if (legX > pad.l + 4 && legX + 22 + textW > maxLegX) {
+      legX = pad.l + 4;
+      legY += 14;
+    }
     svg.appendChild(
       svgEl("line", {
         x1: legX,
-        y1: 13,
+        y1: legY,
         x2: legX + 18,
-        y2: 13,
+        y2: legY,
         stroke: p.color,
         "stroke-width": 2.4,
         "stroke-dasharray": p.dashed ? "4,2" : "none",
       })
     );
-    const labelText = p.name === "Observed" ? `Obs (W=${fmt(p.W, 0)}m, d̄=${fmt(p.dbar, 2)}m)` : p.name;
     svg.appendChild(
-      svgEl("text", { x: legX + 22, y: 17, fill: p.color, "font-size": "10.5", "font-weight": "700" }, labelText)
+      svgEl("text", { x: legX + 22, y: legY + 3.5, fill: p.color, "font-size": "10.5", "font-weight": "700" }, labelText)
     );
-    legX += p.name === "Observed" ? 168 : 66;
+    legX += itemW;
   }
 
   // Optional 3DEP Lidar Valley Transect Inset (top-right corner of XS SVG)
@@ -1143,22 +1263,24 @@ function renderRatingSimulator() {
   const s = state.selectedSite;
   if (!svg || !s) return;
   svg.innerHTML = "";
+  svg.setAttribute("viewBox", "0 0 680 198");
 
   const isEh = state.selectedIsEhydro;
   const gammaMap = state.benchmarks.operational.ops3_diagnostics.dynamic_roughness.gamma_lodo_by_division || {};
   const divGamma = gammaMap[s.d || s.div] ?? -0.3246;
   const gamma = state.simRoughnessMode === "dyn" ? divGamma : 0.0;
+  const oracleColor = isDarkMode() ? "#f8fafc" : "#0f172a";
 
-  const [wObs, dbarObs, dmaxObs, , , rObs] = s.obs;
+  const [, , dmaxObs, , , rObs] = s.obs;
   const dhOracle = computeDingmanStageRise(dmaxObs, rObs || 2.0, state.simQRatio, gamma);
-  readout.textContent = `Q / Q_a = ${state.simQRatio.toFixed(1)}× · ${
-    state.simRoughnessMode === "dyn" ? `γ̂ = ${divGamma.toFixed(3)}` : "γ = 0 (Const. n)"
+  readout.innerHTML = `Q / Q<sub>a</sub> = ${state.simQRatio.toFixed(1)}× · ${
+    state.simRoughnessMode === "dyn" ? `<span class="math-preserve">γ̂</span> = ${divGamma.toFixed(3)}` : "γ = 0 (Const. n)"
   } · Oracle Δh = ${dhOracle >= 0 ? "+" : ""}${dhOracle.toFixed(2)} m`;
 
   const curves = [
-    { name: "Oracle (Obs Anchor)", dmax0: dmaxObs, r: rObs || 2.0, color: "#0f172a", dashed: false, lw: 2.5 },
+    { name: "Oracle (Obs Anchor)", dmax0: dmaxObs, r: rObs || 2.0, color: oracleColor, dashed: false, lw: 2.5 },
   ];
-  for (const m of ["M2-XGB", "M2-MLP", "M5", "M3", "M1"]) {
+  for (const m of HEADLINE_MODELS) {
     if (!state.activeModels.has(m) && m !== "M3") continue;
     const entry = getSiteModelEntry(s, isEh, m);
     if (!entry) continue;
@@ -1181,9 +1303,9 @@ function renderRatingSimulator() {
   }
   maxDh *= 1.1;
 
-  const pad = { l: 50, r: 20, t: 16, b: 30 };
+  const pad = { l: 56, r: 20, t: 14, b: 38 };
   const W_px = 680 - pad.l - pad.r;
-  const H_px = 185 - pad.t - pad.b;
+  const H_px = 198 - pad.t - pad.b;
 
   const qToX = (q) => pad.l + ((q - 0.4) / (qMax - 0.4)) * W_px;
   const dhToY = (dh) => pad.t + H_px - ((dh - minDh) / (maxDh - minDh)) * H_px;
@@ -1232,9 +1354,33 @@ function renderRatingSimulator() {
   for (const qTick of [1, 2, 4, 6, 8, 10]) {
     const x = qToX(qTick);
     svg.appendChild(
-      svgEl("text", { x, y: pad.t + H_px + 14, "text-anchor": "middle", fill: "#64748b", "font-size": "10" }, `${qTick}×`)
+      svgEl("text", { x, y: pad.t + H_px + 13, "text-anchor": "middle", fill: "#64748b", "font-size": "10" }, `${qTick}×`)
     );
   }
+
+  // Explicit X-axis and Y-axis titles
+  svg.appendChild(
+    svgEl(
+      "text",
+      { x: pad.l + W_px / 2, y: 192, "text-anchor": "middle", fill: "#64748b", "font-size": "10.5", "font-weight": "600" },
+      "Flow Ratio Q / Qₐ"
+    )
+  );
+  svg.appendChild(
+    svgEl(
+      "text",
+      {
+        x: 13,
+        y: pad.t + H_px / 2,
+        "text-anchor": "middle",
+        fill: "#64748b",
+        "font-size": "10.5",
+        "font-weight": "600",
+        transform: `rotate(-90 13 ${pad.t + H_px / 2})`,
+      },
+      "Stage Change Δh (m)"
+    )
+  );
 
   // Draw curves
   for (const c of curves) {
@@ -1274,17 +1420,17 @@ function renderSiteModelTable() {
 
   const rowsHtml = [
     `<tr class="is-best-row">
-      <th scope="row">Observed (ADCP)</th>
-      <td data-label="W (m)">${fmt(wObs, 2)}</td>
-      <td data-label="d̄ (m)">${fmt(dbarObs, 3)}</td>
-      <td data-label="d_max (m)">${fmt(dmaxObs, 3)}</td>
-      <td data-label="A (m²)">${fmt(aObs, 2)}</td>
-      <td data-label="r̂">${fmt(rObs, 2)}</td>
-      <td data-label="n̂ / n_back">—</td>
-      <td data-label="|ε_A|">${fmt(epsObs, 4)}</td>
-      <td data-label="Geom RMSE">0.000</td>
-      <td data-label="Stage FP (m)">—</td>
-      <td data-label="Stage Dyn (m)">—</td>
+      <th scope="row" class="col-text">Observed (ADCP)</th>
+      <td class="col-num" data-label="W (m)">${fmt(wObs, 2)}</td>
+      <td class="col-num" data-label="d̄ (m)">${fmt(dbarObs, 3)}</td>
+      <td class="col-num" data-label="dmax (m)">${fmt(dmaxObs, 3)}</td>
+      <td class="col-num" data-label="A (m²)">${fmt(aObs, 2)}</td>
+      <td class="col-num" data-label="r̂">${fmt(rObs, 2)}</td>
+      <td class="col-num" data-label="n̂ / n_back">—</td>
+      <td class="col-num" data-label="|ε_A|">${fmt(epsObs, 4)}</td>
+      <td class="col-num" data-label="Geom RMSE">0.000</td>
+      <td class="col-num" data-label="Stage FP (m)">—</td>
+      <td class="col-num" data-label="Stage Dyn (m)">—</td>
     </tr>`,
   ];
 
@@ -1302,17 +1448,17 @@ function renderSiteModelTable() {
 
     rowsHtml.push(`
       <tr class="${m === winGeom ? "is-best-row" : ""}">
-        <th scope="row"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[m]};display:inline-block;margin-inline-end:5px;"></span>${m}${m === winGeom ? " ★" : ""}</th>
-        <td data-label="W (m)">${fmt(W, 2)}</td>
-        <td data-label="d̄ (m)">${fmt(dbar, 3)}</td>
-        <td data-label="d_max (m)">${fmt(dmax, 3)}</td>
-        <td data-label="A (m²)">${fmt(A, 2)}</td>
-        <td data-label="r̂">${fmt(rHat, 2)}</td>
-        <td data-label="n̂ / n_back">${fmt(nHat, 4)}</td>
-        <td data-label="|ε_A|">${m === "M5" || m === "M3" ? "0.0000" : fmt(epsA, 4)}</td>
-        <td data-label="Geom RMSE">${fmt(rmGeom, 3)}</td>
-        <td data-label="Stage FP (m)">${fmt(rmFp, 2)}</td>
-        <td data-label="Stage Dyn (m)">${fmt(rmDyn, 2)}</td>
+        <th scope="row" class="col-text"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[m]};display:inline-block;margin-inline-end:5px;"></span>${m}${m === winGeom ? " ★" : ""}</th>
+        <td class="col-num" data-label="W (m)">${fmt(W, 2)}</td>
+        <td class="col-num" data-label="d̄ (m)">${fmt(dbar, 3)}</td>
+        <td class="col-num" data-label="dmax (m)">${fmt(dmax, 3)}</td>
+        <td class="col-num" data-label="A (m²)">${fmt(A, 2)}</td>
+        <td class="col-num" data-label="r̂">${fmt(rHat, 2)}</td>
+        <td class="col-num" data-label="n̂ / n_back">${fmt(nHat, 4)}</td>
+        <td class="col-num" data-label="|ε_A|">${m === "M5" || m === "M3" ? "0.0000" : fmt(epsA, 4)}</td>
+        <td class="col-num" data-label="Geom RMSE">${fmt(rmGeom, 3)}</td>
+        <td class="col-num" data-label="Stage FP (m)">${fmt(rmFp, 2)}</td>
+        <td class="col-num" data-label="Stage Dyn (m)">${fmt(rmDyn, 2)}</td>
       </tr>
     `);
   }
@@ -1361,25 +1507,25 @@ function renderBenchmarkChartAndTable(split, target) {
           : null;
       return `
         <tr class="${idx === 0 ? "is-best-row" : ""}">
-          <th scope="row"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[m] || "#64748b"};display:inline-block;margin-inline-end:6px;"></span>${m}${idx === 0 ? " ★" : ""}</th>
-          <td data-label="RMSE_log">${fmt(mt.rmse_log, 4)}</td>
-          <td data-label="MdAPE (%)">${fmt(mt.mdape, 2)}</td>
-          <td data-label="NSE_log">${fmt(mt.nse_log, 4)}</td>
-          <td data-label="Bias_log">${fmt(mt.bias_log, 4)}</td>
-          <td data-label="RMSE_raw">${fmt(mt.rmse_raw, 2)}</td>
-          <td data-label="KGE">${fmt(mt.kge, 3)}</td>
-          <td data-label="Median |ε_A|">${epsMed === 0 ? "0.0000" : fmt(epsMed, 4)}</td>
-          <td data-label="Inadmissible n (%)">${inadN !== null ? `${fmt(inadN, 2)}%` : "—"}</td>
+          <th scope="row" class="col-text"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[m] || "#64748b"};display:inline-block;margin-inline-end:6px;"></span>${m}${idx === 0 ? " ★" : ""}</th>
+          <td class="col-num" data-label="RMSE_log">${fmt(mt.rmse_log, 4)}</td>
+          <td class="col-num" data-label="MdAPE (%)">${fmt(mt.mdape, 2)}</td>
+          <td class="col-num" data-label="NSE_log">${fmt(mt.nse_log, 4)}</td>
+          <td class="col-num" data-label="Bias_log">${fmt(mt.bias_log, 4)}</td>
+          <td class="col-num" data-label="RMSE_raw">${fmt(mt.rmse_raw, 2)}</td>
+          <td class="col-num" data-label="KGE">${fmt(mt.kge, 3)}</td>
+          <td class="col-num" data-label="Median |ε_A|">${epsMed === 0 ? "0.0000" : fmt(epsMed, 4)}</td>
+          <td class="col-num" data-label="Inadmissible n (%)">${inadN !== null ? `${fmt(inadN, 2)}%` : "—"}</td>
         </tr>
       `;
     })
     .join("");
 
-  // Render SVG horizontal comparison bars
+  // Render SVG horizontal comparison bars scaled relative to max(values)
   const svg = document.getElementById("bench-bar-svg");
   svg.innerHTML = "";
-  const maxRmse = Math.max(...matrix.map((r) => r.metrics.rmse_log || 0.5), 0.5) * 1.12;
-  const pad = { l: 92, r: 70, t: 18, b: 22 };
+  const maxRmse = Math.max(...matrix.map((r) => r.metrics.rmse_log || 0.5), 0.1);
+  const pad = { l: 78, r: 108, t: 16, b: 18 };
   const W_px = 760 - pad.l - pad.r;
   const rowH = Math.min(24, Math.floor((290 - pad.t - pad.b) / Math.max(matrix.length, 1)));
 
@@ -1406,38 +1552,43 @@ function renderHypothesesAndAblations() {
   const items = [
     {
       id: "H1 (Regional Transfer S-LRO & S-IND Accuracy Contrast)",
-      verdict: "FALSIFIED (Row 4)",
-      supported: false,
-      detail:
-        "S-LRO ΔRMSE_log(d̄) = M5 − M2-XGB = +0.2502 (95% CI [+0.2262, +0.2765]); ΔRMSE_log(A) = +0.3094 ([+0.2728, +0.3520]). On S-IND (131 USACE locations), M5 wins Flow Area A (0.9495 vs. 0.9839; Δ = −0.0343 [−0.1588, +0.0746]).",
-    },
-    {
-      id: "H2 (Headwater Q1 Bias Reduction on S-ID)",
+      subtag: "Protocol §4.7 Row 4",
       verdict: "FALSIFIED",
       supported: false,
       detail:
-        "In smallest drainage-area quintile Q₁ (n = 798 sites), |B_d̄(M5)| − |B_d̄(M2-XGB)| = +0.0299 (95% CI [−0.0335, +0.0740]) on S-ID and +0.0753 on S-LRO.",
+        'S-LRO ΔRMSE<sub>log</sub>(d̄) = M5 − M2-XGB = <strong class="metric-em">+0.2502</strong> (95% CI <strong class="metric-em">[+0.2262, +0.2765]</strong>); ΔRMSE<sub>log</sub>(A) = <strong class="metric-em">+0.3094</strong> (<strong class="metric-em">[+0.2728, +0.3520]</strong>). On S-IND (131 USACE locations), M5 wins Flow Area A (<strong class="metric-em">0.9495 vs. 0.9839</strong>; Δ = <strong class="metric-em">−0.0343 [−0.1588, +0.0746]</strong>).',
+    },
+    {
+      id: "H2 (Headwater Q₁ Bias Reduction on S-ID)",
+      subtag: "Smallest DA Quintile (n = 798)",
+      verdict: "FALSIFIED",
+      supported: false,
+      detail:
+        'In smallest drainage-area quintile Q<sub>1</sub> (n = 798 sites), |B<sub>d̄</sub>(M5)| − |B<sub>d̄</sub>(M2-XGB)| = <strong class="metric-em">+0.0299</strong> (95% CI <strong class="metric-em">[−0.0335, +0.0740]</strong>) on S-ID and <strong class="metric-em">+0.0753</strong> on S-LRO.',
     },
     {
       id: "H3 (Out-of-Distribution Skill-Loss Reduction)",
-      verdict: "FALSIFIED (Point < 0, CI Straddles 0)",
+      subtag: "Point < 0 · 95% CI Straddles 0",
+      verdict: "FALSIFIED",
       supported: false,
       detail:
-        "M5 loses less skill from S-ID to OOD than M2-XGB across S-LRO (Δ_H3 = −0.0138 [−0.0494, +0.0209]), S-TAIL-DA (−0.0485), and S-TAIL-SO (−0.2088 [−0.4357, +0.0151]), but 95% CIs include 0.",
+        'M5 loses less skill from S-ID to OOD than M2-XGB across S-LRO (Δ<sub>H3</sub> = <strong class="metric-em">−0.0138 [−0.0494, +0.0209]</strong>), S-TAIL-DA (<strong class="metric-em">−0.0485</strong>), and S-TAIL-SO (<strong class="metric-em">−0.2088 [−0.4357, +0.0151]</strong>), but 95% CIs include 0.',
     },
     {
       id: "H4 (Latent Manning n̂ & Dingman Shape r̂ Plausibility)",
-      verdict: "3/4 Passed · D₅₀ Correlation Falsified",
+      subtag: "D₅₀ Correlation Falsified",
+      verdict: "3/4 PASSED",
       supported: false,
       detail:
-        "Literature band π_lit = 92.65% ≥ 80% (S-LRO 95.19%), zero boundary saturation (π_ν = 0.13%, π_r = 0.00%), positive slope correlation ρ_S(n̂, S) = +0.4431, but bed grain-size ρ_S(n̂, D₅₀) = −0.0203.",
+        'Literature band π<sub>lit</sub> = <strong class="metric-em">92.65% ≥ 80%</strong> (S-LRO <strong class="metric-em">95.19%</strong>), zero boundary saturation (π<sub>ν</sub> = <strong class="metric-em">0.13%</strong>, π<sub>r</sub> = <strong class="metric-em">0.00%</strong>), positive slope correlation ρ<sub>S</sub>(n̂, S) = <strong class="metric-em">+0.4431</strong>, but bed grain-size ρ<sub>S</sub>(n̂, D<sub>50</sub>) = <strong class="metric-em">−0.0203</strong>.',
     },
     {
       id: "S2 (End-to-End IFT Through Φ vs. Two-Stage M6-NN)",
-      verdict: "SUPPORTED (Bonferroni 98.75% CI)",
+      subtag: "Bonferroni 98.75% CI",
+      verdict: "SUPPORTED",
       supported: true,
       detail:
-        "End-to-end differentiation through Φ (M5) beats two-stage M6-NN (same I_blind roughness routing) by −0.0996 log units on S-ID and −0.1016 ([−0.1110, −0.0930]) on S-LRO.",
+        'End-to-end differentiation through Φ (M5) beats two-stage M6-NN (same I<sub>blind</sub> roughness routing) by <strong class="metric-em">−0.0996</strong> log units on S-ID and <strong class="metric-em">−0.1016 ([−0.1110, −0.0930])</strong> on S-LRO.',
     },
   ];
 
@@ -1446,7 +1597,7 @@ function renderHypothesesAndAblations() {
       (it) => `
     <div class="hyp-card">
       <div class="hyp-card-top">
-        <span>${it.id}</span>
+        <span class="hyp-title-group"><span>${it.id}</span>${it.subtag ? `<span class="hyp-subtag">· ${it.subtag}</span>` : ""}</span>
         <span class="verdict-pill ${it.supported ? "is-supported" : "is-falsified"}">${it.verdict}</span>
       </div>
       <p class="kpi-desc">${it.detail}</p>
@@ -1454,26 +1605,27 @@ function renderHypothesesAndAblations() {
     )
     .join("");
 
-  // Ablations bar chart on S-LRO dbar
+  // Ablations bar chart on S-LRO dbar scaled relative to max(values)
   const ablSvg = document.getElementById("ablation-svg");
   ablSvg.innerHTML = "";
   const ablRows = [
     { label: "M2-XGB (M* Unconstrained)", val: 0.4782, col: "#0072B2" },
     { label: "M2-MLP (Deep Ensemble)", val: 0.4866, col: "#56B4E9" },
-    { label: "M5 + SA5 (Drop Floored Slope F_S=1)", val: 0.6067, col: "#009E73" },
-    { label: "M5 + A4 (Oracle Measured Q_obs in Φ)", val: 0.6184, col: "#14B8A6" },
+    { label: "M5 + SA5 (Drop Floored Slope Fₛ=1)", val: 0.6067, col: "#009E73" },
+    { label: "M5 + A4 (Oracle Measured Qₒᵦₛ in Φ)", val: 0.6184, col: "#14B8A6" },
     { label: "M4 (Soft Penalty PINN)", val: 0.6864, col: "#E69F00" },
     { label: "M5 Primary (Hard Φ, I_blind)", val: 0.7284, col: "#D55E00" },
     { label: "M6-NN (Two-Stage Back-Calc n)", val: 0.8300, col: "#8B5CF6" },
     { label: "M3 (Physics Only, Strickler/Jarrett n)", val: 1.0156, col: "#CC79A7" },
   ];
 
-  const pad = { l: 215, r: 58, t: 12, b: 16 };
+  const maxAbl = Math.max(...ablRows.map((r) => r.val), 0.5);
+  const pad = { l: 210, r: 58, t: 12, b: 16 };
   const W_px = 620 - pad.l - pad.r;
   const rowH = 28;
   ablRows.forEach((r, i) => {
     const y = pad.t + i * rowH;
-    const bw = (r.val / 1.1) * W_px;
+    const bw = (r.val / maxAbl) * W_px;
     ablSvg.appendChild(
       svgEl("text", { x: pad.l - 8, y: y + 16, "text-anchor": "end", fill: "#64748b", "font-size": "10.5", "font-weight": "600" }, r.label)
     );
@@ -1507,19 +1659,28 @@ function initOperationalView() {
 
 function renderOpsStageChartAndTable(regimeMode) {
   const ops = state.benchmarks.operational;
-  const v1Map = (ops.ops1_v1.primary_s_id || {}).stage_rmse_m || {};
-  const v2FpMap = ((ops.ops2_floodplain.s_id || {}).floodplain || {}).stage_rmse_m || {};
-  const slopeStrat =
-    (((ops.ops3_diagnostics.v2_all_models || {})["S-ID"] || {}).slope_stratification || {}).floodplain || {};
-  const notFsMap = (slopeStrat.not_F_S || {}).rmse_m || {};
-  const fsMap = (slopeStrat.F_S || {}).rmse_m || {};
 
-  const dynTable = (ops.ops3_diagnostics.dynamic_roughness || {}).table || [];
+  // Extract OPS-1 v2/v3 table rows (control, floodplain, not_F_S, F_S)
+  const v2Table = (((ops.ops3_diagnostics || {}).v2_all_models || {})["S-ID"] || {}).table || [];
+  const v1ControlMap = {};
+  const v2FpMap = {};
+  const notFsMap = {};
+  const fsMap = {};
+  for (const r of v2Table) {
+    if (r.bin !== "high") continue;
+    if (r.variant === "control" && r.regime === "all") v1ControlMap[r.model] = r.rmse_h_m;
+    if (r.variant === "floodplain" && r.regime === "all") v2FpMap[r.model] = r.rmse_h_m;
+    if (r.variant === "floodplain" && r.regime === "not_F_S") notFsMap[r.model] = r.rmse_h_m;
+    if (r.variant === "floodplain" && r.regime === "F_S") fsMap[r.model] = r.rmse_h_m;
+  }
+
+  // Extract OPS-1 v3 dynamic roughness vs constant-n (3,080 high-flow sites)
+  const dynTable = ((ops.ops3_diagnostics || {}).dynamic_roughness || {}).table || [];
   const dynMap = {};
   const constOracleMap = {};
   for (const r of dynTable) {
-    if (r.regime === "dynamic_n_lodo") dynMap[r.model] = r.high_flow_rmse_m;
-    if (r.regime === "constant_n") constOracleMap[r.model] = r.high_flow_rmse_m;
+    if (r.rmse_dyn_n_m !== undefined) dynMap[r.model] = r.rmse_dyn_n_m;
+    if (r.rmse_const_n_m !== undefined) constOracleMap[r.model] = r.rmse_const_n_m;
   }
 
   const sharesGeom = {};
@@ -1529,23 +1690,25 @@ function renderOpsStageChartAndTable(regimeMode) {
 
   const tbody = document.getElementById("ops-stage-tbody");
   tbody.innerHTML = ALL_TEN_MODELS.map((m) => {
-    const v1 = v1Map[m] ? v1Map[m].high : null;
-    const v2 = v2FpMap[m] ? v2FpMap[m].high : null;
-    const notFs = notFsMap[m];
-    const fs = fsMap[m];
-    const dyn = dynMap[m];
+    const v1 = constOracleMap[m] ?? v1ControlMap[m] ?? null;
+    const v2 = v2FpMap[m] ?? null;
+    const notFs = notFsMap[m] ?? null;
+    const fs = fsMap[m] ?? null;
+    const dyn = dynMap[m] ?? null;
     const sh = sharesGeom[m] || {};
     const bestRow = m === "M2-XGB" || m === "M2-MLP" || m === "M4" || m === "M5";
+    const notFsBadge = notFs !== null ? (m === "M4" ? " ★#1" : m === "M5" ? " ★#2" : "") : "";
+    const dynBadge = dyn !== null ? (m === "M2-MLP" ? " ★#1" : m === "M2-XGB" ? " ★#2" : "") : "";
     return `
       <tr class="${bestRow ? "is-best-row" : ""}">
-        <th scope="row"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[m]};display:inline-block;margin-inline-end:6px;"></span>${m}</th>
-        <td data-label="v1 In-Channel (m)">${fmt(v1, 3)}</td>
-        <td data-label="v2 3DEP Pooled (m)">${fmt(v2, 3)}</td>
-        <td data-label="v2 Normal S > 10⁻⁵">${fmt(notFs, 3)}${m === "M4" ? " ★#1" : m === "M5" ? " ★#2" : ""}</td>
-        <td data-label="v2 Floored S = 10⁻⁵">${fmt(fs, 3)}</td>
-        <td data-label="v3 Dynamic-n LODO">${fmt(dyn, 3)}${m === "M2-MLP" ? " ★#1" : m === "M2-XGB" ? " ★#2" : ""}</td>
-        <td data-label="Win Share (Geom)">${sh.win_share !== undefined ? `${(sh.win_share * 100).toFixed(1)}%` : "—"}</td>
-        <td data-label="Near-Best ≤ 0.05">${sh.near_best_share !== undefined ? `${(sh.near_best_share * 100).toFixed(1)}%` : "—"}</td>
+        <th scope="row" class="col-text"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[m]};display:inline-block;margin-inline-end:6px;"></span>${m}</th>
+        <td class="col-num" data-label="v1 In-Channel (m)">${fmt(v1, 3)}</td>
+        <td class="col-num" data-label="v2 3DEP Pooled (m)">${fmt(v2, 3)}</td>
+        <td class="col-num" data-label="v2 Normal S > 10⁻⁵">${fmt(notFs, 3)}${notFsBadge}</td>
+        <td class="col-num" data-label="v2 Floored S = 10⁻⁵">${fmt(fs, 3)}</td>
+        <td class="col-num" data-label="v3 Dynamic-n LODO">${fmt(dyn, 3)}${dynBadge}</td>
+        <td class="col-num" data-label="Win Share (Geom)">${sh.win_share !== undefined ? `${(sh.win_share * 100).toFixed(1)}%` : "—"}</td>
+        <td class="col-num" data-label="Near-Best ≤ 0.05">${sh.near_best_share !== undefined ? `${(sh.near_best_share * 100).toFixed(1)}%` : "—"}</td>
       </tr>
     `;
   }).join("");
@@ -1572,24 +1735,24 @@ function renderOpsStageChartAndTable(regimeMode) {
     }));
   } else {
     legA = "OPS-1 v2: 3DEP Lidar Floodplain (m)";
-    legB = "OPS-1 v1: In-Channel Power Law (m)";
+    legB = "OPS-1 v1: In-Channel Control (m)";
     pairs = modelsToPlot.map((m) => ({
       m,
-      a: v2FpMap[m] ? v2FpMap[m].high : 0,
-      b: v1Map[m] ? v1Map[m].high : 0,
+      a: v2FpMap[m] || 0,
+      b: v1ControlMap[m] || 0,
     }));
   }
 
-  const maxV = Math.max(...pairs.flatMap((p) => [p.a, p.b]), 2.5) * 1.12;
-  const pad = { l: 84, r: 58, t: 28, b: 20 };
+  const maxV = Math.max(...pairs.flatMap((p) => [p.a, p.b]), 0.5);
+  const pad = { l: 78, r: 68, t: 28, b: 18 };
   const W_px = 740 - pad.l - pad.r;
   const rowH = Math.floor((300 - pad.t - pad.b) / pairs.length);
 
   // Legend
   svg.appendChild(svgEl("rect", { x: pad.l, y: 6, width: 12, height: 12, rx: 2, fill: "#0F7C80" }));
   svg.appendChild(svgEl("text", { x: pad.l + 16, y: 16, fill: "#0F7C80", "font-size": "11", "font-weight": "700" }, legA));
-  svg.appendChild(svgEl("rect", { x: pad.l + 310, y: 6, width: 12, height: 12, rx: 2, fill: "#D55E00" }));
-  svg.appendChild(svgEl("text", { x: pad.l + 326, y: 16, fill: "#D55E00", "font-size": "11", "font-weight": "700" }, legB));
+  svg.appendChild(svgEl("rect", { x: pad.l + 318, y: 6, width: 12, height: 12, rx: 2, fill: "#D55E00" }));
+  svg.appendChild(svgEl("text", { x: pad.l + 334, y: 16, fill: "#D55E00", "font-size": "11", "font-weight": "700" }, legB));
 
   pairs.forEach((p, i) => {
     const y = pad.t + i * rowH;
@@ -1598,13 +1761,13 @@ function renderOpsStageChartAndTable(regimeMode) {
     svg.appendChild(
       svgEl("text", { x: pad.l - 8, y: y + 18, "text-anchor": "end", fill: "#64748b", "font-size": "11", "font-weight": "700" }, p.m)
     );
-    svg.appendChild(svgEl("rect", { x: pad.l, y: y + 3, width: wA, height: 11, rx: 2, fill: "#0F7C80" }));
+    svg.appendChild(svgEl("rect", { x: pad.l, y: y + 3, width: Math.max(wA, 2), height: 11, rx: 2, fill: "#0F7C80" }));
     svg.appendChild(
-      svgEl("text", { x: pad.l + wA + 5, y: y + 12, fill: "#0F7C80", "font-size": "10", "font-weight": "700" }, `${p.a.toFixed(3)} m`)
+      svgEl("text", { x: pad.l + wA + 6, y: y + 12, fill: "#0F7C80", "font-size": "10.5", "font-weight": "700" }, fmtUnit(p.a, 3, " m"))
     );
-    svg.appendChild(svgEl("rect", { x: pad.l, y: y + 15, width: wB, height: 11, rx: 2, fill: "#D55E00", "fill-opacity": "0.8" }));
+    svg.appendChild(svgEl("rect", { x: pad.l, y: y + 16, width: Math.max(wB, 2), height: 11, rx: 2, fill: "#D55E00", "fill-opacity": "0.82" }));
     svg.appendChild(
-      svgEl("text", { x: pad.l + wB + 5, y: y + 24, fill: "#D55E00", "font-size": "10", "font-weight": "600" }, `${p.b.toFixed(3)} m`)
+      svgEl("text", { x: pad.l + wB + 6, y: y + 25, fill: "#D55E00", "font-size": "10.5", "font-weight": "600" }, fmtUnit(p.b, 3, " m"))
     );
   });
 }
@@ -1615,37 +1778,48 @@ function renderCche1dTable(split) {
   const sorted = [...rows].sort((a, b) => (a.rmse_log_R0 ?? 99) - (b.rmse_log_R0 ?? 99));
   const tbody = document.getElementById("cche-tbody");
   tbody.innerHTML = sorted
-    .map(
-      (r, idx) => `
-      <tr class="${idx === 0 ? "is-best-row" : ""}">
-        <th scope="row"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[r.model] || "#0F7C80"};display:inline-block;margin-inline-end:6px;"></span>${r.model}${idx === 0 ? " ★" : ""}</th>
-        <td data-label="RMSE_log(R_0)">${fmt(r.rmse_log_R0, 4)}</td>
-        <td data-label="RMSE_raw(R_0) (m)">${fmt(r.rmse_raw_R0_m, 3)}</td>
-        <td data-label="RMSE_log(Â_cons)">${fmt(r.rmse_log_A_cons, 4)}</td>
-        <td data-label="RMSE_log(A_direct)">${fmt(r.rmse_log_A_direct, 4)}</td>
-        <td data-label="Orig. |ε_A| > 0.05 (%)">${fmt((r.orig_continuity_violation_share || 0) * 100, 1)}% → 0.0%</td>
-        <td data-label="P_99(|Δd_max|) (m)">${fmt(r.p99_abs_dmax_err_m, 2)} m</td>
-      </tr>`
-    )
+    .map((r, idx) => {
+      const hasR0 = r.rmse_log_R0 !== null && r.rmse_log_R0 !== undefined;
+      const contViol = r.continuity_violation_direct ?? r.orig_continuity_violation_share ?? null;
+      const p99Err = r.p99_abs_err_dmax0_m ?? r.p99_abs_dmax_err_m ?? null;
+      return `
+      <tr class="${idx === 0 && hasR0 ? "is-best-row" : ""}">
+        <th scope="row" class="col-text"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[r.model] || "#0F7C80"};display:inline-block;margin-inline-end:6px;"></span>${r.model}${idx === 0 && hasR0 ? " ★" : ""}</th>
+        <td class="col-num" data-label="RMSE_log(R0)">${fmt(r.rmse_log_R0, 4)}</td>
+        <td class="col-num" data-label="RMSE_raw(R0) (m)">${fmt(r.rmse_raw_R0_m, 3)}</td>
+        <td class="col-num" data-label="RMSE_log(Â_cons)">${fmt(r.rmse_log_A_cons, 4)}</td>
+        <td class="col-num" data-label="RMSE_log(A_direct)">${fmt(r.rmse_log_A_direct, 4)}</td>
+        <td class="col-num" data-label="Orig. |ε_A| > 0.05 (%)">${contViol !== null ? `${fmt(contViol * 100, 1)}% → 0.0%` : "—"}</td>
+        <td class="col-num" data-label="P99(|Δdmax|) (m)">${fmtUnit(p99Err, 2, " m")}</td>
+      </tr>`;
+    })
     .join("");
 }
 
 function renderOffAnchorTable() {
   const oa = (state.benchmarks.operational.ops3_diagnostics.off_anchor_states || {}).table || [];
-  const sorted = [...oa].sort((a, b) => (a.rmse_ln_dbar ?? 99) - (b.rmse_ln_dbar ?? 99));
+  const modelOnly = oa.filter((r) => r.model !== "Oracle");
+  const sorted = [...modelOnly].sort((a, b) => (a.rmse_ln_dbar_all ?? 99) - (b.rmse_ln_dbar_all ?? 99));
+  const oracleRow = oa.find((r) => r.model === "Oracle");
+  const displayRows = oracleRow ? [oracleRow, ...sorted] : sorted;
+
   const tbody = document.getElementById("offanchor-tbody");
-  tbody.innerHTML = sorted
-    .map(
-      (r, idx) => `
-      <tr class="${idx < 2 ? "is-best-row" : ""}">
-        <th scope="row"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[r.model] || "#64748b"};display:inline-block;margin-inline-end:6px;"></span>${r.model}${idx === 0 ? " ★#1" : idx === 1 ? " ★#2" : ""}</th>
-        <td data-label="RMSE(ln d̄(Q_i))">${fmt(r.rmse_ln_dbar, 4)}</td>
-        <td data-label="RMSE(ln d_max(Q_i))">${fmt(r.rmse_ln_dmax, 4)}</td>
-        <td data-label="RMSE(ln W(Q_i))">${fmt(r.rmse_ln_W, 4)}</td>
-        <td data-label="RMSE(ln A(Q_i))">${fmt(r.rmse_ln_A, 4)}</td>
-        <td data-label="High-Flow Raw d_max(Q_i) (m)">${fmt(r.high_flow_rmse_raw_dmax_m, 3)} m</td>
-      </tr>`
-    )
+  tbody.innerHTML = displayRows
+    .map((r) => {
+      const rankIdx = sorted.findIndex((m) => m.model === r.model);
+      const hasVal = r.rmse_ln_dbar_all !== null && r.rmse_ln_dbar_all !== undefined;
+      const badge = hasVal && rankIdx === 0 ? " ★#1" : hasVal && rankIdx === 1 ? " ★#2" : "";
+      const isBest = hasVal && (rankIdx === 0 || rankIdx === 1);
+      return `
+      <tr class="${isBest ? "is-best-row" : ""}">
+        <th scope="row" class="col-text"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[r.model] || "#64748b"};display:inline-block;margin-inline-end:6px;"></span>${r.model}${badge}</th>
+        <td class="col-num" data-label="RMSE(ln d̄(Qi))">${fmt(r.rmse_ln_dbar_all, 4)}</td>
+        <td class="col-num" data-label="RMSE(ln dmax(Qi))">${fmt(r.rmse_ln_dmax_all, 4)}</td>
+        <td class="col-num" data-label="RMSE(ln W(Qi))">${fmt(r.rmse_ln_w_all, 4)}</td>
+        <td class="col-num" data-label="RMSE(ln A(Qi))">${fmt(r.rmse_ln_a_all, 4)}</td>
+        <td class="col-num" data-label="High-Flow Raw dmax(Qi) (m)">${fmtUnit(r.rmse_raw_dmax_high_m, 3, " m")}</td>
+      </tr>`;
+    })
     .join("");
 }
 
@@ -1659,17 +1833,17 @@ function initProvenanceView() {
     {
       stage: "1. Raw USGS HYDROSWOT Acquisition (acquire → unit_map)",
       count: "223,022 ADCP / current-meter records · 10,081 unique USGS stations",
-      desc: "Deterministic SI unit conversion (ft → m, cfs → m³/s); SHA-256 verified against USGS ScienceBase release (doi:10.5066/F7D798H6).",
+      desc: "Deterministic SI unit conversion (ft → m, cfs → m<sup>3</sup>/s); SHA-256 verified against USGS ScienceBase release (doi:10.5066/F7D798H6).",
     },
     {
       stage: "2. Row-Wise Physical QA/QC Cascade (R1–R11 in src/data/qc.py)",
       count: "64,956 valid complete channel geometry measurements retained",
-      desc: "Enforces positive W, d̄, d_max, A, Q, V; continuity closure |ln(A/(W·d̄))| ≤ ln(1.05); shape bounds r_obs ∈ [0.5, 10.0]; and velocity-area consistency.",
+      desc: "Enforces positive W, d̄, d<sub>max</sub>, A, Q, V; continuity closure |ln(A/(W·d̄))| ≤ ln(1.05); shape bounds r<sub>obs</sub> ∈ [0.5, 10.0]; and velocity-area consistency.",
     },
     {
       stage: "3. Topological NHDPlusV2.1 Flowline Linking & Mean-Flow Anchor Selection (R12–R14)",
-      count: "4,205 linked gauges → 3,988 Primary CONUS Benchmark Sites (~F_DA)",
-      desc: "Linked via GageLoc + 500 m snap fallback and drainage-area agreement |ln(DA_site/DA_NHD)| ≤ ln(1.25); anchor row = argmin |ln(Q_obs/Q_E)|.",
+      count: "4,205 linked gauges → 3,988 Primary CONUS Benchmark Sites (~F<sub>DA</sub>)",
+      desc: "Linked via GageLoc + 500 m snap fallback and drainage-area agreement |ln(DA<sub>site</sub>/DA<sub>NHD</sub>)| ≤ ln(1.25); anchor row = argmin |ln(Q<sub>obs</sub>/Q<sub>E</sub>)|.",
     },
     {
       stage: "4. Operational Stage-Response & USGS 3DEP Lidar Floodplain Transects (OPS-1 v1–v3)",
@@ -1697,9 +1871,17 @@ function initProvenanceView() {
     .join("");
 
   const ev1 = state.benchmarks.event1_audit || {};
+  const labelObj = typeof ev1.label === "object" && ev1.label !== null ? ev1.label : null;
+  const auditLabelText = labelObj
+    ? labelObj.optimistic
+      ? "Optimistic (Spatial D + Network N)"
+      : labelObj.text || "Non-optimistic"
+    : String(ev1.label || "Optimistic (Spatial D + Network N)");
+  const auditTooltip = labelObj && labelObj.text ? labelObj.text : auditLabelText;
+
   const ev1El = document.getElementById("event1-audit-cards");
   ev1El.innerHTML = `
-    <div class="telemetry-box"><span>Audit Classification</span><strong>${ev1.label || "optimistic"}</strong></div>
+    <div class="telemetry-box" title="${auditTooltip}"><span>Audit Classification</span><strong>${auditLabelText}</strong></div>
     <div class="telemetry-box"><span>Median Nearest Gauge</span><strong>${fmt(ev1.d_nn_median_km, 2)} km</strong></div>
     <div class="telemetry-box"><span>Variogram Range ρ̂</span><strong>${fmt(ev1.rho_hat_km, 2)} km</strong></div>
     <div class="telemetry-box"><span>Strongly Nested Ψ ≥ 0.5</span><strong>42.13% of sites</strong></div>
@@ -1707,9 +1889,9 @@ function initProvenanceView() {
 
   const provRows = [
     ["HYDROSWOT", "USGS (Canova et al., 2016)", "n = 3,988 CONUS sites · 75,343 OPS-1 stage rows · 9,673 S-RND rows", "CC0-1.0", "https://doi.org/10.5066/F7D798H6"],
-    ["NHDPlusV2.1", "U.S. EPA & USGS (McKay et al., 2012)", "1:100k hydrography (COMID, Q_E, V_E, S, F_S, Stream Order)", "CC0-1.0", "https://doi.org/10.5066/F7P84B24"],
+    ["NHDPlusV2.1", "U.S. EPA & USGS (McKay et al., 2012)", "1:100k hydrography (COMID, Q<sub>E</sub>, V<sub>E</sub>, S, F<sub>S</sub>, Stream Order)", "CC0-1.0", "https://doi.org/10.5066/F7P84B24"],
     ["EPA StreamCat", "U.S. EPA (Hill et al., 2016)", "Catchment climate, soils, lithology, land cover, dam regulation", "CC0-1.0", "https://doi.org/10.1111/1752-1688.12372"],
-    ["CONUS Bed D₅₀", "Abeshu et al. (2022)", "Reach-scale median bed-material grain size D₅₀ (mm)", "CC-BY-4.0", "https://doi.org/10.5281/zenodo.5550700"],
+    ["CONUS Bed D<sub>50</sub>", "Abeshu et al. (2022)", "Reach-scale median bed-material grain size D<sub>50</sub> (mm)", "CC-BY-4.0", "https://doi.org/10.5281/zenodo.5550700"],
     ["Global Aridity v3.1", "Zomer et al. (2022)", "High-resolution aridity index (AI) & PET covariates", "CC-BY-4.0", "https://doi.org/10.6084/m9.figshare.7504448.v5"],
     ["USGS 3DEP (10 m DEM)", "USGS National Map (OPS-1 v2)", "3,282 perpendicular floodplain transects (1,001 pts each, NAVD88)", "CC0-1.0", "https://doi.org/10.3133/fs20143083"],
     ["Physiographic Divisions", "Fenneman & Johnson (1946) / USGS", "8 CONUS physiographic divisions defining S-LRO regional holdouts", "CC0-1.0", "https://water.usgs.gov/GIS/metadata/usgswrd/XML/physio.xml"],
@@ -1722,11 +1904,11 @@ function initProvenanceView() {
     .map(
       ([name, agency, role, lic, url]) => `
     <tr>
-      <th scope="row">${name}</th>
-      <td data-label="Agency / Source">${agency}</td>
-      <td data-label="Benchmark Role & Coverage">${role}</td>
-      <td data-label="License"><span class="badge-pill">${lic}</span></td>
-      <td data-label="DOI / Persistent Link"><a href="${url}" target="_blank" rel="noopener noreferrer">${url.replace("https://", "")}</a></td>
+      <th scope="row" class="col-text">${name}</th>
+      <td class="col-text" data-label="Agency / Source">${agency}</td>
+      <td class="col-text" data-label="Benchmark Role & Coverage">${role}</td>
+      <td class="col-text" data-label="License"><span class="badge-pill">${lic}</span></td>
+      <td class="col-text" data-label="DOI / Persistent Link"><a href="${url}" target="_blank" rel="noopener noreferrer">${url.replace("https://", "")}</a></td>
     </tr>`
     )
     .join("");
@@ -1750,12 +1932,12 @@ function populateLedgerDialog() {
     .map(
       (ev, i) => `
     <tr>
-      <th scope="row">${i + 1}</th>
-      <td data-label="Event"><code>${ev.event}</code></td>
-      <td data-label="Timestamp (UTC)">${ev.timestamp_utc || ev.ts_utc || "—"}</td>
-      <td data-label="Git Commit"><code>${(ev.git_head || ev.commit || "").slice(0, 10)}</code></td>
-      <td data-label="Clean Tree"><span class="badge-pill is-good">git_dirty: ${String(ev.git_dirty)}</span></td>
-      <td data-label="Prev Hash → Entry SHA-256"><code>${(ev.prev_sha256 || "GENESIS").slice(0, 10)}… → ${(ev.entry_sha256 || ev.sha256 || "").slice(0, 12)}…</code></td>
+      <th scope="row" class="col-text">${i + 1}</th>
+      <td class="col-text" data-label="Event"><code>${ev.event}</code></td>
+      <td class="col-text" data-label="Timestamp (UTC)">${ev.timestamp_utc || ev.ts_utc || "—"}</td>
+      <td class="col-text" data-label="Git Commit"><code>${(ev.git_head || ev.commit || "").slice(0, 10)}</code></td>
+      <td class="col-text" data-label="Clean Tree"><span class="badge-pill is-good">git_dirty: ${String(ev.git_dirty)}</span></td>
+      <td class="col-text" data-label="Prev Hash → Entry SHA-256"><code>${(ev.prev_sha256 || "GENESIS").slice(0, 10)}… → ${(ev.entry_sha256 || ev.sha256 || "").slice(0, 12)}…</code></td>
     </tr>`
     )
     .join("");
