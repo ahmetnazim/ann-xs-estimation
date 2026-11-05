@@ -50,8 +50,11 @@ HEADLINE_MODELS: Final[tuple[str, ...]] = (
     "M1",
     "M5",
     "M4",
+    "M6-NN",
+    "M6-XGB",
     "M3",
     "M0",
+    "M-null",
 )
 ALL_TEN_MODELS: Final[tuple[str, ...]] = (
     "M-null",
@@ -717,6 +720,7 @@ def _slim_ops_family(fam_obj: dict[str, Any] | None) -> dict[str, Any]:
             "stage_rmse_m",
             "stage_bias_m",
             "width_rmse_log",
+            "table",
             "ranking",
             "hypotheses",
             "control",
@@ -860,29 +864,12 @@ def build_benchmarks_bundle() -> tuple[dict[str, Any], dict[str, float]]:
     for split_k in ("S-ID", "S-LRO"):
         sp_obj = v2_all.get(split_k, {})
         v2_slim[split_k] = {
-            "slope_stratification": sp_obj.get("slope_stratification"),
+            "n_sites_total": sp_obj.get("n_sites_total"),
+            "n_sites_not_fs": sp_obj.get("n_sites_not_fs"),
+            "n_sites_fs": sp_obj.get("n_sites_fs"),
+            "table": sp_obj.get("table"),
+            "cliques": sp_obj.get("cliques"),
             "H-V3-1": sp_obj.get("H-V3-1"),
-            "floodplain_high_cliques": (
-                sp_obj.get("variants", {})
-                .get("floodplain", {})
-                .get("bins", {})
-                .get("high", {})
-                .get("equivalence_cliques")
-            ),
-            "floodplain_high_table": (
-                sp_obj.get("variants", {})
-                .get("floodplain", {})
-                .get("bins", {})
-                .get("high", {})
-                .get("models")
-            ),
-            "control_high_table": (
-                sp_obj.get("variants", {})
-                .get("control", {})
-                .get("bins", {})
-                .get("high", {})
-                .get("models")
-            ),
         }
 
     bundle: dict[str, Any] = {
@@ -928,10 +915,10 @@ def build_benchmarks_bundle() -> tuple[dict[str, Any], dict[str, float]]:
         "operational": {
             "ops1_v1": {
                 "primary_s_id": _slim_ops_family(
-                    ops1.get("variants", {}).get("primary", {}).get("S-ID")
+                    ops1.get("variants", {}).get("primary", {}).get("families", {}).get("S-ID")
                 ),
                 "primary_s_lro": _slim_ops_family(
-                    ops1.get("variants", {}).get("primary", {}).get("S-LRO")
+                    ops1.get("variants", {}).get("primary", {}).get("families", {}).get("S-LRO")
                 ),
             },
             "ops2_floodplain": {

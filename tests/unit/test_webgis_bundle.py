@@ -122,8 +122,17 @@ def test_webgis_benchmarks_parity_with_canonical_reports() -> None:
     assert math.isclose(matrix_lookup[("S-LRO", "M5", "dbar")]["rmse_log"], 0.7289, abs_tol=5e-4)
     assert math.isclose(matrix_lookup[("S-IND", "M5", "A")]["rmse_log"], 0.9495, abs_tol=5e-4)
 
-    # Verify operational CCHE1D readiness parity
+    # Verify operational CCHE1D readiness parity and OPS-1 v3 table keys
     assert bench["operational"]["ops3_diagnostics"]["cche1d_readiness"] == ops3["cche1d_readiness"]
+    v2_table = bench["operational"]["ops3_diagnostics"]["v2_all_models"]["S-ID"]["table"]
+    assert isinstance(v2_table, list)
+    assert len(v2_table) > 20
+    dyn_table = bench["operational"]["ops3_diagnostics"]["dynamic_roughness"]["table"]
+    assert all("rmse_dyn_n_m" in r and "rmse_const_n_m" in r for r in dyn_table)
+    oa_table = bench["operational"]["ops3_diagnostics"]["off_anchor_states"]["table"]
+    assert all("rmse_ln_dbar_all" in r and "rmse_raw_dmax_high_m" in r for r in oa_table)
+    assert isinstance(bench["event1_audit"]["label"], dict)
+    assert "text" in bench["event1_audit"]["label"]
 
 
 def test_webgis_sites_physical_invariants_and_continuity() -> None:
@@ -143,6 +152,8 @@ def test_webgis_sites_physical_invariants_and_continuity() -> None:
     assert len(ehydro_sites) == 131
 
     headline_models: list[str] = conus["schema"]["headline_models"]
+    assert len(headline_models) == 10
+    assert {"M6-NN", "M6-XGB", "M-null"}.issubset(set(headline_models))
     m5_idx = headline_models.index("M5")
 
     # Check physical bounds and exact continuity closure on M5 across all 3,988 CONUS sites
