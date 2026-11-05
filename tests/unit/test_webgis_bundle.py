@@ -225,11 +225,13 @@ def test_webgis_dom_ids_and_accessibility_hooks() -> None:
     missing_ids = js_ids - html_ids
     assert not missing_ids, f"DOM IDs referenced in app.js missing from index.html: {missing_ids}"
 
-    # Verify modern web guidance semantics
+    # Verify modern web guidance semantics and single semantic <caption> per table
     assert 'name="color-scheme"' in html
     assert "<dialog" in html
     assert 'aria-pressed="' in html
-    assert 'role="region"' in html
+    assert len(re.findall(r"<caption\b", html)) == len(
+        re.findall(r'<table class="data-table"', html)
+    )
     assert "color-scheme: light dark" in css
     assert "overscroll-behavior: contain" in css
     assert "@container (width < 520px)" in css

@@ -381,10 +381,10 @@ sub {
 /* Floating Map Controls Card */
 .map-controls-card {
   position: absolute;
-  inset-block-start: 0.75rem;
+  inset-block-start: 0.65rem;
   inset-inline-start: 0.75rem;
-  inline-size: min(355px, calc(100% - 1.5rem));
-  max-block-size: calc(100% - 1.5rem);
+  inline-size: min(350px, calc(100% - 1.5rem));
+  max-block-size: calc(100% - 1.3rem);
   overflow-y: auto;
   scrollbar-gutter: stable;
   overscroll-behavior: contain;
@@ -392,12 +392,12 @@ sub {
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-subtle);
   border-radius: 0.5rem;
-  padding: 0.75rem;
+  padding: 0.55rem 0.65rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
   z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.38rem;
 }
 
 .card-header-compact {
@@ -427,12 +427,12 @@ sub {
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.14rem;
   min-inline-size: 0;
 }
 
 .control-group label {
-  font-size: 0.72rem;
+  font-size: 0.71rem;
   font-weight: 600;
   color: var(--text-muted);
 }
@@ -441,7 +441,7 @@ sub {
 .filter-bar-inline select,
 .inspector-header-controls select,
 .sim-controls select {
-  padding-block: 0.32rem;
+  padding-block: 0.25rem;
   padding-inline: 0.45rem 1.4rem;
   font-size: 0.75rem;
   border: 1px solid var(--border-subtle);
@@ -463,14 +463,14 @@ sub {
 
 .control-row-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.45rem;
+  grid-template-columns: 1fr;
+  gap: 0.38rem;
 }
 
 .checkbox-row {
   display: flex;
   flex-direction: column;
-  gap: 0.28rem;
+  gap: 0.2rem;
   padding-block-start: 0.2rem;
   border-block-start: 1px solid var(--border-subtle);
 }
@@ -480,15 +480,15 @@ sub {
   display: inline-flex;
   align-items: safe center;
   gap: 0.38rem;
-  font-size: 0.74rem;
+  font-size: 0.73rem;
   cursor: pointer;
 }
 
 .showcase-presets {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  padding-block-start: 0.35rem;
+  gap: 0.24rem;
+  padding-block-start: 0.24rem;
   border-block-start: 1px solid var(--border-subtle);
 }
 

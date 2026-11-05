@@ -120,6 +120,29 @@ function svgEl(tag, attrs = {}, text = null) {
   return el;
 }
 
+function svgMathText(attrs = {}, text = "") {
+  const el = svgEl("text", attrs);
+  const tokens = String(text).split(/(_[A-Za-z0-9]+|\^[^\s)]+)/g);
+  let yOffset = 0;
+  for (const tok of tokens) {
+    if (!tok) continue;
+    if (tok.startsWith("_")) {
+      const dy = 2.2 - yOffset;
+      el.appendChild(svgEl("tspan", { dy: dy.toFixed(1), "font-size": "8.2" }, tok.slice(1)));
+      yOffset = 2.2;
+    } else if (tok.startsWith("^")) {
+      const dy = -3.2 - yOffset;
+      el.appendChild(svgEl("tspan", { dy: dy.toFixed(1), "font-size": "8.2" }, tok.slice(1)));
+      yOffset = -3.2;
+    } else {
+      const spanAttrs = yOffset !== 0 ? { dy: (-yOffset).toFixed(1) } : {};
+      el.appendChild(svgEl("tspan", spanAttrs, tok));
+      yOffset = 0;
+    }
+  }
+  return el;
+}
+
 /* ==========================================================================
    1. Initialization & Data Loading
    ========================================================================== */
@@ -1611,8 +1634,8 @@ function renderHypothesesAndAblations() {
   const ablRows = [
     { label: "M2-XGB (M* Unconstrained)", val: 0.4782, col: "#0072B2" },
     { label: "M2-MLP (Deep Ensemble)", val: 0.4866, col: "#56B4E9" },
-    { label: "M5 + SA5 (Drop Floored Slope Fₛ=1)", val: 0.6067, col: "#009E73" },
-    { label: "M5 + A4 (Oracle Measured Qₒᵦₛ in Φ)", val: 0.6184, col: "#14B8A6" },
+    { label: "M5 + SA5 (Drop Floored Slope F_S=1)", val: 0.6067, col: "#009E73" },
+    { label: "M5 + A4 (Oracle Measured Q_obs in Φ)", val: 0.6184, col: "#14B8A6" },
     { label: "M4 (Soft Penalty PINN)", val: 0.6864, col: "#E69F00" },
     { label: "M5 Primary (Hard Φ, I_blind)", val: 0.7284, col: "#D55E00" },
     { label: "M6-NN (Two-Stage Back-Calc n)", val: 0.8300, col: "#8B5CF6" },
@@ -1627,7 +1650,10 @@ function renderHypothesesAndAblations() {
     const y = pad.t + i * rowH;
     const bw = (r.val / maxAbl) * W_px;
     ablSvg.appendChild(
-      svgEl("text", { x: pad.l - 8, y: y + 16, "text-anchor": "end", fill: "#64748b", "font-size": "10.5", "font-weight": "600" }, r.label)
+      svgMathText(
+        { x: pad.l - 8, y: y + 16, "text-anchor": "end", fill: "#64748b", "font-size": "10.5", "font-weight": "600" },
+        r.label
+      )
     );
     ablSvg.appendChild(
       svgEl("rect", { x: pad.l, y: y + 4, width: bw, height: 18, rx: 3, fill: r.col })
@@ -1750,9 +1776,9 @@ function renderOpsStageChartAndTable(regimeMode) {
 
   // Legend
   svg.appendChild(svgEl("rect", { x: pad.l, y: 6, width: 12, height: 12, rx: 2, fill: "#0F7C80" }));
-  svg.appendChild(svgEl("text", { x: pad.l + 16, y: 16, fill: "#0F7C80", "font-size": "11", "font-weight": "700" }, legA));
+  svg.appendChild(svgMathText({ x: pad.l + 16, y: 16, fill: "#0F7C80", "font-size": "11", "font-weight": "700" }, legA));
   svg.appendChild(svgEl("rect", { x: pad.l + 318, y: 6, width: 12, height: 12, rx: 2, fill: "#D55E00" }));
-  svg.appendChild(svgEl("text", { x: pad.l + 334, y: 16, fill: "#D55E00", "font-size": "11", "font-weight": "700" }, legB));
+  svg.appendChild(svgMathText({ x: pad.l + 334, y: 16, fill: "#D55E00", "font-size": "11", "font-weight": "700" }, legB));
 
   pairs.forEach((p, i) => {
     const y = pad.t + i * rowH;

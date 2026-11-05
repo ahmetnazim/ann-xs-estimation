@@ -222,7 +222,7 @@
             <label for="sim-q-slider">Flow Ratio Q / Q<sub>a</sub>:</label>
             <input type="range" id="sim-q-slider" min="0.4" max="10.0" step="0.1" value="3.5">
             <select id="sim-roughness-mode" aria-label="Roughness regime">
-              <option value="dyn">Dynamic n ∝ Q^γ̂ (OPS-1 v3 LODO)</option>
+              <option value="dyn">Dynamic n (γ̂ = −0.325, OPS-1 v3 LODO)</option>
               <option value="const">Constant n (γ = 0, OPS-1 v1/v2)</option>
             </select>
           </div>
@@ -232,7 +232,7 @@
         <!-- Site Physical Covariates & Model Comparison Table -->
         <div class="site-telemetry-grid" id="site-covariate-cards"></div>
 
-        <div tabindex="0" role="region" aria-labelledby="site-model-table-cap" class="table-wrapper compact-table-wrapper">
+        <div class="table-wrapper compact-table-wrapper">
           <table class="data-table" id="site-model-table">
             <caption id="site-model-table-cap">Reach-level observed vs. predicted geometry, continuity closure |ε<sub>A</sub>|, and stage RMSE</caption>
             <thead>
@@ -315,7 +315,7 @@
 
             <svg id="bench-bar-svg" viewBox="0 0 760 290" role="img" aria-label="Interactive model comparison bar chart"></svg>
 
-            <div tabindex="0" role="region" aria-labelledby="bench-table-caption" class="table-wrapper">
+            <div class="table-wrapper">
               <table class="data-table" id="bench-metrics-table">
                 <caption id="bench-table-caption">Primary and secondary evaluation metrics for selected validation split and target</caption>
                 <thead>
@@ -402,7 +402,7 @@
 
             <svg id="ops-stage-svg" viewBox="0 0 740 300" role="img" aria-label="Operational flood-stage RMSE comparison chart"></svg>
 
-            <div tabindex="0" role="region" aria-labelledby="ops-table-cap" class="table-wrapper">
+            <div class="table-wrapper">
               <table class="data-table" id="ops-stage-table">
                 <caption id="ops-table-cap">Operational high-flow stage-response RMSE (m) across v1, v2, slope regimes, and dynamic roughness</caption>
                 <thead>
@@ -440,7 +440,7 @@
               </div>
             </div>
 
-            <div tabindex="0" role="region" aria-labelledby="cche-table-cap" class="table-wrapper">
+            <div class="table-wrapper">
               <table class="data-table" id="cche-table">
                 <caption id="cche-table-cap">CCHE1D 1D solver readiness metrics across validation regimes</caption>
                 <thead>
@@ -459,7 +459,7 @@
             </div>
 
             <h3 class="sub-heading">Off-Anchor Absolute ADCP States (n = 31,367 Surveys, OPS-1 v3 H-V3-3)</h3>
-            <div tabindex="0" role="region" aria-labelledby="offanchor-table-cap" class="table-wrapper">
+            <div class="table-wrapper">
               <table class="data-table" id="offanchor-table">
                 <caption id="offanchor-table-cap">Dynamic off-anchor cross-section geometry accuracy at Q<sub>i</sub> ≠ Q<sub>a</sub></caption>
                 <thead>
@@ -506,7 +506,7 @@
                 <p class="muted-sub">100% open-access inputs tracked via DVC cryptographic lockfiles (<code>dvc.lock</code> &amp; <code>ops/dvc.lock</code>).</p>
               </div>
             </div>
-            <div tabindex="0" role="region" aria-labelledby="prov-table-cap" class="table-wrapper">
+            <div class="table-wrapper">
               <table class="data-table" id="prov-table">
                 <caption id="prov-table-cap">Third-party dataset provenance, persistent identifiers, sample sizes, and licensing</caption>
                 <thead>
@@ -540,7 +540,7 @@
         All confirmatory results are sealed in a hash-chained 7-record ledger (<code>reports/results/scoring_ledger.json</code>) with zero dirty working-tree events (<code>git_dirty: false</code>) and a 51,508-leaf Phase 8 Merkle root.
       </p>
       <div id="ledger-meta-pills" class="ledger-meta-pills"></div>
-      <div tabindex="0" role="region" aria-labelledby="ledger-table-cap" class="table-wrapper">
+      <div class="table-wrapper">
         <table class="data-table" id="ledger-table">
           <caption id="ledger-table-cap">Hash-chained scoring ledger events</caption>
           <thead>
