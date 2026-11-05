@@ -726,9 +726,11 @@ function initMapView() {
       popup
         .setLngLat(f.geometry.coordinates)
         .setHTML(
-          `<strong>USGS ${p.id}</strong> (COMID ${p.comid})<br>` +
-            `${p.div} · DA: ${Number(p.da).toLocaleString()} km²<br>` +
-            `Geom Best: <b>${p.win_geom}</b> · Dyn-n Best: <b>${p.win_dyn}</b>`
+          `<div class="map-popup-body">` +
+            `<div class="map-popup-title">USGS ${p.id} <span class="map-popup-sub">(COMID ${p.comid})</span></div>` +
+            `<div class="map-popup-meta">${p.div} · DA: ${Number(p.da).toLocaleString()}&nbsp;km²</div>` +
+            `<div class="map-popup-winners">Geom Best: <strong>${p.win_geom}</strong> · Dyn-n Best: <strong>${p.win_dyn}</strong></div>` +
+            `</div>`
         )
         .addTo(map);
     });
@@ -749,7 +751,12 @@ function initMapView() {
       const p = f.properties;
       popup
         .setLngLat(f.geometry.coordinates)
-        .setHTML(`<strong>USACE eHydro ${p.id}</strong><br>River: ${p.river} (COMID ${p.comid})`)
+        .setHTML(
+          `<div class="map-popup-body">` +
+            `<div class="map-popup-title">USACE eHydro ${p.id}</div>` +
+            `<div class="map-popup-meta">River: ${p.river} <span class="map-popup-sub">(COMID ${p.comid})</span></div>` +
+            `</div>`
+        )
         .addTo(map);
     });
     map.on("mouseleave", "ehydro-points", () => {
