@@ -242,8 +242,8 @@
                 <th scope="col" class="col-num">d̄ (m)</th>
                 <th scope="col" class="col-num">d<sub>max</sub> (m)</th>
                 <th scope="col" class="col-num">A (m²)</th>
-                <th scope="col" class="col-num">r̂</th>
-                <th scope="col" class="col-num">n̂ / n<sub>back</sub></th>
+                <th scope="col" class="col-num"><span class="math-hat">r̂</span></th>
+                <th scope="col" class="col-num"><span class="math-hat">n̂</span> / n<sub>back</sub></th>
                 <th scope="col" class="col-num">|ε<sub>A</sub>|</th>
                 <th scope="col" class="col-num">Geom RMSE</th>
                 <th scope="col" class="col-num">Stage FP (m)</th>
@@ -293,23 +293,27 @@
                 <p class="muted-sub">Compare all 11 model rungs across 6 validation splits and 5 cross-section targets.</p>
               </div>
               <div class="filter-bar-inline">
-                <label for="bench-split-select">Split:</label>
-                <select id="bench-split-select">
-                  <option value="S-LRO">S-LRO (8 Held-Out Divisions, n = 3,988)</option>
-                  <option value="S-ID">S-ID (3×5 Grouped CV, n = 3,988 · Optimistic)</option>
-                  <option value="S-IND">S-IND (131 USACE eHydro Locations / 18 Rivers)</option>
-                  <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Deciles 1 &amp; 10, n = 678)</option>
-                  <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Extrapolation, n = 339)</option>
-                  <option value="S-RND">S-RND (Legacy Random 75:25 Split, n = 9,673)</option>
-                </select>
-                <label for="bench-target-select">Target:</label>
-                <select id="bench-target-select">
-                  <option value="dbar">Mean Depth d̄ (m)</option>
-                  <option value="A">Cross-Sectional Area A (m²)</option>
-                  <option value="W">Wetted Top Width W (m)</option>
-                  <option value="dmax">Maximum Depth dₘₐₓ (m)</option>
-                  <option value="t">Thalweg Excess t = dₘₐₓ − d̄ (m)</option>
-                </select>
+                <label class="filter-pair" for="bench-split-select">
+                  <span>Split:</span>
+                  <select id="bench-split-select">
+                    <option value="S-LRO">S-LRO (8 Held-Out Divisions, n = 3,988)</option>
+                    <option value="S-ID">S-ID (3×5 Grouped CV, n = 3,988 · Optimistic)</option>
+                    <option value="S-IND">S-IND (131 USACE eHydro Locations / 18 Rivers)</option>
+                    <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Deciles 1 &amp; 10, n = 678)</option>
+                    <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Extrapolation, n = 339)</option>
+                    <option value="S-RND">S-RND (Legacy Random 75:25 Split, n = 9,673)</option>
+                  </select>
+                </label>
+                <label class="filter-pair" for="bench-target-select">
+                  <span>Target:</span>
+                  <select id="bench-target-select">
+                    <option value="dbar">Mean Depth d̄ (m)</option>
+                    <option value="A">Cross-Sectional Area A (m²)</option>
+                    <option value="W">Wetted Top Width W (m)</option>
+                    <option value="dmax">Maximum Depth dₘₐₓ (m)</option>
+                    <option value="t">Thalweg Excess t = dₘₐₓ − d̄ (m)</option>
+                  </select>
+                </label>
               </div>
             </div>
 
@@ -362,23 +366,23 @@
         <div class="kpi-banner-grid">
           <article class="kpi-card accent-teal">
             <span class="kpi-eyebrow">H-FP1 Supported (OPS-1 v2)</span>
-            <strong class="kpi-value">−0.401 m Flood-Stage RMSE Drop</strong>
-            <p class="kpi-desc">Burning predicted channels into 3,282 USGS 3DEP 10 m Lidar floodplain transects cuts high-flow stage RMSE from <strong class="metric-em">1.874 m</strong> to <strong class="metric-em">1.473 m</strong> (95% CI <strong class="metric-em">[−0.547, −0.253]</strong>).</p>
+            <strong class="kpi-value"><span class="nowrap">−0.401&nbsp;m</span> Flood-Stage RMSE Drop</strong>
+            <p class="kpi-desc">Burning predicted channels into 3,282 USGS 3DEP 10&nbsp;m Lidar floodplain transects cuts high-flow stage RMSE from <strong class="metric-em nowrap">1.874&nbsp;m</strong> to <strong class="metric-em nowrap">1.473&nbsp;m</strong> (95% CI <strong class="metric-em nowrap">[−0.547, −0.253]</strong>).</p>
           </article>
           <article class="kpi-card accent-green">
-            <span class="kpi-eyebrow">H-V3-1 Supported <span class="math-preserve">(Normal Slopes S &gt; 10<sup>−5</sup>)</span></span>
-            <strong class="kpi-value">M4 (1.321 m) &amp; M5 (1.333 m) Win</strong>
-            <p class="kpi-desc">On the 79.1% of CONUS reaches without NHDPlus S = 10<sup>−5</sup> clamping, physics-informed M4 &amp; M5 beat M2-XGB (<strong class="metric-em">1.400 m</strong>; Δ = <strong class="metric-em">−0.068 m</strong>) and M1 (<strong class="metric-em">1.572 m</strong>).</p>
+            <span class="kpi-eyebrow">H-V3-1 Supported <span class="math-preserve">(Normal Slopes <span class="nowrap">S&nbsp;&gt;&nbsp;10<sup>−5</sup></span>)</span></span>
+            <strong class="kpi-value">M4 (<span class="nowrap">1.321&nbsp;m</span>) &amp; M5 (<span class="nowrap">1.333&nbsp;m</span>) Win</strong>
+            <p class="kpi-desc">On the 79.1% of CONUS reaches without NHDPlus <span class="nowrap">S&nbsp;=&nbsp;10<sup>−5</sup></span> clamping, physics-informed M4 &amp; M5 beat M2-XGB (<strong class="metric-em nowrap">1.400&nbsp;m</strong>; Δ = <strong class="metric-em nowrap">−0.068&nbsp;m</strong>) and M1 (<strong class="metric-em nowrap">1.572&nbsp;m</strong>).</p>
           </article>
           <article class="kpi-card accent-navy">
-            <span class="kpi-eyebrow">H-V3-2 Supported <span class="math-preserve">(Dynamic Roughness γ̂ = −0.325)</span></span>
-            <strong class="kpi-value">Oracle Bias +1.011 m → −0.065 m</strong>
-            <p class="kpi-desc">LODO dynamic resistance n ∝ Q<sup>−0.325</sup> eliminates constant-n rating overshoot and restores M2-MLP (<strong class="metric-em">1.246 m</strong>) ≈ M2-XGB (<strong class="metric-em">1.248 m</strong>) &gt; M1 (<strong class="metric-em">1.263 m</strong>) ≫ M3 (<strong class="metric-em">1.513 m</strong>).</p>
+            <span class="kpi-eyebrow">H-V3-2 Supported <span class="math-preserve">(Dynamic Roughness <span class="nowrap"><span class="math-hat">γ̂</span>&nbsp;=&nbsp;−0.325</span>)</span></span>
+            <strong class="kpi-value">Oracle Bias <span class="nowrap">+1.011&nbsp;m</span> → <span class="nowrap">−0.065&nbsp;m</span></strong>
+            <p class="kpi-desc">LODO dynamic resistance <span class="nowrap">n ∝ Q<sup>−0.325</sup></span> eliminates constant-n rating overshoot and restores M2-MLP (<strong class="metric-em nowrap">1.246&nbsp;m</strong>) ≈ M2-XGB (<strong class="metric-em nowrap">1.248&nbsp;m</strong>) &gt; M1 (<strong class="metric-em nowrap">1.263&nbsp;m</strong>) ≫ M3 (<strong class="metric-em nowrap">1.513&nbsp;m</strong>).</p>
           </article>
           <article class="kpi-card accent-orange">
             <span class="kpi-eyebrow">H-V3-4 Supported (CCHE1D 1D Solver Readiness)</span>
             <strong class="kpi-value">0.0% Continuity Error + #1 R<sub>0</sub> (0.4289)</strong>
-            <p class="kpi-desc">Reconstructing Â<sub>0</sub> = Ŵ<sub>0</sub> d̂<sub>mean,0</sub> eliminates M2-XGB continuity violations (<strong class="metric-em">49.6% → 0%</strong>), while CCHE1D-Hybrid beats standalone M2-XGB in S-TAIL-DA (<strong class="metric-em">−0.051</strong>) &amp; S-TAIL-SO (<strong class="metric-em">−0.109</strong>).</p>
+            <p class="kpi-desc">Reconstructing <span class="nowrap"><span class="math-hat">Â</span><sub>0</sub> = <span class="math-hat">Ŵ</span><sub>0</sub> <span class="math-hat">d̂</span><sub>mean,0</sub></span> eliminates M2-XGB continuity violations (<strong class="metric-em nowrap">49.6% → 0%</strong>), while CCHE1D-Hybrid beats standalone M2-XGB in S-TAIL-DA (<strong class="metric-em">−0.051</strong>) &amp; S-TAIL-SO (<strong class="metric-em">−0.109</strong>).</p>
           </article>
         </div>
 
@@ -391,12 +395,14 @@
                 <p class="muted-sub">75,343 off-anchor stage observations · 3,282 3DEP lidar floodplains · 29,174 dynamic-n ADCP rows.</p>
               </div>
               <div class="filter-bar-inline">
-                <label for="ops-regime-select">Regime View:</label>
-                <select id="ops-regime-select">
-                  <option value="slope_strat">OPS-1 v3: Normal Slope (S &gt; 10⁻⁵) vs. Floored Slope (S = 10⁻⁵)</option>
-                  <option value="const_vs_dyn">OPS-1 v3: Constant n (γ = 0) vs. Dynamic n (LODO γ̂ = −0.325)</option>
-                  <option value="v1_vs_v2">OPS-1 v1 vs. v2: In-Channel Power Law vs. 3DEP Lidar Floodplain</option>
-                </select>
+                <label class="filter-pair" for="ops-regime-select">
+                  <span>Regime View:</span>
+                  <select id="ops-regime-select">
+                    <option value="slope_strat">OPS-1 v3: Normal Slope (S &gt; 10⁻⁵) vs. Floored Slope (S = 10⁻⁵)</option>
+                    <option value="const_vs_dyn">OPS-1 v3: Constant n (γ = 0) vs. Dynamic n (LODO γ̂ = −0.325)</option>
+                    <option value="v1_vs_v2">OPS-1 v1 vs. v2: In-Channel Power Law vs. 3DEP Lidar Floodplain</option>
+                  </select>
+                </label>
               </div>
             </div>
 
@@ -410,8 +416,8 @@
                     <th scope="col" class="col-text">Model</th>
                     <th scope="col" class="col-num">v1 In-Channel (m)</th>
                     <th scope="col" class="col-num">v2 3DEP Pooled (m)</th>
-                    <th scope="col" class="col-num">v2 Normal S &gt; 10<sup>−5</sup> (79.1%)</th>
-                    <th scope="col" class="col-num">v2 Floored S = 10<sup>−5</sup> (20.9%)</th>
+                    <th scope="col" class="col-num">v2 Normal <span class="nowrap">S &gt; 10<sup>−5</sup></span> (79.1%)</th>
+                    <th scope="col" class="col-num">v2 Floored <span class="nowrap">S = 10<sup>−5</sup></span> (20.9%)</th>
                     <th scope="col" class="col-num">v3 Dynamic-n LODO (m)</th>
                     <th scope="col" class="col-num">Win Share (Geom)</th>
                     <th scope="col" class="col-num">Near-Best ≤ 0.05</th>
@@ -427,16 +433,18 @@
             <div class="panel-header">
               <div>
                 <h2>CCHE1D 1D Saint-Venant Readiness &amp; Off-Anchor States (Table T10)</h2>
-                <p class="muted-sub">Hydraulic radius R<sub>0</sub> = A<sub>0</sub> / P<sub>0</sub>, 99th-percentile thalweg invert shock P<sub>99</sub>(|d̂<sub>max</sub> − d<sub>max</sub>|), and 31,367 off-anchor ADCP states.</p>
+                <p class="muted-sub">Hydraulic radius R<sub>0</sub> = A<sub>0</sub> / P<sub>0</sub>, 99th-percentile thalweg invert shock P<sub>99</sub>(|<span class="math-hat">d̂</span><sub>max</sub> − d<sub>max</sub>|), and 31,367 off-anchor ADCP states.</p>
               </div>
               <div class="filter-bar-inline">
-                <label for="cche-split-select">Split:</label>
-                <select id="cche-split-select">
-                  <option value="S-ID">S-ID (In-Domain CONUS, n = 3,988)</option>
-                  <option value="S-LRO">S-LRO (Held-Out Divisions, n = 3,988)</option>
-                  <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Extrapolation, n = 678)</option>
-                  <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Tail, n = 339)</option>
-                </select>
+                <label class="filter-pair" for="cche-split-select">
+                  <span>Split:</span>
+                  <select id="cche-split-select">
+                    <option value="S-ID">S-ID (In-Domain CONUS, n = 3,988)</option>
+                    <option value="S-LRO">S-LRO (Held-Out Divisions, n = 3,988)</option>
+                    <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Extrapolation, n = 678)</option>
+                    <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Tail, n = 339)</option>
+                  </select>
+                </label>
               </div>
             </div>
 
@@ -448,7 +456,7 @@
                     <th scope="col" class="col-text">Model</th>
                     <th scope="col" class="col-num">RMSE<sub>log</sub>(R<sub>0</sub>)</th>
                     <th scope="col" class="col-num">RMSE<sub>raw</sub>(R<sub>0</sub>) (m)</th>
-                    <th scope="col" class="col-num">RMSE<sub>log</sub>(Â<sub>cons</sub>)</th>
+                    <th scope="col" class="col-num">RMSE<sub>log</sub>(<span class="math-hat">Â</span><sub>cons</sub>)</th>
                     <th scope="col" class="col-num">RMSE<sub>log</sub>(A<sub>direct</sub>)</th>
                     <th scope="col" class="col-num">Orig. |ε<sub>A</sub>| &gt; 0.05 (%)</th>
                     <th scope="col" class="col-num">P<sub>99</sub>(|Δd<sub>max</sub>|) (m)</th>

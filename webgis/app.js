@@ -553,7 +553,7 @@ function updateMapLegend() {
       { label: "Anchor ADCP Only (n = 345)", color: "#94A3B8", wide: true },
     ];
   } else if (mode === "latent_n") {
-    title = "M5 Predicted Manning Roughness n̂";
+    title = 'M5 Predicted Manning Roughness <span class="math-hat">n̂</span>';
     items = [
       { label: "< 0.025 (Smooth)", color: "#38BDF8" },
       { label: "0.025 – 0.045", color: "#0F7C80" },
@@ -561,12 +561,12 @@ function updateMapLegend() {
       { label: "> 0.075 (Rough / Headwater)", color: "#D55E00" },
     ];
   } else if (mode === "latent_r") {
-    title = "M5 Predicted Dingman Shape r̂";
+    title = 'M5 Predicted Dingman Shape <span class="math-hat">r̂</span>';
     items = [
-      { label: "r̂ < 1.2 (V-Notch)", color: "#8B5CF6" },
+      { label: '<span class="math-hat">r̂</span> < 1.2 (V-Notch)', color: "#8B5CF6" },
       { label: "1.2 – 1.8", color: "#0072B2" },
       { label: "1.8 – 2.5 (Parabolic)", color: "#009E73" },
-      { label: "r̂ > 2.5 (Wide/Flat)", color: "#E69F00" },
+      { label: '<span class="math-hat">r̂</span> > 2.5 (Wide/Flat)', color: "#E69F00" },
     ];
   } else if (mode === "model_rmse") {
     title = `${state.singleModel} Anchor Geometry RMSE<sub>log</sub>`;
@@ -1223,7 +1223,9 @@ function renderXsPlot() {
   // Optional 3DEP Lidar Valley Transect Inset (top-right corner of XS SVG)
   if (state.show3depInset && !isEh && s.fp && Array.isArray(s.fp[2])) {
     const [lenM, z0, dzArr] = s.fp;
-    const inW = 175;
+    const titleText = `3DEP Lidar Valley (${lenM} m · z₀=${z0}m)`;
+    const measuredTitleW = measureSvgTextWidth(titleText, "700 9px -apple-system, BlinkMacSystemFont, sans-serif");
+    const inW = Math.max(182, Math.ceil(measuredTitleW) + 16);
     const inH = 72;
     const inX = pad.l + W_px - inW - 8;
     const inY = pad.t + 6;
@@ -1235,15 +1237,15 @@ function renderXsPlot() {
         width: inW,
         height: inH,
         rx: 4,
-        fill: "rgba(15, 23, 42, 0.82)",
+        fill: "rgba(15, 23, 42, 0.84)",
         stroke: "#475569",
       })
     );
     svg.appendChild(
       svgEl(
         "text",
-        { x: inX + 6, y: inY + 13, fill: "#38bdf8", "font-size": "9.5", "font-weight": "700" },
-        `3DEP Lidar Valley (${lenM} m · z₀=${z0}m)`
+        { x: inX + 7, y: inY + 13, fill: "#38bdf8", "font-size": "9", "font-weight": "700" },
+        titleText
       )
     );
 
@@ -1297,8 +1299,8 @@ function renderRatingSimulator() {
   const [, , dmaxObs, , , rObs] = s.obs;
   const dhOracle = computeDingmanStageRise(dmaxObs, rObs || 2.0, state.simQRatio, gamma);
   readout.innerHTML = `Q / Q<sub>a</sub> = ${state.simQRatio.toFixed(1)}× · ${
-    state.simRoughnessMode === "dyn" ? `<span class="math-preserve">γ̂</span> = ${divGamma.toFixed(3)}` : "γ = 0 (Const. n)"
-  } · Oracle Δh = ${dhOracle >= 0 ? "+" : ""}${dhOracle.toFixed(2)} m`;
+    state.simRoughnessMode === "dyn" ? `<span class="math-preserve math-hat">γ̂</span> = ${divGamma.toFixed(3)}` : "γ = 0 (Const. n)"
+  } · Oracle Δh = ${dhOracle >= 0 ? "+" : ""}${dhOracle.toFixed(2)}&nbsp;m`;
 
   const curves = [
     { name: "Oracle (Obs Anchor)", dmax0: dmaxObs, r: rObs || 2.0, color: oracleColor, dashed: false, lw: 2.5 },
@@ -1598,12 +1600,12 @@ function renderHypothesesAndAblations() {
         'M5 loses less skill from S-ID to OOD than M2-XGB across S-LRO (Δ<sub>H3</sub> = <strong class="metric-em">−0.0138 [−0.0494, +0.0209]</strong>), S-TAIL-DA (<strong class="metric-em">−0.0485</strong>), and S-TAIL-SO (<strong class="metric-em">−0.2088 [−0.4357, +0.0151]</strong>), but 95% CIs include 0.',
     },
     {
-      id: "H4 (Latent Manning n̂ & Dingman Shape r̂ Plausibility)",
+      id: 'H4 (Latent Manning <span class="math-hat">n̂</span> &amp; Dingman Shape <span class="math-hat">r̂</span> Plausibility)',
       subtag: "D₅₀ Correlation Falsified",
       verdict: "3/4 PASSED",
       supported: false,
       detail:
-        'Literature band π<sub>lit</sub> = <strong class="metric-em">92.65% ≥ 80%</strong> (S-LRO <strong class="metric-em">95.19%</strong>), zero boundary saturation (π<sub>ν</sub> = <strong class="metric-em">0.13%</strong>, π<sub>r</sub> = <strong class="metric-em">0.00%</strong>), positive slope correlation ρ<sub>S</sub>(n̂, S) = <strong class="metric-em">+0.4431</strong>, but bed grain-size ρ<sub>S</sub>(n̂, D<sub>50</sub>) = <strong class="metric-em">−0.0203</strong>.',
+        'Literature band π<sub>lit</sub> = <strong class="metric-em">92.65% ≥ 80%</strong> (S-LRO <strong class="metric-em">95.19%</strong>), zero boundary saturation (π<sub>ν</sub> = <strong class="metric-em">0.13%</strong>, π<sub>r</sub> = <strong class="metric-em">0.00%</strong>), positive slope correlation ρ<sub>S</sub>(<span class="math-hat">n̂</span>, S) = <strong class="metric-em">+0.4431</strong>, but bed grain-size ρ<sub>S</sub>(<span class="math-hat">n̂</span>, D<sub>50</sub>) = <strong class="metric-em">−0.0203</strong>.',
     },
     {
       id: "S2 (End-to-End IFT Through Φ vs. Two-Stage M6-NN)",
@@ -1908,8 +1910,8 @@ function initProvenanceView() {
   const ev1El = document.getElementById("event1-audit-cards");
   ev1El.innerHTML = `
     <div class="telemetry-box" title="${auditTooltip}"><span>Audit Classification</span><strong>${auditLabelText}</strong></div>
-    <div class="telemetry-box"><span>Median Nearest Gauge</span><strong>${fmt(ev1.d_nn_median_km, 2)} km</strong></div>
-    <div class="telemetry-box"><span>Variogram Range ρ̂</span><strong>${fmt(ev1.rho_hat_km, 2)} km</strong></div>
+    <div class="telemetry-box"><span>Median Nearest Gauge</span><strong>${fmt(ev1.d_nn_median_km, 2)}&nbsp;km</strong></div>
+    <div class="telemetry-box"><span>Variogram Range <span class="math-hat">ρ̂</span></span><strong>${fmt(ev1.rho_hat_km, 2)}&nbsp;km</strong></div>
     <div class="telemetry-box"><span>Strongly Nested Ψ ≥ 0.5</span><strong>42.13% of sites</strong></div>
   `;
 

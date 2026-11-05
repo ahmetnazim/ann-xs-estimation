@@ -156,6 +156,15 @@ sub {
   text-transform: none;
 }
 
+.math-hat {
+  font-family: "STIX Two Math", "Cambria Math", Georgia, "Times New Roman", serif;
+  margin-inline-end: 1.5px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
 .metric-em {
   color: var(--text-primary);
   font-weight: 600;
@@ -270,7 +279,8 @@ sub {
 }
 
 .site-search input[type="search"] {
-  inline-size: 14.5rem;
+  min-inline-size: 245px;
+  inline-size: 15.75rem;
   padding-block: 0.36rem;
   padding-inline: 0.6rem;
   border: 1px solid var(--border-subtle);
@@ -892,6 +902,7 @@ sub {
   flex-direction: column;
   gap: 0.75rem;
   align-self: start;
+  min-inline-size: 0;
 }
 
 .panel-header {
@@ -921,9 +932,16 @@ sub {
   display: flex;
   flex-wrap: wrap;
   align-items: safe center;
-  gap: 0.4rem;
+  gap: 0.45rem 0.65rem;
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+.filter-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .hypothesis-stack,
@@ -945,10 +963,10 @@ sub {
 
 .hyp-card-top {
   display: flex;
-  flex-wrap: wrap;
-  align-items: safe center;
+  flex-wrap: nowrap;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 0.35rem 0.6rem;
+  gap: 12px;
   font-weight: 700;
   font-size: 0.8rem;
 }
@@ -957,7 +975,8 @@ sub {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.35rem;
+  gap: 0.2rem 0.35rem;
+  flex: 1 1 auto;
   min-inline-size: 0;
 }
 
@@ -994,7 +1013,8 @@ sub {
    ========================================================================== */
 
 .table-wrapper {
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
   max-inline-size: 100%;
   max-block-size: min(460px, 72vh);
   container-type: inline-size;
@@ -1014,12 +1034,14 @@ sub {
   inline-size: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 0.75rem;
+  font-size: 11.5px;
 }
 
 .data-table caption {
   caption-side: top;
   text-align: start;
+  white-space: normal;
+  line-height: 1.35;
   margin-block-end: 0.5rem;
   padding: 0.3rem 0.4rem;
   font-size: 0.73rem;
@@ -1038,8 +1060,7 @@ sub {
 
 .data-table th,
 .data-table td {
-  padding-block: 0.38rem;
-  padding-inline: 0.55rem;
+  padding: 5px 6px;
   text-align: end;
   font-variant-numeric: tabular-nums;
   border-block-end: 1px solid var(--border-subtle);
@@ -1050,6 +1071,9 @@ sub {
   background-color: var(--bg-elevated);
   color: var(--text-primary);
   font-weight: 700;
+  white-space: normal;
+  line-height: 1.15;
+  vertical-align: bottom;
 }
 
 .data-table th.col-text,
@@ -1068,6 +1092,21 @@ sub {
 .data-table td.col-num {
   text-align: end;
   font-variant-numeric: tabular-nums;
+}
+
+#prov-table td:nth-child(2),
+#prov-table td:nth-child(3),
+#prov-table td:nth-child(5) {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+#prov-table th:nth-child(1),
+#prov-table td:nth-child(1),
+#prov-table th:nth-child(4),
+#prov-table td:nth-child(4) {
+  white-space: nowrap;
 }
 
 .data-table tbody th {
