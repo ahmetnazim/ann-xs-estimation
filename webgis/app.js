@@ -582,8 +582,14 @@ function updateMapLegend() {
     items.push({ label: "USACE eHydro S-IND (◆)", color: "#D55E00", triangle: true, wide: true });
   }
 
+  const isCollapsed = legend.classList.contains("is-collapsed");
   legend.innerHTML = `
-    <div class="legend-title">${title}</div>
+    <div class="legend-header">
+      <div class="legend-title">${title}</div>
+      <button type="button" class="legend-toggle-btn" aria-expanded="${!isCollapsed}" title="Toggle legend">${
+        isCollapsed ? "▴ Show" : "▾ Hide"
+      }</button>
+    </div>
     <div class="legend-grid">
       ${items
         .map(
@@ -596,6 +602,14 @@ function updateMapLegend() {
         .join("")}
     </div>
   `;
+  const toggleBtn = legend.querySelector(".legend-toggle-btn");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const nextCollapsed = legend.classList.toggle("is-collapsed");
+      toggleBtn.setAttribute("aria-expanded", String(!nextCollapsed));
+      toggleBtn.textContent = nextCollapsed ? "▴ Show" : "▾ Hide";
+    });
+  }
 }
 
 function refreshMapSources() {
@@ -709,7 +723,7 @@ function initMapView() {
       zoom: 3.6,
       attributionControl: true,
     });
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-left");
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     state.map = map;
 
     map.on("load", () => {

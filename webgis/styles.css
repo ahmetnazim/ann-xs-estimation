@@ -555,30 +555,81 @@ sub {
 /* Map Legend Overlay */
 .map-legend {
   position: absolute;
-  inset-block-end: 1.5rem;
+  inset-block-end: 2.65rem;
   inset-inline-end: 0.75rem;
-  min-inline-size: 270px;
-  max-inline-size: 350px;
+  min-inline-size: 250px;
+  max-inline-size: min(335px, calc(100% - 1.5rem));
   background-color: color-mix(in oklab, var(--bg-surface) 94%, transparent);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-subtle);
   border-radius: 0.45rem;
-  padding: 0.6rem 0.75rem;
+  padding: 0.5rem 0.7rem;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
   z-index: 10;
   font-size: 0.72rem;
 }
 
+.legend-header {
+  display: flex;
+  align-items: safe center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .legend-title {
   font-weight: 700;
-  margin-block-end: 0.35rem;
   color: var(--text-primary);
+}
+
+.legend-toggle-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.1rem 0.25rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.legend-toggle-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-elevated);
 }
 
 .legend-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.25rem 0.65rem;
+  gap: 0.24rem 0.6rem;
+  margin-block-start: 0.35rem;
+}
+
+.map-legend.is-collapsed .legend-grid {
+  display: none;
+}
+
+/* Theme-Aware MapLibre Bottom-Right Attribution & Controls */
+.maplibregl-ctrl-attrib {
+  background-color: color-mix(in oklab, var(--bg-surface) 90%, transparent) !important;
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.35rem !important;
+  font-size: 0.68rem !important;
+  backdrop-filter: blur(6px);
+}
+
+.maplibregl-ctrl-attrib a {
+  color: var(--text-primary) !important;
+}
+
+.maplibregl-ctrl-group {
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+
+.maplibregl-ctrl-group button + button {
+  border-block-start-color: var(--border-subtle) !important;
 }
 
 .legend-item {
