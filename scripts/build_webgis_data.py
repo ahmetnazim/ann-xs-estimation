@@ -294,13 +294,18 @@ def _load_3dep_transect_preview(site_no: str) -> list[Any] | None:
     samples = raw.get("samples", {})
     z_list = samples.get("z", [])
     geom = raw.get("geometry", {})
-    if not isinstance(z_list, list) or len(z_list) < 1001:
+    if not isinstance(z_list, list) or len(z_list) < 100:
         return None
-    z_arr = np.asarray(z_list, dtype=np.float64)
+    z_arr = np.asarray([float(x) if x is not None else np.nan for x in z_list], dtype=np.float64)
     if not np.all(np.isfinite(z_arr)):
         return None
-    z_center = float(z_arr[500])
-    dz_sub = [round(float(z_arr[idx] - z_center), 1) for idx in FP_SAMPLE_INDICES]
+    n_pts = len(z_arr)
+    center_idx = n_pts // 2
+    z_center = float(z_arr[center_idx])
+    dz_sub = [
+        round(float(z_arr[min(n_pts - 1, round(idx * (n_pts - 1) / 1000))] - z_center), 1)
+        for idx in FP_SAMPLE_INDICES
+    ]
     return [_r(geom.get("length"), 0), _r(z_center, 1), dz_sub]
 
 
@@ -435,7 +440,7 @@ def build_conus_sites() -> dict[str, Any]:
             else None
         )
 
-        fp_preview = _load_3dep_transect_preview(sid) if rmse_fp is not None else None
+        fp_preview = _load_3dep_transect_preview(sid)
         nn_km = _r(audit_site.at[sid, "nn_km"], 1) if sid in audit_site.index else None
         psi_max = _r(audit_site.at[sid, "psi_max"], 2) if sid in audit_site.index else None
 

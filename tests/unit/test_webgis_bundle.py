@@ -188,7 +188,7 @@ def test_webgis_sites_physical_invariants_and_continuity() -> None:
                     assert 0.0 <= d_lo <= d_hi
                     assert d_hi > 0.0
 
-    assert n_with_3dep == 1760
+    assert n_with_3dep == 3350
 
     # Check eHydro independent sites
     n_ehydro_uq = 0
