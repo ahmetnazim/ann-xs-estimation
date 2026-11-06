@@ -227,7 +227,7 @@ def test_webgis_dom_ids_and_accessibility_hooks() -> None:
 
     # Verify modern web guidance semantics and single semantic <caption> per table
     assert 'name="color-scheme"' in html
-    assert "<dialog" in html
+    assert '<details class="controls-details"' in html
     assert 'aria-pressed="' in html
     assert len(re.findall(r"<caption\b", html)) == len(
         re.findall(r'<table class="data-table"', html)
@@ -235,3 +235,23 @@ def test_webgis_dom_ids_and_accessibility_hooks() -> None:
     assert "color-scheme: light dark" in css
     assert "overscroll-behavior: contain" in css
     assert "@container (width < 520px)" in css
+
+    # Verify manuscript cross-references and internal protocol codes are absent from UI copy
+    for token in (
+        "§4.7",
+        "Row 4",
+        "Row-4",
+        "Table T2",
+        "Table T7",
+        "Table T10",
+        "Table T11",
+        "Event 1",
+        "Event 2",
+        "OPS-1 v1",
+        "OPS-1 v2",
+        "OPS-1 v3",
+        "H-FP1",
+        "H-V3-",
+    ):
+        assert token not in html, f"Manuscript/protocol reference '{token}' still in index.html"
+        assert token not in js, f"Manuscript/protocol reference '{token}' still in app.js"

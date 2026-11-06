@@ -10,7 +10,7 @@
         localStorage.getItem("color-scheme") ?? "light dark";
     } catch (_) {}
   </script>
-  <title>ANN-XS Estimation WebGIS | Continental River Cross-Section &amp; Operational Routing Benchmark</title>
+  <title>ANN-XS Estimation WebGIS | Continental River Cross-Section &amp; Stage Routing Benchmark</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap">
@@ -23,7 +23,7 @@
       <span class="agency-pill" title="USDA-ARS Cooperative Agreement No. 6060-13000-030-00D · NCCHE, University of Mississippi">
         NCCHE · USDA-ARS 6060-13000-030-00D
       </span>
-      <h1>River Cross-Section Geometry &amp; Operational Stage Benchmark</h1>
+      <h1>River Cross-Section Geometry &amp; Stage Routing Benchmark</h1>
     </div>
 
     <nav class="view-nav" aria-label="Primary workspace views">
@@ -31,13 +31,13 @@
         WebGIS &amp; XS Explorer
       </button>
       <button type="button" class="nav-tab" data-view="geometry" aria-pressed="false">
-        Geometry Benchmark (Event 1–3)
+        Channel Geometry
       </button>
       <button type="button" class="nav-tab" data-view="operational" aria-pressed="false">
-        Operational Routing &amp; CCHE1D (OPS-1)
+        Stage Routing &amp; 1D Hydraulics
       </button>
       <button type="button" class="nav-tab" data-view="provenance" aria-pressed="false">
-        Data Availability &amp; Provenance
+        Data &amp; Quality Control
       </button>
     </nav>
 
@@ -55,10 +55,6 @@
           <button type="submit" class="btn-subtle">Go</button>
         </form>
       </search>
-
-      <button type="button" id="open-ledger-btn" class="btn-badge" aria-haspopup="dialog">
-        <span aria-hidden="true">🔒</span> v1.0.0 + OPS-1 Ledger
-      </button>
 
       <button type="button" id="theme-toggle-btn" class="btn-icon" aria-label="Toggle color theme">
         <span class="theme-icon-light" aria-hidden="true">☀️</span>
@@ -99,12 +95,12 @@
             <div class="control-group">
               <label for="map-color-mode">Color Reaches By</label>
               <select id="map-color-mode">
-                <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dₘₐₓ)</option>
-                <option value="win_op_dyn">Best Model: Flood Stage — Dynamic n (OPS-1 v3)</option>
-                <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain, Const. n (OPS-1 v2)</option>
+                <option value="win_geom">Best Model: Bankfull Geometry (ln W, ln d̄, ln dₘₐₓ)</option>
+                <option value="win_op_dyn">Best Model: Flood Stage — Dynamic Roughness</option>
+                <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain (Const. n)</option>
                 <option value="model_rmse">Single-Model Reach Error (RMSEₗₒ₉ or Stage m)</option>
-                <option value="slope_regime">NHDPlus Slope-Floor Regime (Fₛ: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
-                <option value="data_tier">Data Availability Tier (3DEP / OPS-1 / eHydro)</option>
+                <option value="slope_regime">NHDPlus Slope Regime (S = 10⁻⁵ vs. S &gt; 10⁻⁵)</option>
+                <option value="data_tier">Data Availability Tier (3DEP / Multi-Stage / Anchor)</option>
                 <option value="latent_n">Predicted Manning Roughness n̂ (M5 Physics Layer)</option>
                 <option value="latent_r">Predicted Dingman Shape Exponent r̂ (M5 Physics Layer)</option>
               </select>
@@ -113,7 +109,7 @@
             <div id="single-model-control" class="control-group is-hidden">
               <label for="map-single-model">Select Model to Inspect</label>
               <select id="map-single-model">
-                <option value="M2-XGB">M2-XGB (M* Selected Baseline)</option>
+                <option value="M2-XGB">M2-XGB (Gradient Boosted Trees)</option>
                 <option value="M2-MLP">M2-MLP (Deep Ensemble Neural Network)</option>
                 <option value="M5">M5 (Hard Manning + Continuity Φ)</option>
                 <option value="M1">M1 (Retrained Zarrabi et al. 2025 XGB)</option>
@@ -138,7 +134,7 @@
                 <select id="filter-slope">
                   <option value="ALL">All Slopes (100%)</option>
                   <option value="NORMAL">Normal S &gt; 10⁻⁵ (79.1%)</option>
-                  <option value="FLOORED">Floored S = 10⁻⁵ (20.9%)</option>
+                  <option value="FLOORED">Clamped S = 10⁻⁵ (20.9%)</option>
                 </select>
               </div>
             </div>
@@ -150,8 +146,8 @@
                   <option value="ALL">All Benchmark Sites</option>
                   <option value="3DEP">Has 3DEP Lidar Transect (n = 3,350)</option>
                   <option value="OPS1">Has Multi-Stage Series (n = 3,643)</option>
-                  <option value="TAIL_DA">Extrapolation Tail DA (S-TAIL-DA)</option>
-                  <option value="TAIL_SO">Extrapolation Tail Order (S-TAIL-SO)</option>
+                  <option value="TAIL_DA">Drainage Area Extremes (Top / Bottom 10%)</option>
+                  <option value="TAIL_SO">Large Rivers (Stream Order ≥ 7)</option>
                 </select>
               </div>
               <div class="control-group">
@@ -174,7 +170,7 @@
                   </label>
                   <label class="check-label">
                     <input type="checkbox" id="toggle-physio-layer" checked>
-                    <span>Show 8 F&amp;J Physiographic Division polygons</span>
+                    <span>Show 8 Physiographic Division polygons</span>
                   </label>
                   <label class="check-label">
                     <input type="checkbox" id="toggle-ehydro-layer" checked>
@@ -205,9 +201,9 @@
           </div>
           <div class="inspector-header-controls">
             <label for="xs-split-select" class="sr-only">Validation Split</label>
-            <select id="xs-split-select" title="Switch between In-Distribution (S-ID) and Leave-One-Region-Out (S-LRO) out-of-fold predictions">
-              <option value="sid">Split: S-ID (3×5 Grouped CV)</option>
-              <option value="slro">Split: S-LRO (Held-Out Division)</option>
+            <select id="xs-split-select" title="Switch between 5-Fold Grouped CV and Regional Holdout out-of-fold predictions">
+              <option value="sid">5-Fold Grouped CV</option>
+              <option value="slro">Regional Holdout (8 Divisions)</option>
             </select>
             <button type="button" id="export-site-btn" class="btn-subtle" title="Download site cross-section and predictions as JSON">
               Export JSON
@@ -244,18 +240,18 @@
           </div>
         </figure>
 
-        <!-- Interactive OPS-1 Stage-Discharge Routing Simulator -->
+        <!-- Interactive Stage-Discharge Rating Curve Simulator -->
         <section class="routing-simulator" aria-labelledby="routing-sim-heading">
           <div class="sim-header">
-            <h3 id="routing-sim-heading">Interactive Stage–Discharge Routing (OPS-1 Simulator)</h3>
+            <h3 id="routing-sim-heading">Interactive Stage–Discharge Rating Curve</h3>
             <span id="sim-q-readout" class="sim-readout">Q / Q<sub>a</sub> = 3.5× (High Flow)</span>
           </div>
           <div class="sim-controls">
             <label for="sim-q-slider">Flow Ratio Q / Q<sub>a</sub>:</label>
             <input type="range" id="sim-q-slider" min="0.4" max="10.0" step="0.1" value="3.5">
             <select id="sim-roughness-mode" aria-label="Roughness regime">
-              <option value="dyn">Dynamic n (γ̂ = −0.325, OPS-1 v3 LODO)</option>
-              <option value="const">Constant n (γ = 0, OPS-1 v1/v2)</option>
+              <option value="dyn">Dynamic Roughness: n(Q) = nₐ (Q / Qₐ)^γ</option>
+              <option value="const">Constant Roughness: n = nₐ</option>
             </select>
           </div>
           <div id="rating-legend-strip" class="chart-legend-strip" role="list" aria-label="Plotted rating curve models"></div>
@@ -267,7 +263,7 @@
 
         <div class="table-wrapper compact-table-wrapper">
           <table class="data-table" id="site-model-table">
-            <caption id="site-model-table-cap">Reach-level observed vs. predicted geometry, continuity closure |ε<sub>A</sub>|, and stage RMSE</caption>
+            <caption id="site-model-table-cap">Reach-level observed vs. predicted geometry, continuity closure |ε<sub>A</sub>|, and high-flow stage RMSE</caption>
             <thead>
               <tr>
                 <th scope="col" class="col-text">Model</th>
@@ -290,30 +286,30 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- VIEW 2: CONFIRMATORY GEOMETRY BENCHMARK (EVENT 1-3)                   -->
+    <!-- VIEW 2: CHANNEL GEOMETRY BENCHMARK                                    -->
     <!-- ===================================================================== -->
-    <section id="view-geometry" class="workspace-view" aria-label="Confirmatory Geometry Benchmark Dashboard" hidden>
+    <section id="view-geometry" class="workspace-view" aria-label="Channel Geometry Benchmark Dashboard" hidden>
       <div class="dashboard-container">
         <div class="kpi-banner-grid">
           <article class="kpi-card accent-teal">
-            <span class="kpi-eyebrow">Event 2 Selected Baseline (M*)</span>
+            <span class="kpi-eyebrow">Top Overall Accuracy</span>
             <strong class="kpi-value">M2-XGB (#1) &amp; M2-MLP (#2)</strong>
-            <p class="kpi-desc">Beat retrained Zarrabi M1 across all S-ID &amp; S-LRO dimensions (S-ID d̄ RMSE<sub>log</sub> <strong class="metric-em">0.4396</strong> &amp; <strong class="metric-em">0.4520</strong> vs. <strong class="metric-em">0.4745</strong>).</p>
+            <p class="kpi-desc">Lowest error across width, mean depth, thalweg depth, and cross-sectional area in both grouped CV and regional holdouts (CV d̄ RMSE<sub>log</sub> <strong class="metric-em">0.4396</strong> &amp; <strong class="metric-em">0.4520</strong> vs. M1 <strong class="metric-em">0.4745</strong>).</p>
           </article>
           <article class="kpi-card accent-orange">
-            <span class="kpi-eyebrow">Pre-Registered §4.7 Verdict</span>
-            <strong class="kpi-value">Row 4 Realized (H1–H4 Falsified)</strong>
-            <p class="kpi-desc">Hard Manning inversion (M5) propagates NHDPlus slope-floor &amp; Q<sub>E</sub> errors into d̄ (<strong class="metric-em">+0.2502</strong> log units on S-LRO).</p>
+            <span class="kpi-eyebrow">Physics-Constrained Sensitivity</span>
+            <strong class="kpi-value">Slope &amp; Flow Input Noise</strong>
+            <p class="kpi-desc">Enforcing hard Manning inversion during training (M5) amplifies errors where NHDPlus slopes are clamped at S = 10<sup>−5</sup> or mean flow Q<sub>E</sub> diverges from survey discharge (<strong class="metric-em">+0.2502</strong> log units on regional holdouts).</p>
           </article>
           <article class="kpi-card accent-navy">
-            <span class="kpi-eyebrow">Independent USACE eHydro (S-IND)</span>
+            <span class="kpi-eyebrow">USACE Bathymetric Surveys (131 Reaches)</span>
             <strong class="kpi-value">M5 #1 on Flow Area A (0.9495)</strong>
-            <p class="kpi-desc">Across 131 navigation surveys on 18 rivers, M5 achieves lowest Area RMSE<sub>log</sub> (<strong class="metric-em">0.9495</strong>, MdAPE <strong class="metric-em">44.3%</strong>) &amp; exact |ε<sub>A</sub>| = 0.</p>
+            <p class="kpi-desc">Across 131 independent hydrographic surveys on 18 navigable rivers, physics-informed M5 achieves lowest Area RMSE<sub>log</sub> (<strong class="metric-em">0.9495</strong>, MdAPE <strong class="metric-em">44.3%</strong>) with exact continuity |ε<sub>A</sub>| = 0.</p>
           </article>
           <article class="kpi-card accent-green">
-            <span class="kpi-eyebrow">Deep-Ensemble 90% UQ Calibration</span>
-            <strong class="kpi-value">0.8997 (S-ID) · 0.9025 (S-LRO)</strong>
-            <p class="kpi-desc">Both M5 and M2-MLP (<strong class="metric-em">0.8961</strong> / <strong class="metric-em">0.8965</strong>) land squarely inside the pre-registered [0.85, 0.95] coverage band without conformal post-hoc scaling.</p>
+            <span class="kpi-eyebrow">90% Prediction Interval Calibration</span>
+            <strong class="kpi-value">89.97% (CV) · 90.25% (Regional)</strong>
+            <p class="kpi-desc">5-member neural ensembles (M5 and M2-MLP at <strong class="metric-em">89.61%</strong> / <strong class="metric-em">89.65%</strong>) produce well-calibrated 90% empirical uncertainty bounds across held-out gauges and physiographic divisions.</p>
           </article>
         </div>
 
@@ -322,19 +318,19 @@
           <div class="panel-card">
             <div class="panel-header">
               <div>
-                <h2>Multi-Regime Accuracy &amp; Continuity Matrix (Table T2 / T7)</h2>
-                <p class="muted-sub">Compare all 11 model rungs across 6 validation splits and 5 cross-section targets.</p>
+                <h2>Cross-Section Accuracy &amp; Continuity by Validation Split</h2>
+                <p class="muted-sub">Compare all 10 models across 6 evaluation splits and 5 channel geometry targets.</p>
               </div>
               <div class="filter-bar-inline">
                 <label class="filter-pair" for="bench-split-select">
                   <span>Split:</span>
                   <select id="bench-split-select">
-                    <option value="S-LRO">S-LRO (8 Held-Out Divisions, n = 3,988)</option>
-                    <option value="S-ID">S-ID (3×5 Grouped CV, n = 3,988 · Optimistic)</option>
-                    <option value="S-IND">S-IND (131 USACE eHydro Locations / 18 Rivers)</option>
-                    <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Deciles 1 &amp; 10, n = 678)</option>
-                    <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Extrapolation, n = 339)</option>
-                    <option value="S-RND">S-RND (Legacy Random 75:25 Split, n = 9,673)</option>
+                    <option value="S-LRO">Regional Holdout (8 Divisions, n = 3,988)</option>
+                    <option value="S-ID">5-Fold Grouped CV (n = 3,988)</option>
+                    <option value="S-IND">USACE eHydro Surveys (131 Reaches / 18 Rivers)</option>
+                    <option value="S-TAIL-DA">Drainage Area Extremes (Deciles 1 &amp; 10, n = 678)</option>
+                    <option value="S-TAIL-SO">Large Rivers (Stream Order ≥ 7, n = 339)</option>
+                    <option value="S-RND">Random 75:25 Split (n = 9,673)</option>
                   </select>
                 </label>
                 <label class="filter-pair" for="bench-target-select">
@@ -373,86 +369,86 @@
             </div>
           </div>
 
-          <!-- Pre-Registered Hypotheses H1-H4 & Row-4 Ablations -->
+          <!-- Key Scientific Findings & Input Sensitivity -->
           <div class="panel-card">
             <div class="panel-header">
               <div>
-                <h2>Pre-Registered Hypotheses (H1–H4) &amp; Row-4 Mechanism Diagnosis</h2>
-                <p class="muted-sub">Division-stratified paired cluster bootstrap (B = 10,000) and ablations A1–A4, SA1–SA6.</p>
+                <h2>Key Benchmark Findings &amp; Input Sensitivity</h2>
+                <p class="muted-sub">Regional bootstrap comparisons (B = 10,000) and sensitivity of physics-constrained depth to slope and discharge inputs.</p>
               </div>
             </div>
 
             <div id="hypotheses-cards-list" class="hypothesis-stack"></div>
 
-            <h3 class="sub-heading">Row-4 Diagnostic Ablations on Mean Depth d̄ (RMSE<sub>log</sub>)</h3>
-            <svg id="ablation-svg" viewBox="0 0 640 250" role="img" aria-label="Ablation and sensitivity analysis comparison for M5"></svg>
+            <h3 class="sub-heading">Impact of Slope Clamping &amp; Discharge Uncertainty on Mean Depth d̄ (RMSE<sub>log</sub>)</h3>
+            <svg id="ablation-svg" viewBox="0 0 640 250" role="img" aria-label="Sensitivity analysis comparison for physics-constrained mean depth"></svg>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- VIEW 3: OPERATIONAL STAGE ROUTING & CCHE1D READINESS (OPS-1 v1-v3)    -->
+    <!-- VIEW 3: STAGE ROUTING & 1D HYDRAULICS                                 -->
     <!-- ===================================================================== -->
-    <section id="view-operational" class="workspace-view" aria-label="Operational Stage-Response and CCHE1D Readiness Benchmark" hidden>
+    <section id="view-operational" class="workspace-view" aria-label="Stage Routing and 1D Hydraulic Solver Readiness" hidden>
       <div class="dashboard-container">
         <div class="kpi-banner-grid">
           <article class="kpi-card accent-teal">
-            <span class="kpi-eyebrow">H-FP1 Supported (OPS-1 v2)</span>
+            <span class="kpi-eyebrow">3DEP Lidar Floodplain Coupling</span>
             <strong class="kpi-value"><span class="nowrap">−0.401&nbsp;m</span> Flood-Stage RMSE Drop</strong>
-            <p class="kpi-desc">Burning predicted channels into 3,282 USGS 3DEP 10&nbsp;m Lidar floodplain transects cuts high-flow stage RMSE from <strong class="metric-em nowrap">1.874&nbsp;m</strong> to <strong class="metric-em nowrap">1.473&nbsp;m</strong> (95% CI <strong class="metric-em nowrap">[−0.547, −0.253]</strong>).</p>
+            <p class="kpi-desc">Embedding predicted channels into 3,282 USGS 3DEP 10&nbsp;m Lidar valley transects reduces high-flow stage RMSE from <strong class="metric-em nowrap">1.874&nbsp;m</strong> to <strong class="metric-em nowrap">1.473&nbsp;m</strong> (95% CI <strong class="metric-em nowrap">[−0.547, −0.253]</strong>).</p>
           </article>
           <article class="kpi-card accent-green">
-            <span class="kpi-eyebrow">H-V3-1 Supported <span class="math-preserve">(Normal Slopes <span class="nowrap">S&nbsp;&gt;&nbsp;10<sup>−5</sup></span>)</span></span>
-            <strong class="kpi-value">M4 (<span class="nowrap">1.321&nbsp;m</span>) &amp; M5 (<span class="nowrap">1.333&nbsp;m</span>) Win</strong>
-            <p class="kpi-desc">On the 79.1% of CONUS reaches without NHDPlus <span class="nowrap">S&nbsp;=&nbsp;10<sup>−5</sup></span> clamping, physics-informed M4 &amp; M5 beat M2-XGB (<strong class="metric-em nowrap">1.400&nbsp;m</strong>; Δ = <strong class="metric-em nowrap">−0.068&nbsp;m</strong>) and M1 (<strong class="metric-em nowrap">1.572&nbsp;m</strong>).</p>
+            <span class="kpi-eyebrow">Unclamped Reach Slopes <span class="math-preserve">(<span class="nowrap">S&nbsp;&gt;&nbsp;10<sup>−5</sup></span>)</span></span>
+            <strong class="kpi-value">M4 (<span class="nowrap">1.321&nbsp;m</span>) &amp; M5 (<span class="nowrap">1.333&nbsp;m</span>) Lead</strong>
+            <p class="kpi-desc">On the 79.1% of CONUS reaches without NHDPlus <span class="nowrap">S&nbsp;=&nbsp;10<sup>−5</sup></span> slope clamping, physics-informed M4 &amp; M5 outperform M2-XGB (<strong class="metric-em nowrap">1.400&nbsp;m</strong>; Δ = <strong class="metric-em nowrap">−0.068&nbsp;m</strong>) and M1 (<strong class="metric-em nowrap">1.572&nbsp;m</strong>).</p>
           </article>
           <article class="kpi-card accent-navy">
-            <span class="kpi-eyebrow">H-V3-2 Supported <span class="math-preserve">(Dynamic Roughness <span class="nowrap"><span class="math-hat">γ̂</span>&nbsp;=&nbsp;−0.325</span>)</span></span>
-            <strong class="kpi-value">Oracle Bias <span class="nowrap">+1.011&nbsp;m</span> → <span class="nowrap">−0.065&nbsp;m</span></strong>
-            <p class="kpi-desc">LODO dynamic resistance <span class="nowrap">n ∝ Q<sup>−0.325</sup></span> eliminates constant-n rating overshoot and restores M2-MLP (<strong class="metric-em nowrap">1.246&nbsp;m</strong>) ≈ M2-XGB (<strong class="metric-em nowrap">1.248&nbsp;m</strong>) &gt; M1 (<strong class="metric-em nowrap">1.263&nbsp;m</strong>) ≫ M3 (<strong class="metric-em nowrap">1.513&nbsp;m</strong>).</p>
+            <span class="kpi-eyebrow">Dynamic High-Flow Roughness <span class="math-preserve">(<span class="nowrap"><span class="math-hat">γ̂</span>&nbsp;=&nbsp;−0.325</span>)</span></span>
+            <strong class="kpi-value">Rating Bias <span class="nowrap">+1.011&nbsp;m</span> → <span class="nowrap">−0.065&nbsp;m</span></strong>
+            <p class="kpi-desc">Accounting for flow-dependent resistance <span class="nowrap">n ∝ Q<sup>−0.325</sup></span> removes constant-roughness stage overshoot and aligns high-flow stage skill with geometry accuracy: M2-MLP (<strong class="metric-em nowrap">1.246&nbsp;m</strong>) ≈ M2-XGB (<strong class="metric-em nowrap">1.248&nbsp;m</strong>) &gt; M1 (<strong class="metric-em nowrap">1.263&nbsp;m</strong>).</p>
           </article>
           <article class="kpi-card accent-orange">
-            <span class="kpi-eyebrow">H-V3-4 Supported (CCHE1D 1D Solver Readiness)</span>
+            <span class="kpi-eyebrow">1D Hydraulic Solver Readiness (CCHE1D)</span>
             <strong class="kpi-value">0.0% Continuity Error + #1 R<sub>0</sub> (0.4289)</strong>
-            <p class="kpi-desc">Reconstructing <span class="nowrap"><span class="math-hat">Â</span><sub>0</sub> = <span class="math-hat">Ŵ</span><sub>0</sub> <span class="math-hat">d̂</span><sub>mean,0</sub></span> eliminates M2-XGB continuity violations (<strong class="metric-em nowrap">49.6% → 0%</strong>), while CCHE1D-Hybrid beats standalone M2-XGB in S-TAIL-DA (<strong class="metric-em">−0.051</strong>) &amp; S-TAIL-SO (<strong class="metric-em">−0.109</strong>).</p>
+            <p class="kpi-desc">Enforcing <span class="nowrap"><span class="math-hat">Â</span><sub>0</sub> = <span class="math-hat">Ŵ</span><sub>0</sub> <span class="math-hat">d̂</span><sub>mean,0</sub></span> eliminates M2-XGB continuity violations (<strong class="metric-em nowrap">49.6% → 0%</strong>), while domain-gated CCHE1D-Hybrid improves hydraulic radius R<sub>0</sub> in extreme basins (<strong class="metric-em">−0.051</strong> to <strong class="metric-em">−0.109</strong>).</p>
           </article>
         </div>
 
         <div class="dashboard-split-row">
-          <!-- Left: Progression v1 -> v2 -> v3 + Slope Stratification -->
+          <!-- Left: High-Flow Stage Error Across Routing Assumptions -->
           <div class="panel-card">
             <div class="panel-header">
               <div>
-                <h2>High-Flow Stage RMSE (Q<sub>i</sub> / Q<sub>a</sub> ≥ 2) Across Regimes (Table T11)</h2>
-                <p class="muted-sub">75,343 off-anchor stage observations · 3,282 3DEP lidar floodplains · 29,174 dynamic-n ADCP rows.</p>
+                <h2>High-Flow Stage Error (Q<sub>i</sub> / Q<sub>a</sub> ≥ 2) Across Routing Assumptions</h2>
+                <p class="muted-sub">75,343 multi-discharge stage observations · 3,282 3DEP Lidar valley profiles · 29,174 multi-survey ADCP pairs.</p>
               </div>
               <div class="filter-bar-inline">
                 <label class="filter-pair" for="ops-regime-select">
-                  <span>Regime View:</span>
+                  <span>View:</span>
                   <select id="ops-regime-select">
-                    <option value="slope_strat">OPS-1 v3: Normal Slope (S &gt; 10⁻⁵) vs. Floored Slope (S = 10⁻⁵)</option>
-                    <option value="const_vs_dyn">OPS-1 v3: Constant n (γ = 0) vs. Dynamic n (LODO γ̂ = −0.325)</option>
-                    <option value="v1_vs_v2">OPS-1 v1 vs. v2: In-Channel Power Law vs. 3DEP Lidar Floodplain</option>
+                    <option value="slope_strat">Unclamped Slope (S &gt; 10⁻⁵) vs. Clamped Slope (S = 10⁻⁵)</option>
+                    <option value="const_vs_dyn">Constant Roughness (γ = 0) vs. Dynamic Roughness (γ̂ = −0.325)</option>
+                    <option value="v1_vs_v2">In-Channel Power Law vs. 3DEP Lidar Floodplain</option>
                   </select>
                 </label>
               </div>
             </div>
 
             <div id="ops-legend-strip" class="chart-legend-strip" role="list" aria-label="Operational stage regime series"></div>
-            <svg id="ops-stage-svg" viewBox="0 0 740 276" role="img" aria-label="Operational flood-stage RMSE comparison chart"></svg>
+            <svg id="ops-stage-svg" viewBox="0 0 740 276" role="img" aria-label="High-flow stage RMSE comparison chart"></svg>
 
             <div class="table-wrapper">
               <table class="data-table" id="ops-stage-table">
-                <caption id="ops-table-cap">Operational high-flow stage-response RMSE (m) across v1, v2, slope regimes, and dynamic roughness</caption>
+                <caption id="ops-table-cap">High-flow stage-response RMSE (m) across channel, floodplain, slope, and dynamic-roughness configurations</caption>
                 <thead>
                   <tr>
                     <th scope="col" class="col-text">Model</th>
-                    <th scope="col" class="col-num">v1 In-Channel (m)</th>
-                    <th scope="col" class="col-num">v2 3DEP Pooled (m)</th>
-                    <th scope="col" class="col-num">v2 Normal <span class="nowrap">S &gt; 10<sup>−5</sup></span> (79.1%)</th>
-                    <th scope="col" class="col-num">v2 Floored <span class="nowrap">S = 10<sup>−5</sup></span> (20.9%)</th>
-                    <th scope="col" class="col-num">v3 Dynamic-n LODO (m)</th>
+                    <th scope="col" class="col-num">In-Channel Only (m)</th>
+                    <th scope="col" class="col-num">3DEP Floodplain (m)</th>
+                    <th scope="col" class="col-num">Normal <span class="nowrap">S &gt; 10<sup>−5</sup></span> (79.1%)</th>
+                    <th scope="col" class="col-num">Clamped <span class="nowrap">S = 10<sup>−5</sup></span> (20.9%)</th>
+                    <th scope="col" class="col-num">Dynamic Roughness (m)</th>
                     <th scope="col" class="col-num">Win Share (Geom)</th>
                     <th scope="col" class="col-num">Near-Best ≤ 0.05</th>
                   </tr>
@@ -462,21 +458,21 @@
             </div>
           </div>
 
-          <!-- Right: CCHE1D 1D Solver Readiness & Off-Anchor Dynamic States -->
+          <!-- Right: 1D Hydraulic Solver Readiness & Multi-Discharge Geometry -->
           <div class="panel-card">
             <div class="panel-header">
               <div>
-                <h2>CCHE1D 1D Saint-Venant Readiness &amp; Off-Anchor States (Table T10)</h2>
-                <p class="muted-sub">Hydraulic radius R<sub>0</sub> = A<sub>0</sub> / P<sub>0</sub>, 99th-percentile thalweg invert shock P<sub>99</sub>(|<span class="math-hat">d̂</span><sub>max</sub> − d<sub>max</sub>|), and 31,367 off-anchor ADCP states.</p>
+                <h2>1D Hydraulic Solver Readiness (CCHE1D) &amp; Multi-Discharge Geometry</h2>
+                <p class="muted-sub">Hydraulic radius R<sub>0</sub> = A<sub>0</sub> / P<sub>0</sub>, 99th-percentile thalweg depth error P<sub>99</sub>(|<span class="math-hat">d̂</span><sub>max</sub> − d<sub>max</sub>|), and 31,367 multi-discharge ADCP surveys.</p>
               </div>
               <div class="filter-bar-inline">
                 <label class="filter-pair" for="cche-split-select">
                   <span>Split:</span>
                   <select id="cche-split-select">
-                    <option value="S-ID">S-ID (In-Domain CONUS, n = 3,988)</option>
-                    <option value="S-LRO">S-LRO (Held-Out Divisions, n = 3,988)</option>
-                    <option value="S-TAIL-DA">S-TAIL-DA (Drainage Area Extrapolation, n = 678)</option>
-                    <option value="S-TAIL-SO">S-TAIL-SO (Stream Order ≥ 7 Tail, n = 339)</option>
+                    <option value="S-ID">5-Fold Grouped CV (n = 3,988)</option>
+                    <option value="S-LRO">Regional Holdout (n = 3,988)</option>
+                    <option value="S-TAIL-DA">Drainage Area Extremes (n = 678)</option>
+                    <option value="S-TAIL-SO">Large Rivers: Order ≥ 7 (n = 339)</option>
                   </select>
                 </label>
               </div>
@@ -484,7 +480,7 @@
 
             <div class="table-wrapper">
               <table class="data-table" id="cche-table">
-                <caption id="cche-table-cap">CCHE1D 1D solver readiness metrics across validation regimes</caption>
+                <caption id="cche-table-cap">1D hydraulic solver readiness metrics across validation splits</caption>
                 <thead>
                   <tr>
                     <th scope="col" class="col-text">Model</th>
@@ -500,10 +496,10 @@
               </table>
             </div>
 
-            <h3 class="sub-heading">Off-Anchor Absolute ADCP States (n = 31,367 Surveys, OPS-1 v3 H-V3-3)</h3>
+            <h3 class="sub-heading">Cross-Section Accuracy Across Multiple Discharges (n = 31,367 Field Surveys)</h3>
             <div class="table-wrapper">
               <table class="data-table" id="offanchor-table">
-                <caption id="offanchor-table-cap">Dynamic off-anchor cross-section geometry accuracy at Q<sub>i</sub> ≠ Q<sub>a</sub></caption>
+                <caption id="offanchor-table-cap">Multi-discharge cross-section geometry accuracy at Q<sub>i</sub> ≠ Q<sub>a</sub></caption>
                 <thead>
                   <tr>
                     <th scope="col" class="col-text">Model</th>
@@ -523,34 +519,34 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- VIEW 4: DATA AVAILABILITY, QA/QC CASCADE & PROVENANCE                 -->
+    <!-- VIEW 4: DATA AVAILABILITY & QUALITY CONTROL                           -->
     <!-- ===================================================================== -->
-    <section id="view-provenance" class="workspace-view" aria-label="Data Availability, QA/QC Funnel, and Provenance Matrix" hidden>
+    <section id="view-provenance" class="workspace-view" aria-label="Data Availability and Quality Control Pipeline" hidden>
       <div class="dashboard-container">
         <div class="dashboard-split-row">
           <div class="panel-card">
             <div class="panel-header">
               <div>
-                <h2>Deterministic 14-Rule QA/QC &amp; Topological Link Funnel</h2>
-                <p class="muted-sub">From 223,022 raw USGS HYDROSWOT ADCP measurements to 3,988 analysis-ready CONUS anchor gauges and 3,282 3DEP floodplain transects.</p>
+                <h2>Quality Control &amp; Reach Selection Pipeline</h2>
+                <p class="muted-sub">From 223,022 raw USGS HYDROSWOT ADCP measurements to 3,988 CONUS benchmark gauges and 3,350 3DEP Lidar valley transects.</p>
               </div>
             </div>
             <div id="qc-funnel-list" class="funnel-stack"></div>
 
-            <h3 class="sub-heading">Event 1 Spatial &amp; Stream-Network Dependence Audit (S-ID)</h3>
+            <h3 class="sub-heading">Gauge Network Spatial &amp; Basin Clustering</h3>
             <div id="event1-audit-cards" class="site-telemetry-grid"></div>
           </div>
 
           <div class="panel-card">
             <div class="panel-header">
               <div>
-                <h2>Federal &amp; Open Scientific Data Provenance Matrix</h2>
-                <p class="muted-sub">100% open-access inputs tracked via DVC cryptographic lockfiles (<code>dvc.lock</code> &amp; <code>ops/dvc.lock</code>).</p>
+                <h2>Public Hydrographic &amp; Watershed Data Sources</h2>
+                <p class="muted-sub">Open-access federal and academic datasets used to construct and validate the benchmark.</p>
               </div>
             </div>
             <div class="table-wrapper">
               <table class="data-table" id="prov-table">
-                <caption id="prov-table-cap">Third-party dataset provenance, persistent identifiers, sample sizes, and licensing</caption>
+                <caption id="prov-table-cap">Dataset sources, persistent identifiers, sample sizes, and open licenses</caption>
                 <thead>
                   <tr>
                     <th scope="col" class="col-text">Dataset</th>
@@ -568,38 +564,6 @@
       </div>
     </section>
   </main>
-
-  <!-- Native Modal Dialog for Cryptographic Scoring Ledger (Rule 1 from dialog guide) -->
-  <dialog id="ledger-dialog" closedby="any" aria-labelledby="ledger-dialog-title">
-    <div class="dialog-header">
-      <h2 id="ledger-dialog-title">Cryptographic 3-Event Scoring Ledger &amp; S-SDLC Provenance</h2>
-      <form method="dialog">
-        <button value="close" autofocus class="btn-subtle" aria-label="Close cryptographic ledger modal">Close ✕</button>
-      </form>
-    </div>
-    <div class="dialog-body">
-      <p class="muted-sub">
-        All confirmatory results are sealed in a hash-chained 7-record ledger (<code>reports/results/scoring_ledger.json</code>) with zero dirty working-tree events (<code>git_dirty: false</code>) and a 51,508-leaf Phase 8 Merkle root.
-      </p>
-      <div id="ledger-meta-pills" class="ledger-meta-pills"></div>
-      <div class="table-wrapper">
-        <table class="data-table" id="ledger-table">
-          <caption id="ledger-table-cap">Hash-chained scoring ledger events</caption>
-          <thead>
-            <tr>
-              <th scope="col" class="col-text">#</th>
-              <th scope="col" class="col-text">Event</th>
-              <th scope="col" class="col-text">Timestamp (UTC)</th>
-              <th scope="col" class="col-text">Git Commit</th>
-              <th scope="col" class="col-text">Clean Tree</th>
-              <th scope="col" class="col-text">Prev Hash → Entry SHA-256</th>
-            </tr>
-          </thead>
-          <tbody id="ledger-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </dialog>
 
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
   <script type="module" src="app.js"></script>

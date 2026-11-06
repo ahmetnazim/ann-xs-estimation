@@ -1,6 +1,6 @@
-# CONUS River Cross-Section (XS) WebGIS Explorer (`v1.0.0`)
+# CONUS River Cross-Section (XS) WebGIS Explorer
 
-A zero-build, single-page static WebGIS application showcasing the **Physics-Informed Neural Networks and Tree-Based Surrogates for Continental-Scale River Cross-Section Estimation** benchmark (`Event 1–3` geometry + `OPS-1 v1–v3` operational 1D flood-stage routing and `CCHE1D` solver readiness).
+A zero-build, single-page static WebGIS application for exploring continental-scale river cross-section geometry predictions, 3DEP Lidar valley profiles, stage–discharge rating curves, and 1D hydraulic solver readiness (`CCHE1D`).
 
 Designed for direct hosting on **GitHub Pages** or any static HTTP server with zero Node/Webpack build steps required at deploy time.
 
@@ -8,25 +8,25 @@ Designed for direct hosting on **GitHub Pages** or any static HTTP server with z
 
 ## 1. Interactive Views & Capabilities
 
-1. **CONUS Map & XS Inspector (`#view-map`)**
-   - **MapLibre GL JS v4** canvas displaying all **3,988 CONUS USGS gauges** (`HYDROSWOT` + `NHDPlusV2.1`) and **131 independent USACE `eHydro` locations** (`18` rivers, `33` single-COMID UQ sites), overlaid on the **8 USGS Fenneman & Johnson physiographic divisions** (`physio_divisions.geojson`).
-   - Dynamic map styling by **Winning Model Family (`M1`–`M6`)**, **Reach Log-Space Mean RMSE**, **Covariate Tier Completeness**, **Physiographic Division**, **NHDPlus Stream Order**, or **Log10 Drainage Area ($A_d$)**.
-   - **Analytical Cross-Section ($\text{XS}$) Profile Drawer:** clicking any reach renders its observed Dingman bed profile $z(x) = -d_{\max}\left(1 - |2x/W|^r\right)$ (`HYDROSWOT` median or `USACE eHydro` survey) against predicted profiles from all six models (`M1` Power-Law, `M2` Tabular MLP, `M3` LightGBM, `M4` PINN-MLP, `M5` Physics-Guided ResNet, `M6` Gated Residual Network) under both **In-Distribution (`S-ID`)** and **Leave-Region-Out (`S-LRO`)** regimes.
-   - **90% Deep-Ensemble UQ Bands (`M5` $K = 5$)** and **USGS 3DEP 1/3 arc-second (~10 m) Lidar Valley Insets** (±5 bankfull widths) where available (`3,632` CONUS gauges).
-   - **Live Stage–Discharge Rating Simulator:** interactive stage ratio slider ($y / \bar{d} \in [0.25, 2.00]$) solving the coupled Dingman–Manning system $Q(y) = \frac{1}{n} A(y) R(y)^{2/3} S_0^{1/2}$ in real time with dynamic water-surface rendering.
+1. **WebGIS & XS Explorer (`#view-map`)**
+   - **MapLibre GL JS v4** canvas displaying all **3,988 CONUS USGS gauges** (`HYDROSWOT` + `NHDPlusV2.1`) and **131 independent USACE `eHydro` survey reaches** (`18` rivers, `33` single-COMID UQ reaches), overlaid on the **8 USGS physiographic divisions** (`physio_divisions.geojson`).
+   - Dynamic map styling by **Best Model (Bankfull Geometry, Flood Stage with Dynamic Roughness, or 3DEP Floodplain)**, **Single-Model Reach Error**, **NHDPlus Slope Regime ($S = 10^{-5}$ vs. $S > 10^{-5}$)**, **Data Availability Tier**, or **Predicted Manning's $\hat{n}$ and Dingman Shape $\hat{r}$**.
+   - **Analytical Cross-Section ($\text{XS}$) Profile Inspector:** clicking any reach renders its observed Dingman bed profile $z(x) = -d_{\max}\left(1 - |2x/W|^r\right)$ against predicted profiles from all 10 benchmark models (`M2-XGB`, `M2-MLP`, `M1`, `M5`, `M4`, `M6-NN`, `M6-XGB`, `M3`, `M0`, `M-null`) under both **5-Fold Grouped CV** and **Regional Holdout** splits.
+   - **90% Deep-Ensemble UQ Bands** (`M5` and `M2-MLP`) and docked **USGS 3DEP 10 m Lidar Valley Transects** across `3,350` valid CONUS gauges.
+   - **Interactive Stage–Discharge Rating Curve Simulator:** flow ratio slider ($Q / Q_a \in [0.4, 10.0]$) comparing constant roughness ($n = n_a$) against flow-dependent dynamic roughness ($n(Q) = n_a (Q / Q_a)^{\gamma}$).
 
-2. **Model Benchmarks (`#view-benchmarks`)**
-   - **Multi-Regime Matrix:** interactive comparison across `S-ID` ($n = 599$ test gauges), `S-LRO` ($n = 3,988$ across 8 divisions), `S-LSO` ($n = 3,893$ stream-order holdout), and `S-IND` (`USACE eHydro`, $n = 131$ locations) for `W`, `d_mean`, `A`, `d_max`, `r`, and `n`.
-   - **Physiographic Division Breakdown:** division-by-division winners under `S-ID` vs. `S-LRO` with 10,000-replicate paired bootstrap confidence intervals (`reports/operational/best_model_map/`).
-   - **Operational Flood-Stage Routing (`OPS-1 v1–v3`):** compound-channel normal-depth stage RMSE ($\text{m}$), normalized stage error ($\text{NSE}_h$), water-surface top-width error, 90% UQ empirical coverage (`95.0%` CONUS / `100.0%` `S-IND`), and 5-tier `CCHE1D` 1D unsteady St. Venant solver certification (`99.0%` Grade A on `S-ID`, `100.0%` Grade A on `S-IND`).
+2. **Channel Geometry (`#view-geometry`)**
+   - **Multi-Split Accuracy & Continuity Matrix:** interactive comparison across all 10 models, 6 validation splits (**Regional Holdout**, **5-Fold Grouped CV**, **USACE eHydro Surveys**, **Drainage Area Extremes**, **Large Rivers: Stream Order $\ge 7$**, and **Random 75:25 Split**), and 5 cross-section targets ($W$, $\bar{d}$, $d_{\max}$, $A$, and thalweg excess $t = d_{\max} - \bar{d}$).
+   - **Key Findings & Input Sensitivity:** regional bootstrap comparisons ($B = 10,000$) and sensitivity of physics-constrained depth (`M5`) to NHDPlus slope clamping ($S = 10^{-5}$) and mean-discharge ($Q_E$) uncertainty.
 
-3. **Data Availability & QA/QC (`#view-data`)**
-   - **4-Stage `HYDROSWOT` Harmonization Cascade:** interactive breakdown from `246,729` raw field measurements (`2,621` stations) through `F_Q`, `F_CONT`, `F_MANNING`, and `F_STAGE` to `155,705` harmonized records (`3,988` primary site medians).
-   - **Covariate Tier Matrix (`T1`–`T6`):** coverage and imputation flags across `NHDPlusV2.1`, `StreamCat`, `Abeshu et al. (2022) D50`, `Global-AI` aridity, and `USGS 3DEP` lidar valley transects (`91.07%` full `T1–T6` coverage).
-   - **Searchable 4,119-Reach Virtualized Table:** instant filtering across all `3,988` CONUS gauges and `131` USACE `eHydro` locations with **one-click CSV export**.
+3. **Stage Routing & 1D Hydraulics (`#view-operational`)**
+   - **High-Flow Stage Error ($Q_i / Q_a \ge 2$):** comparison of in-channel power-law routing, 3DEP Lidar floodplain strip conveyance (`3,282` reaches), unclamped vs. clamped reach slopes, and dynamic high-flow roughness across `75,343` stage observations.
+   - **1D Hydraulic Solver Readiness (`CCHE1D`) & Multi-Discharge Geometry:** evaluation of hydraulic radius $R_0 = A_0 / P_0$, continuity-consistent area $\hat{A}_{\text{cons}} = \hat{W}\hat{\bar{d}}$, 99th-percentile thalweg depth error $P_{99}(|\Delta d_{\max}|)$, and cross-section geometry across `31,367` multi-discharge field surveys.
 
-4. **XS Gallery & Interactive Simulator (`#view-gallery`)**
-   - Curated canonical river cross-sections across all 8 CONUS physiographic divisions plus a **Live Custom Dingman–Manning Cross-Section Sandbox** ($W$, $\bar{d}$, $r$, $n$, $S_0$, $y/\bar{d}$, and $z_{\text{bank}}$).
+4. **Data & Quality Control (`#view-provenance`)**
+   - **Quality Control & Reach Selection Pipeline:** step-by-step filtering from `223,022` raw USGS HYDROSWOT ADCP records to `64,956` quality-controlled surveys, `3,988` primary CONUS benchmark gauges, `3,350` 3DEP Lidar valley profiles, and `131` USACE `eHydro` bathymetric reaches.
+   - **Gauge Network Spatial & Basin Clustering:** nearest-neighbor distance, spatial variogram range, and nested-basin overlap metrics motivating basin-grouped cross-validation and physiographic regional holdouts.
+   - **Public Hydrographic & Watershed Data Sources:** persistent DOIs, sample coverage, and open-access licenses (`CC0-1.0` / `CC-BY-4.0`) for all input datasets.
 
 ---
 
@@ -35,15 +35,15 @@ Designed for direct hosting on **GitHub Pages** or any static HTTP server with z
 ```text
 webgis/
 ├── index.html                   # Semantic HTML5 single-page shell (WCAG AA, dark/light themes)
-├── styles.css                   # Responsive CSS Grid/Flexbox tokens, tables, and drawer styling
+├── styles.css                   # Responsive CSS Grid/Flexbox tokens, tables, and inspector styling
 ├── app.js                       # Vanilla ES2022 module (MapLibre GL JS v4, SVG XS engine, simulator)
 ├── README.md                    # Documentation and deployment instructions
-└── data/                        # Deterministic static JSON/GeoJSON bundle (~5.5 MB total, ~1.1 MB gzipped)
+└── data/                        # Deterministic static JSON/GeoJSON bundle
     ├── manifest.json            # SHA-256 checksums and canonical record counts
-    ├── benchmarks.json          # Event 1–3 + OPS-1 v1–v3 + CCHE1D + physiographic division metrics
+    ├── benchmarks.json          # Multi-split geometry, stage routing, CCHE1D & division metrics
     ├── physio_divisions.geojson # 8 simplified USGS physiographic division polygons (EPSG:4326)
-    ├── sites_conus.json         # 3,988 CONUS stations with covariates, S-ID/S-LRO predictions, UQ & 3DEP
-    └── sites_ehydro.json        # 131 USACE eHydro S-IND locations with survey & predicted geometry
+    ├── sites_conus.json         # 3,988 CONUS stations with covariates, CV/regional predictions, UQ & 3DEP
+    └── sites_ehydro.json        # 131 USACE eHydro locations with survey & predicted geometry
 ```
 
 ---

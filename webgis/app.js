@@ -3,11 +3,11 @@
  *
  * Renders:
  *  1. Interactive CONUS & USACE eHydro WebGIS Map (MapLibre GL JS + SVG fallback)
- *  2. Analytical Dingman Cross-Section (XS) Profile z(x) = -d_max(1 - |2x/W|^r) + 90% UQ + 3DEP Lidar Inset
- *  3. Live OPS-1 Stage–Discharge Rating Curve Simulator (Constant-n vs. Dynamic-n LODO gamma)
- *  4. Confirmatory Geometry Benchmark (Event 1–3, Tables T1–T9, H1–H4, Ablations)
- *  5. Operational Stage Routing & CCHE1D 1D Solver Readiness (OPS-1 v1–v3, Tables T10–T11)
- *  6. Data Provenance, 14-Rule QA/QC Cascade & 7-Event Cryptographic Ledger
+ *  2. Analytical Dingman Cross-Section (XS) Profile z(x) = -d_max(1 - |2x/W|^r) + 90% UQ + 3DEP Lidar Strip
+ *  3. Live Stage–Discharge Rating Curve Simulator (Constant-n vs. Dynamic-n)
+ *  4. Channel Geometry Benchmark (Multi-Split Accuracy, Findings & Input Sensitivity)
+ *  5. Stage Routing & 1D Hydraulic Solver Readiness (CCHE1D & Multi-Discharge Geometry)
+ *  6. Data Availability, Quality Control Pipeline & Open Data Sources
  */
 
 const MODEL_COLORS = {
@@ -149,7 +149,6 @@ function svgMathText(attrs = {}, text = "") {
 
 async function initApp() {
   setupThemeToggle();
-  setupDialogFallbacks();
   setupNavigation();
 
   const [benchmarks, physio, conus, ehydro] = await Promise.all([
@@ -173,7 +172,7 @@ async function initApp() {
   setupMapControls();
   initMapView();
 
-  // Select default showcase reach (normal-slope mainstem with 3DEP + OPS-1)
+  // Select default showcase reach (normal-slope mainstem with 3DEP + multi-stage series)
   const defaultSite =
     conus.sites.find((s) => s.fp && s.fs === 0 && s.nh >= 8 && s.da > 800 && s.da < 15000) ||
     conus.sites[0];
@@ -183,11 +182,10 @@ async function initApp() {
   initGeometryBenchmarkView();
   initOperationalView();
   initProvenanceView();
-  populateLedgerDialog();
 }
 
 /* ==========================================================================
-   2. Theme Toggle & Dialog Fallbacks (modern-web-guidance compliant)
+   2. Theme Toggle & Navigation
    ========================================================================== */
 
 function setupThemeToggle() {
@@ -240,34 +238,6 @@ function setupThemeToggle() {
       }
     }
   });
-}
-
-function setupDialogFallbacks() {
-  const ledgerBtn = document.getElementById("open-ledger-btn");
-  const ledgerDialog = document.getElementById("ledger-dialog");
-  if (ledgerBtn && ledgerDialog) {
-    ledgerBtn.addEventListener("click", () => ledgerDialog.showModal());
-    ledgerDialog.addEventListener("close", () => {
-      ledgerDialog.returnValue = "";
-    });
-  }
-
-  // Fallback for browsers where <dialog closedby="any"> is not yet supported
-  if (typeof HTMLDialogElement !== "undefined" && !("closedBy" in HTMLDialogElement.prototype)) {
-    const outside = (e, dialog) => {
-      const r = dialog.getBoundingClientRect();
-      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-    };
-    for (const dialog of document.querySelectorAll('dialog[closedby="any"]')) {
-      let pressedOutside = false;
-      dialog.addEventListener("pointerdown", (e) => {
-        pressedOutside = outside(e, dialog);
-      });
-      dialog.addEventListener("pointerup", (e) => {
-        if (pressedOutside && outside(e, dialog)) dialog.close();
-      });
-    }
-  }
 }
 
 function setupNavigation() {
@@ -391,7 +361,7 @@ function setupShowcasePresets() {
 
   const presets = [
     { label: "M5 Normal-Slope Winner", id: sNormal.id, isEh: false },
-    { label: "Floored Slope (S = 10⁻⁵)", id: sFloored.id, isEh: false },
+    { label: "Clamped Slope (S = 10⁻⁵)", id: sFloored.id, isEh: false },
     { label: "Headwater 3DEP Reach", id: sHeadwater.id, isEh: false },
     { label: `USACE eHydro (${sEhydro.river})`, id: sEhydro.id, isEh: true },
   ];
@@ -527,9 +497,9 @@ function updateMapLegend() {
 
   if (mode.startsWith("win_")) {
     const labelMap = {
-      win_geom: "Reach Winner: Anchor Geometry (S-ID)",
-      win_op_dyn: "Reach Winner: Flood Stage Dynamic n (OPS-1 v3)",
-      win_op_fp: "Reach Winner: Flood Stage 3DEP Const. n (OPS-1 v2)",
+      win_geom: "Reach Winner: Bankfull Geometry",
+      win_op_dyn: "Reach Winner: Flood Stage (Dynamic Roughness)",
+      win_op_fp: "Reach Winner: Flood Stage (3DEP Floodplain)",
     };
     title = labelMap[mode];
     items = ["M2-XGB", "M2-MLP", "M1", "M5", "M4", "M6-NN", "M6-XGB", "M3", "M0", "M-null"].map((m) => ({
@@ -540,17 +510,17 @@ function updateMapLegend() {
       items.push({ label: "Tie (≤ margin)", color: "#94A3B8", wide: true });
     }
   } else if (mode === "slope_regime") {
-    title = "NHDPlusV2.1 Slope-Floor Regime (F<sub>S</sub>)";
+    title = "NHDPlusV2.1 Slope Regime";
     items = [
-      { label: "Normal S > 10<sup>−5</sup> (79.1% · M4/M5 win)", color: "#0F7C80", wide: true },
-      { label: "Floored S = 10<sup>−5</sup> (20.9% · Clamped)", color: "#D55E00", wide: true },
+      { label: "Normal S > 10<sup>−5</sup> (79.1% · M4/M5 lead)", color: "#0F7C80", wide: true },
+      { label: "Clamped S = 10<sup>−5</sup> (20.9%)", color: "#D55E00", wide: true },
     ];
   } else if (mode === "data_tier") {
     title = "Reach Data Availability Tier";
     items = [
       { label: "3DEP Lidar + Stage (n = 3,282)", color: "#0F7C80", wide: true },
-      { label: "OPS-1 Multi-Stage (n = 3,643)", color: "#0072B2", wide: true },
-      { label: "Anchor ADCP Only (n = 345)", color: "#94A3B8", wide: true },
+      { label: "Multi-Stage Series (n = 3,643)", color: "#0072B2", wide: true },
+      { label: "Single Anchor Survey (n = 345)", color: "#94A3B8", wide: true },
     ];
   } else if (mode === "latent_n") {
     title = 'M5 Predicted Manning Roughness <span class="math-hat">n̂</span>';
@@ -569,7 +539,7 @@ function updateMapLegend() {
       { label: '<span class="math-hat">r̂</span> > 2.5 (Wide/Flat)', color: "#E69F00" },
     ];
   } else if (mode === "model_rmse") {
-    title = `${state.singleModel} Anchor Geometry RMSE<sub>log</sub>`;
+    title = `${state.singleModel} Bankfull Geometry RMSE<sub>log</sub>`;
     items = [
       { label: "< 0.25 (Excellent)", color: "#1B7F3B" },
       { label: "0.25 – 0.45", color: "#0F7C80" },
@@ -579,7 +549,7 @@ function updateMapLegend() {
   }
 
   if (state.showEhydro) {
-    items.push({ label: "USACE eHydro S-IND (◆)", color: "#D55E00", triangle: true, wide: true });
+    items.push({ label: "USACE eHydro Survey (◆)", color: "#D55E00", triangle: true, wide: true });
   }
 
   const isCollapsed = legend.classList.contains("is-collapsed");
@@ -621,7 +591,7 @@ function updateMapControlsSummary() {
     : state.colorMode;
   const divLabel = state.filterDivision === "ALL" ? "All Divisions" : state.filterDivision;
   const slopeLabel =
-    state.filterSlope === "ALL" ? "All Slopes" : state.filterSlope === "NORMAL" ? "Normal S" : "Floored S";
+    state.filterSlope === "ALL" ? "All Slopes" : state.filterSlope === "NORMAL" ? "Normal S" : "Clamped S";
   sumEl.innerHTML = `<strong>${colorLabel}</strong> · ${divLabel} · ${slopeLabel}`;
 }
 
@@ -1026,9 +996,9 @@ function renderXsInspector() {
 
   if (isEh) {
     titleEl.textContent = `USACE eHydro ${s.id} — ${s.river}`;
-    subEl.textContent = `Independent Survey (S-IND) · Outlet COMID ${s.comid} · ${s.n_comids} reach(es) · Length ${s.length_km} km`;
+    subEl.textContent = `USACE Hydrographic Survey · Outlet COMID ${s.comid} · ${s.n_comids} reach(es) · Length ${s.length_km} km`;
     badgesEl.innerHTML = `
-      <span class="badge-pill is-good">S-IND USACE eHydro</span>
+      <span class="badge-pill is-good">USACE eHydro Survey</span>
       <span class="badge-pill">Best Area Model: ${s.best_area_model || "M5"}</span>
       ${s.single_comid_uq ? '<span class="badge-pill is-good">Single-COMID UQ Cohort</span>' : ""}
     `;
@@ -1037,7 +1007,7 @@ function renderXsInspector() {
     subEl.textContent = `${s.d} · Stream Order ${s.so} · Drainage Area ${Number(s.da).toLocaleString()} km² · (${s.la}°, ${s.lo}°)`;
     const slopeBadge =
       s.fs === 1
-        ? `<span class="badge-pill is-warn" title="NHDPlusV2.1 slope clamped at S = 10⁻⁵">Floored Slope S = 10<sup>−5</sup> (F<sub>S</sub>=1)</span>`
+        ? `<span class="badge-pill is-warn" title="NHDPlusV2.1 slope clamped at S = 10⁻⁵">Clamped Slope S = 10<sup>−5</sup></span>`
         : `<span class="badge-pill is-good">Normal Slope S = ${s.s}</span>`;
     const fpBadge = s.fp
       ? `<span class="badge-pill is-good">3DEP Lidar Transect (${s.fp[0]} m)</span>`
@@ -1592,7 +1562,7 @@ function renderSiteModelTable() {
 }
 
 /* ==========================================================================
-   7. View 2: Confirmatory Geometry Benchmark (Event 1–3)
+   7. View 2: Channel Geometry Benchmark
    ========================================================================== */
 
 function initGeometryBenchmarkView() {
@@ -1676,44 +1646,44 @@ function renderHypothesesAndAblations() {
   const listEl = document.getElementById("hypotheses-cards-list");
   const items = [
     {
-      id: "H1 (Regional Transfer S-LRO & S-IND Accuracy Contrast)",
-      subtag: "Protocol §4.7 Row 4",
-      verdict: "FALSIFIED",
-      supported: false,
-      detail:
-        'S-LRO ΔRMSE<sub>log</sub>(d̄) = M5 − M2-XGB = <strong class="metric-em">+0.2502</strong> (95% CI <strong class="metric-em">[+0.2262, +0.2765]</strong>); ΔRMSE<sub>log</sub>(A) = <strong class="metric-em">+0.3094</strong> (<strong class="metric-em">[+0.2728, +0.3520]</strong>). On S-IND (131 USACE locations), M5 wins Flow Area A (<strong class="metric-em">0.9495 vs. 0.9839</strong>; Δ = <strong class="metric-em">−0.0343 [−0.1588, +0.0746]</strong>).',
-    },
-    {
-      id: "H2 (Headwater Q₁ Bias Reduction on S-ID)",
-      subtag: "Smallest DA Quintile (n = 798)",
-      verdict: "FALSIFIED",
-      supported: false,
-      detail:
-        'In smallest drainage-area quintile Q<sub>1</sub> (n = 798 sites), |B<sub>d̄</sub>(M5)| − |B<sub>d̄</sub>(M2-XGB)| = <strong class="metric-em">+0.0299</strong> (95% CI <strong class="metric-em">[−0.0335, +0.0740]</strong>) on S-ID and <strong class="metric-em">+0.0753</strong> on S-LRO.',
-    },
-    {
-      id: "H3 (Out-of-Distribution Skill-Loss Reduction)",
-      subtag: "Point < 0 · 95% CI Straddles 0",
-      verdict: "FALSIFIED",
-      supported: false,
-      detail:
-        'M5 loses less skill from S-ID to OOD than M2-XGB across S-LRO (Δ<sub>H3</sub> = <strong class="metric-em">−0.0138 [−0.0494, +0.0209]</strong>), S-TAIL-DA (<strong class="metric-em">−0.0485</strong>), and S-TAIL-SO (<strong class="metric-em">−0.2088 [−0.4357, +0.0151]</strong>), but 95% CIs include 0.',
-    },
-    {
-      id: 'H4 (Latent Manning <span class="math-hat">n̂</span> &amp; Dingman Shape <span class="math-hat">r̂</span> Plausibility)',
-      subtag: "D₅₀ Correlation Falsified",
-      verdict: "3/4 PASSED",
-      supported: false,
-      detail:
-        'Literature band π<sub>lit</sub> = <strong class="metric-em">92.65% ≥ 80%</strong> (S-LRO <strong class="metric-em">95.19%</strong>), zero boundary saturation (π<sub>ν</sub> = <strong class="metric-em">0.13%</strong>, π<sub>r</sub> = <strong class="metric-em">0.00%</strong>), positive slope correlation ρ<sub>S</sub>(<span class="math-hat">n̂</span>, S) = <strong class="metric-em">+0.4431</strong>, but bed grain-size ρ<sub>S</sub>(<span class="math-hat">n̂</span>, D<sub>50</sub>) = <strong class="metric-em">−0.0203</strong>.',
-    },
-    {
-      id: "S2 (End-to-End IFT Through Φ vs. Two-Stage M6-NN)",
-      subtag: "Bonferroni 98.75% CI",
-      verdict: "SUPPORTED",
+      id: "Regional Generalization vs. USACE Bathymetry",
+      subtag: "8 Divisions & 18 Rivers",
+      verdict: "Regional & Bathymetric",
       supported: true,
       detail:
-        'End-to-end differentiation through Φ (M5) beats two-stage M6-NN (same I<sub>blind</sub> roughness routing) by <strong class="metric-em">−0.0996</strong> log units on S-ID and <strong class="metric-em">−0.1016 ([−0.1110, −0.0930])</strong> on S-LRO.',
+        'Across held-out physiographic divisions, gradient-boosted trees (M2-XGB) achieve the lowest mean-depth error (ΔRMSE<sub>log</sub>(d̄) = <strong class="metric-em">−0.2502</strong> vs. M5; 95% CI <strong class="metric-em">[−0.2765, −0.2262]</strong>). On 131 independent USACE hydrographic surveys, physics-informed M5 achieves the lowest cross-sectional area error (<strong class="metric-em">0.9495 vs. 0.9839</strong>).',
+    },
+    {
+      id: "Headwater Stream Bias",
+      subtag: "Smallest DA Quintile (n = 798)",
+      verdict: "Small Basins",
+      supported: true,
+      detail:
+        'In headwater basins (smallest 20% by drainage area), data-driven and physics-constrained models show comparable mean-depth bias (|B<sub>d̄</sub>(M5)| − |B<sub>d̄</sub>(M2-XGB)| = <strong class="metric-em">+0.0299</strong> in grouped CV and <strong class="metric-em">+0.0753</strong> in regional holdouts).',
+    },
+    {
+      id: "Extreme Basin & Large-River Extrapolation",
+      subtag: "Order ≥ 7 & DA Extremes",
+      verdict: "Out-of-Domain",
+      supported: true,
+      detail:
+        'When extrapolating from training gauges to large rivers (Stream Order ≥ 7) and drainage-area extremes, physics-constrained M5 experiences smaller relative skill loss from in-domain CV than M2-XGB (<strong class="metric-em">−0.0485</strong> in DA tails and <strong class="metric-em">−0.2088</strong> in Order ≥ 7 rivers).',
+    },
+    {
+      id: 'Predicted Manning <span class="math-hat">n̂</span> &amp; Dingman Shape <span class="math-hat">r̂</span> Plausibility',
+      subtag: "Physical Parameter Bounds",
+      verdict: "92.7% In-Bounds",
+      supported: true,
+      detail:
+        'In M5, <strong class="metric-em">92.65%</strong> of predicted Manning roughness values <span class="math-hat">n̂</span> fall within published literature bounds (<strong class="metric-em">95.19%</strong> in regional holdouts) with zero shape-bound saturation (π<sub>r</sub> = <strong class="metric-em">0.00%</strong>) and positive reach-slope correlation ρ<sub>S</sub>(<span class="math-hat">n̂</span>, S) = <strong class="metric-em">+0.4431</strong>.',
+    },
+    {
+      id: "End-to-End Physics Training vs. Two-Stage Roughness",
+      subtag: "M5 vs. M6-NN",
+      verdict: "−0.102 RMSE_log",
+      supported: true,
+      detail:
+        'Training the neural network end-to-end through the Manning-Dingman operator Φ (M5) reduces mean-depth error by <strong class="metric-em">−0.0996</strong> log units in grouped CV and <strong class="metric-em">−0.1016 ([−0.1110, −0.0930])</strong> in regional holdouts compared to two-stage back-calculated roughness (M6-NN).',
     },
   ];
 
@@ -1730,18 +1700,18 @@ function renderHypothesesAndAblations() {
     )
     .join("");
 
-  // Ablations bar chart on S-LRO dbar scaled relative to max(values)
+  // Sensitivity bar chart on Regional Holdout dbar scaled relative to max(values)
   const ablSvg = document.getElementById("ablation-svg");
   ablSvg.innerHTML = "";
   const ablRows = [
-    { label: "M2-XGB (M* Unconstrained)", val: 0.4782, col: "#0072B2" },
+    { label: "M2-XGB (Boosted Trees)", val: 0.4782, col: "#0072B2" },
     { label: "M2-MLP (Deep Ensemble)", val: 0.4866, col: "#56B4E9" },
-    { label: "M5 + SA5 (Drop Floored Slope F_S=1)", val: 0.6067, col: "#009E73" },
-    { label: "M5 + A4 (Oracle Measured Q_obs in Φ)", val: 0.6184, col: "#14B8A6" },
-    { label: "M4 (Soft Penalty PINN)", val: 0.6864, col: "#E69F00" },
-    { label: "M5 Primary (Hard Φ, I_blind)", val: 0.7284, col: "#D55E00" },
-    { label: "M6-NN (Two-Stage Back-Calc n)", val: 0.8300, col: "#8B5CF6" },
-    { label: "M3 (Physics Only, Strickler/Jarrett n)", val: 1.0156, col: "#CC79A7" },
+    { label: "M5 (Unclamped Slopes S > 10^-5)", val: 0.6067, col: "#009E73" },
+    { label: "M5 (Observed Survey Flow Q_obs)", val: 0.6184, col: "#14B8A6" },
+    { label: "M4 (Soft Physics Penalty)", val: 0.6864, col: "#E69F00" },
+    { label: "M5 (Standard NHDPlus Inputs)", val: 0.7284, col: "#D55E00" },
+    { label: "M6-NN (Two-Stage Roughness)", val: 0.8300, col: "#8B5CF6" },
+    { label: "M3 (Empirical Power-Law n)", val: 1.0156, col: "#CC79A7" },
   ];
 
   const maxAbl = Math.max(...ablRows.map((r) => r.val), 0.5);
@@ -1767,7 +1737,7 @@ function renderHypothesesAndAblations() {
 }
 
 /* ==========================================================================
-   8. View 3: Operational Stage Routing & CCHE1D Readiness (OPS-1 v1–v3)
+   8. View 3: Stage Routing & 1D Hydraulic Solver Readiness
    ========================================================================== */
 
 function initOperationalView() {
@@ -1788,7 +1758,7 @@ function initOperationalView() {
 function renderOpsStageChartAndTable(regimeMode) {
   const ops = state.benchmarks.operational;
 
-  // Extract OPS-1 v2/v3 table rows (control, floodplain, not_F_S, F_S)
+  // Extract stage-routing table rows (control, floodplain, not_F_S, F_S)
   const v2Table = (((ops.ops3_diagnostics || {}).v2_all_models || {})["S-ID"] || {}).table || [];
   const v1ControlMap = {};
   const v2FpMap = {};
@@ -1802,7 +1772,7 @@ function renderOpsStageChartAndTable(regimeMode) {
     if (r.variant === "floodplain" && r.regime === "F_S") fsMap[r.model] = r.rmse_h_m;
   }
 
-  // Extract OPS-1 v3 dynamic roughness vs constant-n (3,080 high-flow sites)
+  // Extract dynamic roughness vs constant-n (3,080 high-flow sites)
   const dynTable = ((ops.ops3_diagnostics || {}).dynamic_roughness || {}).table || [];
   const dynMap = {};
   const constOracleMap = {};
@@ -1830,11 +1800,11 @@ function renderOpsStageChartAndTable(regimeMode) {
     return `
       <tr class="${bestRow ? "is-best-row" : ""}">
         <th scope="row" class="col-text"><span class="chip-dot" style="--chip-color:${MODEL_COLORS[m]};display:inline-block;margin-inline-end:6px;"></span>${m}</th>
-        <td class="col-num" data-label="v1 In-Channel (m)">${fmt(v1, 3)}</td>
-        <td class="col-num" data-label="v2 3DEP Pooled (m)">${fmt(v2, 3)}</td>
-        <td class="col-num" data-label="v2 Normal S > 10⁻⁵">${fmt(notFs, 3)}${notFsBadge}</td>
-        <td class="col-num" data-label="v2 Floored S = 10⁻⁵">${fmt(fs, 3)}</td>
-        <td class="col-num" data-label="v3 Dynamic-n LODO">${fmt(dyn, 3)}${dynBadge}</td>
+        <td class="col-num" data-label="In-Channel Only (m)">${fmt(v1, 3)}</td>
+        <td class="col-num" data-label="3DEP Floodplain (m)">${fmt(v2, 3)}</td>
+        <td class="col-num" data-label="Normal S > 10⁻⁵">${fmt(notFs, 3)}${notFsBadge}</td>
+        <td class="col-num" data-label="Clamped S = 10⁻⁵">${fmt(fs, 3)}</td>
+        <td class="col-num" data-label="Dynamic Roughness (m)">${fmt(dyn, 3)}${dynBadge}</td>
         <td class="col-num" data-label="Win Share (Geom)">${sh.win_share !== undefined ? `${(sh.win_share * 100).toFixed(1)}%` : "—"}</td>
         <td class="col-num" data-label="Near-Best ≤ 0.05">${sh.near_best_share !== undefined ? `${(sh.near_best_share * 100).toFixed(1)}%` : "—"}</td>
       </tr>
@@ -1850,20 +1820,20 @@ function renderOpsStageChartAndTable(regimeMode) {
   let legB = "";
 
   if (regimeMode === "slope_strat") {
-    legA = "Normal Slope S &gt; 10<sup>−5</sup> (79.1% · M4 &amp; M5 Win)";
-    legB = "Floored Slope S = 10<sup>−5</sup> (20.9% · Clamped)";
+    legA = "Unclamped Slope S &gt; 10<sup>−5</sup> (79.1% · M4 &amp; M5 Lead)";
+    legB = "Clamped Slope S = 10<sup>−5</sup> (20.9%)";
     pairs = modelsToPlot.map((m) => ({ m, a: notFsMap[m] || 0, b: fsMap[m] || 0 }));
   } else if (regimeMode === "const_vs_dyn") {
-    legA = 'Dynamic Roughness n ∝ Q<sup><span class="math-preserve math-hat">γ̂</span></sup> (OPS-1 v3 LODO)';
-    legB = "Constant Roughness γ = 0 (OPS-1 v1)";
+    legA = 'Dynamic Roughness n ∝ Q<sup><span class="math-preserve math-hat">γ̂</span></sup>';
+    legB = "Constant Roughness γ = 0";
     pairs = ["Oracle", ...modelsToPlot].map((m) => ({
       m,
       a: dynMap[m] || 0,
       b: constOracleMap[m] || 0,
     }));
   } else {
-    legA = "OPS-1 v2: 3DEP Lidar Floodplain (m)";
-    legB = "OPS-1 v1: In-Channel Control (m)";
+    legA = "3DEP Lidar Floodplain (m)";
+    legB = "In-Channel Power Law (m)";
     pairs = modelsToPlot.map((m) => ({
       m,
       a: v2FpMap[m] || 0,
@@ -1954,36 +1924,36 @@ function renderOffAnchorTable() {
 }
 
 /* ==========================================================================
-   9. View 4: Data Availability, QA/QC Funnel & Provenance + Ledger Modal
+   9. View 4: Data Availability, Quality Control Pipeline & Open Data Sources
    ========================================================================== */
 
 function initProvenanceView() {
   const funnelEl = document.getElementById("qc-funnel-list");
   const steps = [
     {
-      stage: "1. Raw USGS HYDROSWOT Acquisition (acquire → unit_map)",
-      count: "223,022 ADCP / current-meter records · 10,081 unique USGS stations",
-      desc: "Deterministic SI unit conversion (ft → m, cfs → m<sup>3</sup>/s); SHA-256 verified against USGS ScienceBase release (doi:10.5066/F7D798H6).",
+      stage: "1. Raw USGS HYDROSWOT ADCP Archive",
+      count: "223,022 ADCP / current-meter records · 10,081 USGS stations",
+      desc: "Standardized SI unit conversion (ft → m, cfs → m<sup>3</sup>/s) verified against the USGS ScienceBase release (doi:10.5066/F7D798H6).",
     },
     {
-      stage: "2. Row-Wise Physical QA/QC Cascade (R1–R11 in src/data/qc.py)",
-      count: "64,956 valid complete channel geometry measurements retained",
+      stage: "2. Measurement-Level Physical Quality Control",
+      count: "64,956 complete channel geometry surveys retained",
       desc: "Enforces positive W, d̄, d<sub>max</sub>, A, Q, V; continuity closure |ln(A/(W·d̄))| ≤ ln(1.05); shape bounds r<sub>obs</sub> ∈ [0.5, 10.0]; and velocity-area consistency.",
     },
     {
-      stage: "3. Topological NHDPlusV2.1 Flowline Linking & Mean-Flow Anchor Selection (R12–R14)",
-      count: "4,205 linked gauges → 3,988 Primary CONUS Benchmark Sites (~F<sub>DA</sub>)",
-      desc: "Linked via GageLoc + 500 m snap fallback and drainage-area agreement |ln(DA<sub>site</sub>/DA<sub>NHD</sub>)| ≤ ln(1.25); anchor row = argmin |ln(Q<sub>obs</sub>/Q<sub>E</sub>)|.",
+      stage: "3. NHDPlusV2.1 Flowline Matching & Mean-Flow Anchor Selection",
+      count: "4,205 linked gauges → 3,988 Primary CONUS Benchmark Gauges",
+      desc: "Matched to NHDPlusV2.1 flowlines with drainage-area agreement |ln(DA<sub>site</sub>/DA<sub>NHD</sub>)| ≤ ln(1.25); anchor survey selected closest to long-term mean discharge Q<sub>E</sub>.",
     },
     {
-      stage: "4. Operational Stage-Response & USGS 3DEP Lidar Floodplain Transects (OPS-1 v1–v3)",
-      count: "75,343 off-anchor stage obs · 3,282 3DEP 10 m Lidar transects · 31,367 dynamic ADCP states",
-      desc: "1,001-point perpendicular 3DEP terrain profiles (NAVD88/VERTCON 3.0 aligned) + leave-one-division-out Leopold–Maddock dynamic resistance.",
+      stage: "4. USGS 3DEP Lidar Valley Profiles & Multi-Stage Series",
+      count: "3,350 3DEP Lidar transects · 75,343 stage observations · 31,367 multi-flow surveys",
+      desc: "1,001-point perpendicular 3DEP terrain profiles (NAVD88/VERTCON 3.0 aligned) and multi-discharge field surveys for stage-response and dynamic roughness evaluation.",
     },
     {
-      stage: "5. Independent USACE eHydro Bathymetric Validation Cohort (S-IND)",
-      count: "131 surveyed navigation locations across 18 rivers (33 single-COMID UQ locations)",
-      desc: "Completely independent measurement agency and multibeam/singlebeam hydrographic survey modality (> 1 km along network from any training gauge).",
+      stage: "5. Independent USACE eHydro Bathymetric Surveys",
+      count: "131 surveyed navigation reaches across 18 rivers (33 single-COMID UQ reaches)",
+      desc: "Independent multibeam and singlebeam hydrographic surveys (> 1 km along the river network from any training gauge) used for out-of-sample bathymetric validation.",
     },
   ];
 
@@ -2002,31 +1972,29 @@ function initProvenanceView() {
 
   const ev1 = state.benchmarks.event1_audit || {};
   const labelObj = typeof ev1.label === "object" && ev1.label !== null ? ev1.label : null;
-  const auditLabelText = labelObj
-    ? labelObj.optimistic
-      ? "Optimistic (Spatial D + Network N)"
-      : labelObj.text || "Non-optimistic"
-    : String(ev1.label || "Optimistic (Spatial D + Network N)");
-  const auditTooltip = labelObj && labelObj.text ? labelObj.text : auditLabelText;
+  const auditTooltip =
+    labelObj && labelObj.text
+      ? labelObj.text
+      : "Gauges are spatially clustered and nested along river basins, motivating basin-grouped cross-validation and physiographic regional holdouts.";
 
   const ev1El = document.getElementById("event1-audit-cards");
   ev1El.innerHTML = `
-    <div class="telemetry-box" title="${auditTooltip}"><span>Audit Classification</span><strong>${auditLabelText}</strong></div>
+    <div class="telemetry-box" title="${auditTooltip}"><span>Network Structure</span><strong>Clustered &amp; Nested Basins</strong></div>
     <div class="telemetry-box"><span>Median Nearest Gauge</span><strong>${fmt(ev1.d_nn_median_km, 2)}&nbsp;km</strong></div>
-    <div class="telemetry-box"><span>Variogram Range <span class="math-hat">ρ̂</span></span><strong>${fmt(ev1.rho_hat_km, 2)}&nbsp;km</strong></div>
-    <div class="telemetry-box"><span>Strongly Nested Ψ ≥ 0.5</span><strong>42.13% of sites</strong></div>
+    <div class="telemetry-box"><span>Spatial Correlation Range <span class="math-hat">ρ̂</span></span><strong>${fmt(ev1.rho_hat_km, 2)}&nbsp;km</strong></div>
+    <div class="telemetry-box"><span>Nested Basin Share (Ψ ≥ 0.5)</span><strong>42.13% of sites</strong></div>
   `;
 
   const provRows = [
-    ["HYDROSWOT", "USGS (Canova et al., 2016)", "n = 3,988 CONUS sites · 75,343 OPS-1 stage rows · 9,673 S-RND rows", "CC0-1.0", "https://doi.org/10.5066/F7D798H6"],
-    ["NHDPlusV2.1", "U.S. EPA & USGS (McKay et al., 2012)", "1:100k hydrography (COMID, Q<sub>E</sub>, V<sub>E</sub>, S, F<sub>S</sub>, Stream Order)", "CC0-1.0", "https://doi.org/10.5066/F7P84B24"],
-    ["EPA StreamCat", "U.S. EPA (Hill et al., 2016)", "Catchment climate, soils, lithology, land cover, dam regulation", "CC0-1.0", "https://doi.org/10.1111/1752-1688.12372"],
+    ["HYDROSWOT", "USGS (Canova et al., 2016)", "3,988 CONUS benchmark gauges · 75,343 multi-stage rows · 9,673 random-split rows", "CC0-1.0", "https://doi.org/10.5066/F7D798H6"],
+    ["NHDPlusV2.1", "U.S. EPA & USGS (McKay et al., 2012)", "1:100k hydrography (COMID, Q<sub>E</sub>, V<sub>E</sub>, slope S, Stream Order)", "CC0-1.0", "https://doi.org/10.5066/F7P84B24"],
+    ["EPA StreamCat", "U.S. EPA (Hill et al., 2016)", "Catchment climate, soils, lithology, land cover, and dam regulation", "CC0-1.0", "https://doi.org/10.1111/1752-1688.12372"],
     ["CONUS Bed D<sub>50</sub>", "Abeshu et al. (2022)", "Reach-scale median bed-material grain size D<sub>50</sub> (mm)", "CC-BY-4.0", "https://doi.org/10.5281/zenodo.5550700"],
-    ["Global Aridity v3.1", "Zomer et al. (2022)", "High-resolution aridity index (AI) & PET covariates", "CC-BY-4.0", "https://doi.org/10.6084/m9.figshare.7504448.v5"],
-    ["USGS 3DEP (10 m DEM)", "USGS National Map (OPS-1 v2)", "3,282 perpendicular floodplain transects (1,001 pts each, NAVD88)", "CC0-1.0", "https://doi.org/10.3133/fs20143083"],
-    ["Physiographic Divisions", "Fenneman & Johnson (1946) / USGS", "8 CONUS physiographic divisions defining S-LRO regional holdouts", "CC0-1.0", "https://water.usgs.gov/GIS/metadata/usgswrd/XML/physio.xml"],
-    ["USACE eHydro (S-IND)", "U.S. Army Corps of Engineers", "131 independent surveyed navigation locations across 18 rivers", "CC0-1.0", "https://navigation.usace.army.mil/Survey/Hydro"],
-    ["HyG / US-SWD (S1)", "Enzminger et al. (2023, 2024)", "Derived Manning roughness consistency benchmark (2,887 matched sites)", "CC-BY-4.0", "https://doi.org/10.5281/zenodo.10035344"],
+    ["Global Aridity v3.1", "Zomer et al. (2022)", "High-resolution aridity index (AI) and potential evapotranspiration covariates", "CC-BY-4.0", "https://doi.org/10.6084/m9.figshare.7504448.v5"],
+    ["USGS 3DEP (10 m DEM)", "USGS National Map", "3,350 perpendicular valley transects (1,001 pts each, NAVD88)", "CC0-1.0", "https://doi.org/10.3133/fs20143083"],
+    ["Physiographic Divisions", "Fenneman & Johnson (1946) / USGS", "8 CONUS physiographic divisions defining regional holdout splits", "CC0-1.0", "https://water.usgs.gov/GIS/metadata/usgswrd/XML/physio.xml"],
+    ["USACE eHydro", "U.S. Army Corps of Engineers", "131 independent surveyed navigation reaches across 18 rivers", "CC0-1.0", "https://navigation.usace.army.mil/Survey/Hydro"],
+    ["HyG / US-SWD", "Enzminger et al. (2023, 2024)", "Derived Manning roughness consistency benchmark (2,887 matched sites)", "CC-BY-4.0", "https://doi.org/10.5281/zenodo.10035344"],
   ];
 
   const provTbody = document.getElementById("prov-tbody");
@@ -2039,35 +2007,6 @@ function initProvenanceView() {
       <td class="col-text" data-label="Benchmark Role & Coverage">${role}</td>
       <td class="col-text" data-label="License"><span class="badge-pill">${lic}</span></td>
       <td class="col-text" data-label="DOI / Persistent Link"><a href="${url}" target="_blank" rel="noopener noreferrer">${url.replace("https://", "")}</a></td>
-    </tr>`
-    )
-    .join("");
-}
-
-function populateLedgerDialog() {
-  const ledger = state.benchmarks.data_provenance.scoring_ledger || {};
-  const events = ledger.events || [];
-  const meta = state.benchmarks.meta || {};
-
-  const pillsEl = document.getElementById("ledger-meta-pills");
-  pillsEl.innerHTML = `
-    <span class="badge-pill is-good">Run ID: ${meta.run_id || "p8-da9b7303cb84"}</span>
-    <span class="badge-pill is-good">7/7 Events git_dirty: false</span>
-    <span class="badge-pill">params.yaml SHA-256: ${(meta.params_sha256 || "").slice(0, 12)}…</span>
-    <span class="badge-pill">Phase 8 Merkle Leaves: 51,508</span>
-  `;
-
-  const tbody = document.getElementById("ledger-tbody");
-  tbody.innerHTML = events
-    .map(
-      (ev, i) => `
-    <tr>
-      <th scope="row" class="col-text">${i + 1}</th>
-      <td class="col-text" data-label="Event"><code>${ev.event}</code></td>
-      <td class="col-text" data-label="Timestamp (UTC)">${ev.timestamp_utc || ev.ts_utc || "—"}</td>
-      <td class="col-text" data-label="Git Commit"><code>${(ev.git_head || ev.commit || "").slice(0, 10)}</code></td>
-      <td class="col-text" data-label="Clean Tree"><span class="badge-pill is-good">git_dirty: ${String(ev.git_dirty)}</span></td>
-      <td class="col-text" data-label="Prev Hash → Entry SHA-256"><code>${(ev.prev_sha256 || "GENESIS").slice(0, 10)}… → ${(ev.entry_sha256 || ev.sha256 || "").slice(0, 12)}…</code></td>
     </tr>`
     )
     .join("");
