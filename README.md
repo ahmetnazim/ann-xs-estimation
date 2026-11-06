@@ -198,45 +198,6 @@ All primary hydrographic, topographic, substrate, and climatic inputs derive fro
 
 ---
 
-## 8. How to Cite
-
-### 8.1 Companion Journal Manuscript (Preferred Citation)
-
-**APA (7th Edition):**
-> Sahin, A. N., Yasarer, H., Ozeren, Y., Langendoen, E. J., Al-Hamdan, M. Z., & D'Alessio, M. (2026). *Physics-informed versus unconstrained machine learning for reach-scale river cross-sectional geometry across the continental United States: A pre-registered multi-regime benchmark*. Journal of Hydrologic Engineering (ASCE), in preparation.
-
-**BibTeX:**
-```bibtex
-@article{Sahin2026_JHE_ANN_XS,
-  author  = {Sahin, Ahmet Nazim and Yasarer, Hakan and Ozeren, Yavuz and Langendoen, Eddy J. and Al-Hamdan, Mohammad Z. and D'Alessio, Matteo},
-  title   = {Physics-Informed Versus Unconstrained Machine Learning for Reach-Scale River Cross-Sectional Geometry Across the Continental {United States}: A Pre-Registered Multi-Regime Benchmark},
-  journal = {Journal of Hydrologic Engineering},
-  year    = {2026},
-  note    = {American Society of Civil Engineers (ASCE), in preparation. Supported by USDA-ARS Cooperative Agreement No. 6060-13000-030-00D}
-}
-```
-
-### 8.2 Software Release Citation
-
-**APA (7th Edition):**
-> Sahin, A. N., Yasarer, H., Ozeren, Y., Langendoen, E. J., Al-Hamdan, M. Z., & D'Alessio, M. (2026). *ann-xs-estimation: Hard Manning + continuity hybrid versus unconstrained machine learning for reach-scale river cross-section geometry across the continental United States* (Version 1.1.0 / Tag v1.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24022059
-
-**BibTeX:**
-```bibtex
-@software{Sahin2026_Zenodo_ANN_XS_Software,
-  author    = {Sahin, Ahmet Nazim and Yasarer, Hakan and Ozeren, Yavuz and Langendoen, Eddy J. and Al-Hamdan, Mohammad Z. and D'Alessio, Matteo},
-  title     = {{ann-xs-estimation}: Hard Manning + Continuity Hybrid Versus Unconstrained Machine Learning for Reach-Scale River Cross-Section Geometry Across the Continental {United States}},
-  version   = {1.1.0},
-  year      = {2026},
-  publisher = {Zenodo},
-  doi       = {10.5281/zenodo.24022059},
-  url       = {https://doi.org/10.5281/zenodo.24022059},
-  license   = {BSD-3-Clause}
-}
-```
-
----
-
-## 9. Acknowledgements & Funding
+## 8. Acknowledgements & Funding
 
 This research was supported by the **United States Department of Agriculture – Agricultural Research Service (USDA-ARS)** under **Cooperative Agreement No. `6060-13000-030-00D`** between the **USDA-ARS National Sedimentation Laboratory (Oxford, MS)** and the **National Center for Computational Hydroscience and Engineering (NCCHE), University of Mississippi**. Any opinions, findings, conclusions, or recommendations expressed in this material are those of the authors and do not necessarily reflect the official views or policies of the USDA-ARS or the University of Mississippi.
