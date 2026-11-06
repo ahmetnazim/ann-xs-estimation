@@ -1,7 +1,7 @@
 # `ann-xs-estimation`: Hard Manning + Continuity Hybrid vs. Unconstrained Machine Learning for Reach-Scale River Cross-Section Geometry Across the Continental United States
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
-[![Data Capsule DOI](https://img.shields.io/badge/Data%20%26%20Run%20Capsule-10.5281%2Fzenodo.YYYYYYY-blue)](https://doi.org/10.5281/zenodo.YYYYYYY)
+[![DOI](https://zenodo.org/badge/1448724853.svg)](https://doi.org/10.5281/zenodo.24022058)
+[![Data Capsule DOI](https://img.shields.io/badge/Data%20%26%20Run%20Capsule-10.5281%2Fzenodo.24022059-blue)](https://doi.org/10.5281/zenodo.24022059)
 [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD_3--Clause-0072B2.svg)](LICENSE)
 [![Python 3.12.13](https://img.shields.io/badge/Python-3.12.13-3776AB.svg)](pyproject.toml)
 [![S-SDLC Master Protocol](https://img.shields.io/badge/S--SDLC-Phases%200--11%20Complete-009E73.svg)](CITATION.cff)
