@@ -6,7 +6,7 @@
   "identifier": "https://doi.org/10.5281/zenodo.XXXXXXX",
   "description": "Hard Manning + continuity hybrid for reach-scale channel cross-section geometry (HYDROSWOT -> NHDPlusV2.1, CONUS).",
   "license": "https://spdx.org/licenses/BSD-3-Clause.html",
-  "codeRepository": "https://github.com/ansahin/ann-xs-estimation",
+  "codeRepository": "https://github.com/ahmetnazim/ann-xs-estimation",
   "dateCreated": "2026-10-08",
   "dateModified": "2026-10-16",
   "datePublished": "2026-10-16",

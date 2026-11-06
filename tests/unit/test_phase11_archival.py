@@ -60,7 +60,7 @@ def test_citation_cff_v120_schema_and_metadata() -> None:
     assert cff["version"] == "0.1.0"
     assert cff["license"] == "BSD-3-Clause"
     assert cff["doi"] == "10.5281/zenodo.XXXXXXX"
-    assert cff["repository-code"] == "https://github.com/ansahin/ann-xs-estimation"
+    assert cff["repository-code"] == "https://github.com/ahmetnazim/ann-xs-estimation"
 
     authors = cff["authors"]
     assert isinstance(authors, list)

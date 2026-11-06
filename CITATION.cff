@@ -12,7 +12,7 @@ version: "0.1.0"
 date-released: "2026-10-16"
 doi: "10.5281/zenodo.XXXXXXX"
 license: "BSD-3-Clause"
-repository-code: "https://github.com/ansahin/ann-xs-estimation"
+repository-code: "https://github.com/ahmetnazim/ann-xs-estimation"
 url: "https://doi.org/10.5281/zenodo.XXXXXXX"
 abstract: >-
   Reproducible Scientific Software Development Life Cycle (S-SDLC) research
