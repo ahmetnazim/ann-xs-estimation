@@ -74,98 +74,117 @@
         <div id="map-canvas" class="map-canvas" role="application" aria-label="Interactive CONUS and USACE eHydro River Reach Map"></div>
 
         <!-- Floating Map Layer & Filter Controls -->
-        <aside class="map-controls-card" aria-label="Map layer and filter controls">
+        <aside id="map-controls-card" class="map-controls-card" aria-label="Map layer and filter controls">
           <div class="card-header-compact">
-            <h2>Map Layers &amp; Filters</h2>
-            <span id="visible-count-badge" class="pill-count">3,988 gauges · 131 eHydro</span>
+            <div class="card-header-title-group">
+              <h2>Map Layers &amp; Filters</h2>
+              <span id="visible-count-badge" class="pill-count">3,988 gauges · 131 eHydro</span>
+            </div>
+            <button
+              type="button"
+              id="toggle-map-controls-btn"
+              class="legend-toggle-btn"
+              aria-expanded="true"
+              aria-controls="map-controls-body"
+            >
+              ▾ Collapse
+            </button>
           </div>
+          <div id="map-controls-summary" class="map-controls-summary" hidden></div>
 
-          <div class="control-group">
-            <label for="map-color-mode">Color Reaches By</label>
-            <select id="map-color-mode">
-              <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dₘₐₓ)</option>
-              <option value="win_op_dyn">Best Model: Flood Stage — Dynamic n (OPS-1 v3)</option>
-              <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain, Const. n (OPS-1 v2)</option>
-              <option value="model_rmse">Single-Model Reach Error (RMSEₗₒ₉ or Stage m)</option>
-              <option value="slope_regime">NHDPlus Slope-Floor Regime (Fₛ: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
-              <option value="data_tier">Data Availability Tier (3DEP / OPS-1 / eHydro)</option>
-              <option value="latent_n">Predicted Manning Roughness n̂ (M5 Physics Layer)</option>
-              <option value="latent_r">Predicted Dingman Shape Exponent r̂ (M5 Physics Layer)</option>
-            </select>
-          </div>
-
-          <div id="single-model-control" class="control-group is-hidden">
-            <label for="map-single-model">Select Model to Inspect</label>
-            <select id="map-single-model">
-              <option value="M2-XGB">M2-XGB (M* Selected Baseline)</option>
-              <option value="M2-MLP">M2-MLP (Deep Ensemble Neural Network)</option>
-              <option value="M5">M5 (Hard Manning + Continuity Φ)</option>
-              <option value="M1">M1 (Retrained Zarrabi et al. 2025 XGB)</option>
-              <option value="M4">M4 (Soft-Constrained PINN)</option>
-              <option value="M6-NN">M6-NN (Two-Stage Back-Calculated n)</option>
-              <option value="M6-XGB">M6-XGB (Two-Stage GBDT Roughness)</option>
-              <option value="M3">M3 (Physics Only — Empirical n)</option>
-              <option value="M0">M0 (Regional Power Law)</option>
-              <option value="M-null">M-null (Unconditional Mean Baseline)</option>
-            </select>
-          </div>
-
-          <div class="control-row-split">
+          <div id="map-controls-body" class="map-controls-body">
             <div class="control-group">
-              <label for="filter-division">Physiographic Division</label>
-              <select id="filter-division">
-                <option value="ALL">All 8 CONUS Divisions</option>
+              <label for="map-color-mode">Color Reaches By</label>
+              <select id="map-color-mode">
+                <option value="win_geom">Best Model: Anchor Geometry (ln W, ln d̄, ln dₘₐₓ)</option>
+                <option value="win_op_dyn">Best Model: Flood Stage — Dynamic n (OPS-1 v3)</option>
+                <option value="win_op_fp">Best Model: Flood Stage — 3DEP Floodplain, Const. n (OPS-1 v2)</option>
+                <option value="model_rmse">Single-Model Reach Error (RMSEₗₒ₉ or Stage m)</option>
+                <option value="slope_regime">NHDPlus Slope-Floor Regime (Fₛ: S = 10⁻⁵ vs S &gt; 10⁻⁵)</option>
+                <option value="data_tier">Data Availability Tier (3DEP / OPS-1 / eHydro)</option>
+                <option value="latent_n">Predicted Manning Roughness n̂ (M5 Physics Layer)</option>
+                <option value="latent_r">Predicted Dingman Shape Exponent r̂ (M5 Physics Layer)</option>
               </select>
             </div>
-            <div class="control-group">
-              <label for="filter-slope">Slope Regime</label>
-              <select id="filter-slope">
-                <option value="ALL">All Slopes (100%)</option>
-                <option value="NORMAL">Normal S &gt; 10⁻⁵ (79.1%)</option>
-                <option value="FLOORED">Floored S = 10⁻⁵ (20.9%)</option>
+
+            <div id="single-model-control" class="control-group is-hidden">
+              <label for="map-single-model">Select Model to Inspect</label>
+              <select id="map-single-model">
+                <option value="M2-XGB">M2-XGB (M* Selected Baseline)</option>
+                <option value="M2-MLP">M2-MLP (Deep Ensemble Neural Network)</option>
+                <option value="M5">M5 (Hard Manning + Continuity Φ)</option>
+                <option value="M1">M1 (Retrained Zarrabi et al. 2025 XGB)</option>
+                <option value="M4">M4 (Soft-Constrained PINN)</option>
+                <option value="M6-NN">M6-NN (Two-Stage Back-Calculated n)</option>
+                <option value="M6-XGB">M6-XGB (Two-Stage GBDT Roughness)</option>
+                <option value="M3">M3 (Physics Only — Empirical n)</option>
+                <option value="M0">M0 (Regional Power Law)</option>
+                <option value="M-null">M-null (Unconditional Mean Baseline)</option>
               </select>
             </div>
-          </div>
 
-          <div class="control-row-split">
-            <div class="control-group">
-              <label for="filter-availability">Data Availability</label>
-              <select id="filter-availability">
-                <option value="ALL">All Benchmark Sites</option>
-                <option value="3DEP">Has 3DEP Lidar Transect (n = 3,282)</option>
-                <option value="OPS1">Has Multi-Stage Series (n = 3,643)</option>
-                <option value="TAIL_DA">Extrapolation Tail DA (S-TAIL-DA)</option>
-                <option value="TAIL_SO">Extrapolation Tail Order (S-TAIL-SO)</option>
-              </select>
+            <div class="control-row-split">
+              <div class="control-group">
+                <label for="filter-division">Physiographic Division</label>
+                <select id="filter-division">
+                  <option value="ALL">All 8 CONUS Divisions</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label for="filter-slope">Slope Regime</label>
+                <select id="filter-slope">
+                  <option value="ALL">All Slopes (100%)</option>
+                  <option value="NORMAL">Normal S &gt; 10⁻⁵ (79.1%)</option>
+                  <option value="FLOORED">Floored S = 10⁻⁵ (20.9%)</option>
+                </select>
+              </div>
             </div>
-            <div class="control-group">
-              <label for="map-basemap">Basemap</label>
-              <select id="map-basemap">
-                <option value="positron">Carto Positron (Light)</option>
-                <option value="dark">Carto Dark Matter</option>
-                <option value="topo">USGS National Map Topo</option>
-              </select>
+
+            <div class="control-row-split">
+              <div class="control-group">
+                <label for="filter-availability">Data Availability</label>
+                <select id="filter-availability">
+                  <option value="ALL">All Benchmark Sites</option>
+                  <option value="3DEP">Has 3DEP Lidar Transect (n = 3,350)</option>
+                  <option value="OPS1">Has Multi-Stage Series (n = 3,643)</option>
+                  <option value="TAIL_DA">Extrapolation Tail DA (S-TAIL-DA)</option>
+                  <option value="TAIL_SO">Extrapolation Tail Order (S-TAIL-SO)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label for="map-basemap">Basemap</label>
+                <select id="map-basemap">
+                  <option value="positron">Carto Positron (Light)</option>
+                  <option value="dark">Carto Dark Matter</option>
+                  <option value="topo">USGS National Map Topo</option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <div class="checkbox-row">
-            <label class="check-label">
-              <input type="checkbox" id="toggle-decisive-only" checked>
-              <span>Grey out non-decisive ties (≤ 0.05 log / ≤ 5 cm)</span>
-            </label>
-            <label class="check-label">
-              <input type="checkbox" id="toggle-physio-layer" checked>
-              <span>Show 8 F&amp;J Physiographic Division polygons</span>
-            </label>
-            <label class="check-label">
-              <input type="checkbox" id="toggle-ehydro-layer" checked>
-              <span>Show 131 USACE eHydro survey locations (▲)</span>
-            </label>
-          </div>
+            <details class="controls-details" open>
+              <summary class="controls-summary">Overlays &amp; Showcase Reaches</summary>
+              <div class="controls-details-content">
+                <div class="checkbox-row">
+                  <label class="check-label">
+                    <input type="checkbox" id="toggle-decisive-only" checked>
+                    <span>Grey out non-decisive ties (≤ 0.05 log / ≤ 5 cm)</span>
+                  </label>
+                  <label class="check-label">
+                    <input type="checkbox" id="toggle-physio-layer" checked>
+                    <span>Show 8 F&amp;J Physiographic Division polygons</span>
+                  </label>
+                  <label class="check-label">
+                    <input type="checkbox" id="toggle-ehydro-layer" checked>
+                    <span>Show 131 USACE eHydro survey locations (▲)</span>
+                  </label>
+                </div>
 
-          <div class="showcase-presets">
-            <span class="preset-title">Diagnostic Showcase Reaches:</span>
-            <div class="preset-pills" id="showcase-buttons"></div>
+                <div class="showcase-presets">
+                  <span class="preset-title">Diagnostic Showcase Reaches:</span>
+                  <div class="preset-pills" id="showcase-buttons"></div>
+                </div>
+              </div>
+            </details>
           </div>
         </aside>
 

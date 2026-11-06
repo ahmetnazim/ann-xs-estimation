@@ -612,8 +612,22 @@ function updateMapLegend() {
   }
 }
 
+function updateMapControlsSummary() {
+  const sumEl = document.getElementById("map-controls-summary");
+  const colorSel = document.getElementById("map-color-mode");
+  if (!sumEl || !colorSel) return;
+  const colorLabel = colorSel.options[colorSel.selectedIndex]
+    ? colorSel.options[colorSel.selectedIndex].text.split("(")[0].trim()
+    : state.colorMode;
+  const divLabel = state.filterDivision === "ALL" ? "All Divisions" : state.filterDivision;
+  const slopeLabel =
+    state.filterSlope === "ALL" ? "All Slopes" : state.filterSlope === "NORMAL" ? "Normal S" : "Floored S";
+  sumEl.innerHTML = `<strong>${colorLabel}</strong> · ${divLabel} · ${slopeLabel}`;
+}
+
 function refreshMapSources() {
   updateMapLegend();
+  updateMapControlsSummary();
   if (!state.map || !state.map.isStyleLoaded()) return;
   const conusSrc = state.map.getSource("conus-sites");
   if (conusSrc) conusSrc.setData(buildSitesGeoJSON());
@@ -799,6 +813,29 @@ function setupMapControls() {
   const decChk = document.getElementById("toggle-decisive-only");
   const physChk = document.getElementById("toggle-physio-layer");
   const ehChk = document.getElementById("toggle-ehydro-layer");
+  const toggleBtn = document.getElementById("toggle-map-controls-btn");
+  const bodyEl = document.getElementById("map-controls-body");
+  const sumEl = document.getElementById("map-controls-summary");
+
+  updateMapControlsSummary();
+
+  if (toggleBtn && bodyEl) {
+    toggleBtn.addEventListener("click", () => {
+      const isExpanded = toggleBtn.getAttribute("aria-expanded") === "true";
+      const nextExpanded = !isExpanded;
+      toggleBtn.setAttribute("aria-expanded", String(nextExpanded));
+      toggleBtn.textContent = nextExpanded ? "▾ Collapse" : "▴ Filters";
+      if (nextExpanded) {
+        bodyEl.removeAttribute("hidden");
+        bodyEl.removeAttribute("inert");
+        if (sumEl) sumEl.setAttribute("hidden", "");
+      } else {
+        bodyEl.setAttribute("hidden", "");
+        bodyEl.setAttribute("inert", "");
+        if (sumEl) sumEl.removeAttribute("hidden");
+      }
+    });
+  }
 
   colorSel.addEventListener("change", () => {
     state.colorMode = colorSel.value;
