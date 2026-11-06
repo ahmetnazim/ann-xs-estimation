@@ -1102,9 +1102,9 @@ function renderXsPlot() {
   const maxW = Math.max(...profiles.map((p) => (p.uq ? Math.max(p.W, p.uq.wHi * 0.85) : p.W))) * 1.12;
   const maxD = Math.max(...profiles.map((p) => (p.uq ? Math.max(p.dmax, p.uq.dHi * 1.25) : p.dmax))) * 1.18;
 
-  const pad = { l: 58, r: 22, t: 30, b: 38 };
+  const pad = { l: 58, r: 22, t: 14, b: 36 };
   const W_px = 680 - pad.l - pad.r;
-  const H_px = 310 - pad.t - pad.b;
+  const H_px = 286 - pad.t - pad.b;
 
   const xToPx = (x_m) => pad.l + ((x_m + maxW / 2) / maxW) * W_px;
   const zToPx = (depth_m) => pad.t + (depth_m / maxD) * H_px; // 0 = water surface, maxD = bottom
@@ -1157,7 +1157,7 @@ function renderXsPlot() {
     svg.appendChild(
       svgEl(
         "text",
-        { x, y: pad.t + H_px + 16, "text-anchor": "middle", fill: "#64748b", "font-size": "10.5" },
+        { x, y: pad.t + H_px + 15, "text-anchor": "middle", fill: "#64748b", "font-size": "10.5" },
         `${xVal >= 0 ? "+" : ""}${xVal.toFixed(0)} m`
       )
     );
@@ -1166,7 +1166,7 @@ function renderXsPlot() {
   svg.appendChild(
     svgEl(
       "text",
-      { x: pad.l + W_px / 2, y: 304, "text-anchor": "middle", fill: "#64748b", "font-size": "11", "font-weight": "600" },
+      { x: pad.l + W_px / 2, y: 280, "text-anchor": "middle", fill: "#64748b", "font-size": "11", "font-weight": "600" },
       "Lateral Distance from Channel Centerline x (m)"
     )
   );
@@ -1249,81 +1249,111 @@ function renderXsPlot() {
     );
   }
 
-  // Legend inside SVG top-left with measured text widths and 18px inter-item spacing
-  let legX = pad.l + 4;
-  let legY = 12;
-  const maxLegX = pad.l + W_px - 6;
-  for (const p of profiles) {
-    const labelText = p.name === "Observed" ? `Obs (W=${fmt(p.W, 0)}m, d̄=${fmt(p.dbar, 2)}m)` : p.name;
-    const textW = measureSvgTextWidth(labelText);
-    const itemW = 22 + textW + 18;
-    if (legX > pad.l + 4 && legX + 22 + textW > maxLegX) {
-      legX = pad.l + 4;
-      legY += 14;
-    }
-    svg.appendChild(
-      svgEl("line", {
-        x1: legX,
-        y1: legY,
-        x2: legX + 18,
-        y2: legY,
-        stroke: p.color,
-        "stroke-width": 2.4,
-        "stroke-dasharray": p.dashed ? "4,2" : "none",
+  // Render dedicated HTML Legend Strip above #xs-svg (zero text overlay on plot)
+  const legStrip = document.getElementById("xs-legend-strip");
+  if (legStrip) {
+    legStrip.innerHTML = profiles
+      .map((p) => {
+        const labelHtml =
+          p.name === "Observed"
+            ? `Obs (W=${fmt(p.W, 0)}&nbsp;m, d̄=${fmt(p.dbar, 2)}&nbsp;m)`
+            : `${p.name} (W=${fmt(p.W, 0)}&nbsp;m, d̄=${fmt(p.dbar, 2)}&nbsp;m)`;
+        return `<span class="chart-legend-item" role="listitem" style="color:${p.color}"><span class="chart-line-swatch ${
+          p.dashed ? "is-dashed" : ""
+        }" style="--swatch-color:${p.color}"></span><span>${labelHtml}</span></span>`;
       })
-    );
-    svg.appendChild(
-      svgEl("text", { x: legX + 22, y: legY + 3.5, fill: p.color, "font-size": "10.5", "font-weight": "700" }, labelText)
-    );
-    legX += itemW;
+      .join("");
   }
 
-  // Optional 3DEP Lidar Valley Transect Inset (top-right corner of XS SVG)
-  if (state.show3depInset && !isEh && s.fp && Array.isArray(s.fp[2])) {
-    const [lenM, z0, dzArr] = s.fp;
-    const titleText = `3DEP Lidar Valley (${lenM} m · z₀=${z0}m)`;
-    const measuredTitleW = measureSvgTextWidth(titleText, "700 9px -apple-system, BlinkMacSystemFont, sans-serif");
-    const inW = Math.max(182, Math.ceil(measuredTitleW) + 16);
-    const inH = 72;
-    const inX = pad.l + W_px - inW - 8;
-    const inY = pad.t + 6;
+  // Docked 3DEP Lidar Valley Transect Strip below #xs-svg (unobstructed channel geometry)
+  const fpStrip = document.getElementById("xs-3dep-strip");
+  const fpTitle = document.getElementById("xs-3dep-title");
+  const fpMeta = document.getElementById("xs-3dep-meta");
+  const fpSvg = document.getElementById("xs-3dep-svg");
 
-    svg.appendChild(
-      svgEl("rect", {
-        x: inX,
-        y: inY,
-        width: inW,
-        height: inH,
-        rx: 4,
-        fill: "rgba(15, 23, 42, 0.84)",
-        stroke: "#475569",
-      })
-    );
-    svg.appendChild(
-      svgEl(
-        "text",
-        { x: inX + 7, y: inY + 13, fill: "#38bdf8", "font-size": "9", "font-weight": "700" },
-        titleText
-      )
-    );
+  if (fpStrip && fpSvg) {
+    if (state.show3depInset && !isEh && s.fp && Array.isArray(s.fp[2])) {
+      fpStrip.removeAttribute("hidden");
+      const [lenM, z0, dzArr] = s.fp;
+      const minDz = Math.min(...dzArr, -dmaxObs);
+      const maxDz = Math.max(...dzArr, 4.0);
+      const spanDz = Math.max(maxDz - minDz, 1.0);
 
-    const minDz = Math.min(...dzArr, -dmaxObs);
-    const maxDz = Math.max(...dzArr, 4.0);
-    const spanDz = Math.max(maxDz - minDz, 1.0);
-    const xiCoords = state.conus.schema.fp_xi_coords;
-    const fpPts = dzArr.map((dz, idx) => {
-      const px = inX + 8 + ((xiCoords[idx] + 1) / 2) * (inW - 16);
-      const py = inY + inH - 8 - ((dz - minDz) / spanDz) * (inH - 26);
-      return `${px.toFixed(1)},${py.toFixed(1)}`;
-    });
-    svg.appendChild(
-      svgEl("polyline", {
-        points: fpPts.join(" "),
-        fill: "none",
-        stroke: "#4ade80",
-        "stroke-width": 1.6,
-      })
-    );
+      if (fpTitle) fpTitle.textContent = `3DEP 10 m Lidar Valley Transect (${Number(lenM).toLocaleString()} m)`;
+      if (fpMeta) {
+        fpMeta.innerHTML = `Thalweg z<sub>0</sub> = ${fmt(z0, 1)}&nbsp;m NAVD88 · Valley Δz: ${minDz.toFixed(
+          1
+        )}&nbsp;m to +${maxDz.toFixed(1)}&nbsp;m`;
+      }
+
+      fpSvg.innerHTML = "";
+      const fPad = { l: 58, r: 22, t: 6, b: 8 };
+      const fW = 680 - fPad.l - fPad.r;
+      const fH = 64 - fPad.t - fPad.b;
+
+      // Zero elevation reference & centerline marker
+      const yZeroFp = fPad.t + fH - ((0 - minDz) / spanDz) * fH;
+      fpSvg.appendChild(
+        svgEl("line", {
+          x1: fPad.l,
+          y1: yZeroFp,
+          x2: fPad.l + fW,
+          y2: yZeroFp,
+          stroke: "rgba(148, 163, 184, 0.28)",
+          "stroke-dasharray": "3,3",
+        })
+      );
+      fpSvg.appendChild(
+        svgEl("line", {
+          x1: fPad.l + fW / 2,
+          y1: fPad.t,
+          x2: fPad.l + fW / 2,
+          y2: fPad.t + fH,
+          stroke: "rgba(56, 189, 248, 0.45)",
+          "stroke-dasharray": "2,2",
+        })
+      );
+
+      const xiCoords = state.conus.schema.fp_xi_coords;
+      const fpPts = dzArr.map((dz, idx) => {
+        const px = fPad.l + ((xiCoords[idx] + 1) / 2) * fW;
+        const py = fPad.t + fH - ((dz - minDz) / spanDz) * fH;
+        return `${px.toFixed(1)},${py.toFixed(1)}`;
+      });
+      const areaPts = `${fPad.l.toFixed(1)},${(fPad.t + fH).toFixed(1)} ${fpPts.join(" ")} ${(fPad.l + fW).toFixed(
+        1
+      )},${(fPad.t + fH).toFixed(1)}`;
+      fpSvg.appendChild(
+        svgEl("polygon", {
+          points: areaPts,
+          fill: "rgba(34, 197, 94, 0.12)",
+        })
+      );
+      fpSvg.appendChild(
+        svgEl("polyline", {
+          points: fpPts.join(" "),
+          fill: "none",
+          stroke: "#22c55e",
+          "stroke-width": 1.8,
+        })
+      );
+      fpSvg.appendChild(
+        svgEl(
+          "text",
+          { x: fPad.l - 6, y: fPad.t + 9, "text-anchor": "end", fill: "#64748b", "font-size": "9.5" },
+          `+${maxDz.toFixed(0)} m`
+        )
+      );
+      fpSvg.appendChild(
+        svgEl(
+          "text",
+          { x: fPad.l - 6, y: fPad.t + fH, "text-anchor": "end", fill: "#64748b", "font-size": "9.5" },
+          `${minDz.toFixed(0)} m`
+        )
+      );
+    } else {
+      fpStrip.setAttribute("hidden", "");
+    }
   }
 }
 
@@ -1375,6 +1405,18 @@ function renderRatingSimulator() {
       dashed: m === "M3",
       lw: 1.9,
     });
+  }
+
+  const ratingLeg = document.getElementById("rating-legend-strip");
+  if (ratingLeg) {
+    ratingLeg.innerHTML = curves
+      .map(
+        (c) =>
+          `<span class="chart-legend-item" role="listitem" style="color:${c.color}"><span class="chart-line-swatch ${
+            c.dashed ? "is-dashed" : ""
+          }" style="--swatch-color:${c.color}"></span><span>${c.name}</span></span>`
+      )
+      .join("");
   }
 
   const qMax = 10.0;
@@ -1808,11 +1850,11 @@ function renderOpsStageChartAndTable(regimeMode) {
   let legB = "";
 
   if (regimeMode === "slope_strat") {
-    legA = "Normal Slope S > 10⁻⁵ (79.1% · M4 & M5 Win)";
-    legB = "Floored Slope S = 10⁻⁵ (20.9% · Clamped)";
+    legA = "Normal Slope S &gt; 10<sup>−5</sup> (79.1% · M4 &amp; M5 Win)";
+    legB = "Floored Slope S = 10<sup>−5</sup> (20.9% · Clamped)";
     pairs = modelsToPlot.map((m) => ({ m, a: notFsMap[m] || 0, b: fsMap[m] || 0 }));
   } else if (regimeMode === "const_vs_dyn") {
-    legA = "Dynamic Roughness n ∝ Q^γ̂ (OPS-1 v3 LODO)";
+    legA = 'Dynamic Roughness n ∝ Q<sup><span class="math-preserve math-hat">γ̂</span></sup> (OPS-1 v3 LODO)';
     legB = "Constant Roughness γ = 0 (OPS-1 v1)";
     pairs = ["Oracle", ...modelsToPlot].map((m) => ({
       m,
@@ -1829,16 +1871,18 @@ function renderOpsStageChartAndTable(regimeMode) {
     }));
   }
 
-  const maxV = Math.max(...pairs.flatMap((p) => [p.a, p.b]), 0.5);
-  const pad = { l: 78, r: 68, t: 28, b: 18 };
-  const W_px = 740 - pad.l - pad.r;
-  const rowH = Math.floor((300 - pad.t - pad.b) / pairs.length);
+  const opsLeg = document.getElementById("ops-legend-strip");
+  if (opsLeg) {
+    opsLeg.innerHTML = `
+      <span class="chart-legend-item" role="listitem" style="color:#0F7C80"><span class="chart-box-swatch" style="--swatch-color:#0F7C80"></span><span>${legA}</span></span>
+      <span class="chart-legend-item" role="listitem" style="color:#D55E00"><span class="chart-box-swatch" style="--swatch-color:#D55E00"></span><span>${legB}</span></span>
+    `;
+  }
 
-  // Legend
-  svg.appendChild(svgEl("rect", { x: pad.l, y: 6, width: 12, height: 12, rx: 2, fill: "#0F7C80" }));
-  svg.appendChild(svgMathText({ x: pad.l + 16, y: 16, fill: "#0F7C80", "font-size": "11", "font-weight": "700" }, legA));
-  svg.appendChild(svgEl("rect", { x: pad.l + 318, y: 6, width: 12, height: 12, rx: 2, fill: "#D55E00" }));
-  svg.appendChild(svgMathText({ x: pad.l + 334, y: 16, fill: "#D55E00", "font-size": "11", "font-weight": "700" }, legB));
+  const maxV = Math.max(...pairs.flatMap((p) => [p.a, p.b]), 0.5);
+  const pad = { l: 78, r: 68, t: 10, b: 16 };
+  const W_px = 740 - pad.l - pad.r;
+  const rowH = Math.floor((276 - pad.t - pad.b) / pairs.length);
 
   pairs.forEach((p, i) => {
     const y = pad.t + i * rowH;

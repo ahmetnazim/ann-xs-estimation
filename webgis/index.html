@@ -219,16 +219,26 @@
         <figure class="xs-figure">
           <div class="xs-figure-toolbar">
             <figcaption id="xs-plot-caption">Analytical Dingman Profile z(x) = −d<sub>max</sub>(1 − |2x/W|<sup>r</sup>) &amp; 90% UQ Bounds</figcaption>
-            <label class="check-label-inline">
-              <input type="checkbox" id="toggle-uq-band" checked>
-              <span>90% Deep-Ensemble UQ Band</span>
-            </label>
-            <label class="check-label-inline">
-              <input type="checkbox" id="toggle-3dep-inset" checked>
-              <span>3DEP Lidar Valley Inset</span>
-            </label>
+            <div class="xs-toolbar-checks">
+              <label class="check-label-inline">
+                <input type="checkbox" id="toggle-uq-band" checked>
+                <span>90% Deep-Ensemble UQ Band</span>
+              </label>
+              <label class="check-label-inline">
+                <input type="checkbox" id="toggle-3dep-inset" checked>
+                <span>3DEP Lidar Valley Profile</span>
+              </label>
+            </div>
           </div>
-          <svg id="xs-svg" viewBox="0 0 680 310" role="img" aria-labelledby="xs-plot-caption"></svg>
+          <div id="xs-legend-strip" class="chart-legend-strip" role="list" aria-label="Plotted cross-section profiles"></div>
+          <svg id="xs-svg" viewBox="0 0 680 286" role="img" aria-labelledby="xs-plot-caption"></svg>
+          <div id="xs-3dep-strip" class="xs-3dep-strip" hidden>
+            <div class="xs-3dep-header">
+              <span id="xs-3dep-title" class="xs-3dep-title">3DEP 10 m Lidar Valley Transect</span>
+              <span id="xs-3dep-meta" class="xs-3dep-meta"></span>
+            </div>
+            <svg id="xs-3dep-svg" viewBox="0 0 680 64" role="img" aria-labelledby="xs-3dep-title"></svg>
+          </div>
         </figure>
 
         <!-- Interactive OPS-1 Stage-Discharge Routing Simulator -->
@@ -245,6 +255,7 @@
               <option value="const">Constant n (γ = 0, OPS-1 v1/v2)</option>
             </select>
           </div>
+          <div id="rating-legend-strip" class="chart-legend-strip" role="list" aria-label="Plotted rating curve models"></div>
           <svg id="rating-svg" viewBox="0 0 680 195" role="img" aria-label="Synthetic stage-change rating curve across flow ratios"></svg>
         </section>
 
@@ -425,7 +436,8 @@
               </div>
             </div>
 
-            <svg id="ops-stage-svg" viewBox="0 0 740 300" role="img" aria-label="Operational flood-stage RMSE comparison chart"></svg>
+            <div id="ops-legend-strip" class="chart-legend-strip" role="list" aria-label="Operational stage regime series"></div>
+            <svg id="ops-stage-svg" viewBox="0 0 740 276" role="img" aria-label="Operational flood-stage RMSE comparison chart"></svg>
 
             <div class="table-wrapper">
               <table class="data-table" id="ops-stage-table">
