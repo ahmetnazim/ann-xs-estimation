@@ -194,7 +194,7 @@ All primary hydrographic, topographic, substrate, and climatic inputs derive fro
 ## 7. ASCE Data, Models, and Code Availability Statement
 
 > **Data, Models, and Code Availability Statement (ASCE *Journal of Hydrologic Engineering*):**  
-> All source code, physics-informed neural network and baseline implementations (`M-null`, `M0`, `M1`, `M2-MLP`, `M2-XGB`, `M3`, `M4`, `M5`, `M6-NN`, `M6-XGB`, and `A_J`), DVC pipeline specifications (`dvc.yaml`, `dvc.lock`, `params.yaml`), container build definitions (`Dockerfile`), publication figure/table rendering scripts (`figures/`), and the cryptographically hash-chained evaluation ledger (`reports/results/scoring_ledger.json`) are openly available under the BSD-3-Clause license at `https://github.com/ahmetnazim/ann-xs-estimation` and permanently archived on Zenodo at `https://doi.org/10.5281/zenodo.XXXXXXX` (tag `v1.0.0`). Processed analysis-ready datasets (`data/processed/site_table.parquet`, `fold_assignment.parquet`, `srnd_assignment.parquet`, `ehydro_ind.parquet`), out-of-fold prediction matrices (`reports/results/event3_matrix.parquet`), and the deterministic POSIX `ustar` archive of all trained model checkpoints (`p8-da9b7303cb84.tar`, SHA-256 `a6a88f772aa864ed24cadcc380aeb85831c02dd0e28473143ce9905e450db4b8`, Merkle root `bb97203df74599de568bee5316d4b147d1b7dea770220d7917da464b937a1fb2`) are archived at `https://doi.org/10.5281/zenodo.YYYYYYY`. All raw observational inputs derive from publicly accessible repositories (USGS HYDRoSWOT `https://doi.org/10.5066/F7D798H6`, NHDPlusV2.1 `https://doi.org/10.5066/F7P84B24`, EPA StreamCat, Abeshu et al. $D_{50}$ `https://doi.org/10.5281/zenodo.5550700`, Global Aridity Index v3 `https://doi.org/10.6084/m9.figshare.7504448.v5`, Enzminger et al. HyG `https://doi.org/10.5281/zenodo.10035344`, and USACE eHydro).
+> All source code, physics-informed neural network and baseline implementations (`M-null`, `M0`, `M1`, `M2-MLP`, `M2-XGB`, `M3`, `M4`, `M5`, `M6-NN`, `M6-XGB`, and `A_J`), DVC pipeline specifications (`dvc.yaml`, `dvc.lock`, `params.yaml`), container build definitions (`Dockerfile`), publication figure/table rendering scripts (`figures/`), and the cryptographically hash-chained evaluation ledger (`reports/results/scoring_ledger.json`) are openly available under the BSD-3-Clause license at `https://github.com/ahmetnazim/ann-xs-estimation` and permanently archived on Zenodo at `https://doi.org/10.5281/zenodo.24022059` (tag `v1.1.0`). Processed analysis-ready datasets (`data/processed/site_table.parquet`, `fold_assignment.parquet`, `srnd_assignment.parquet`, `ehydro_ind.parquet`), out-of-fold prediction matrices (`reports/results/event3_matrix.parquet`), and the deterministic POSIX `ustar` archive of all trained model checkpoints (`p8-da9b7303cb84.tar`, SHA-256 `a6a88f772aa864ed24cadcc380aeb85831c02dd0e28473143ce9905e450db4b8`, Merkle root `bb97203df74599de568bee5316d4b147d1b7dea770220d7917da464b937a1fb2`) are archived at `https://doi.org/10.5281/zenodo.24022059`. All raw observational inputs derive from publicly accessible repositories (USGS HYDRoSWOT `https://doi.org/10.5066/F7D798H6`, NHDPlusV2.1 `https://doi.org/10.5066/F7P84B24`, EPA StreamCat, Abeshu et al. $D_{50}$ `https://doi.org/10.5281/zenodo.5550700`, Global Aridity Index v3 `https://doi.org/10.6084/m9.figshare.7504448.v5`, Enzminger et al. HyG `https://doi.org/10.5281/zenodo.10035344`, and USACE eHydro).
 
 ---
 
@@ -219,18 +219,18 @@ All primary hydrographic, topographic, substrate, and climatic inputs derive fro
 ### 8.2 Software Release Citation
 
 **APA (7th Edition):**
-> Sahin, A. N., Yasarer, H., Ozeren, Y., Langendoen, E. J., Al-Hamdan, M. Z., & D'Alessio, M. (2026). *ann-xs-estimation: Hard Manning + continuity hybrid versus unconstrained machine learning for reach-scale river cross-section geometry across the continental United States* (Version 0.1.0 / Tag v1.0.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.XXXXXXX
+> Sahin, A. N., Yasarer, H., Ozeren, Y., Langendoen, E. J., Al-Hamdan, M. Z., & D'Alessio, M. (2026). *ann-xs-estimation: Hard Manning + continuity hybrid versus unconstrained machine learning for reach-scale river cross-section geometry across the continental United States* (Version 1.1.0 / Tag v1.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24022059
 
 **BibTeX:**
 ```bibtex
 @software{Sahin2026_Zenodo_ANN_XS_Software,
   author    = {Sahin, Ahmet Nazim and Yasarer, Hakan and Ozeren, Yavuz and Langendoen, Eddy J. and Al-Hamdan, Mohammad Z. and D'Alessio, Matteo},
   title     = {{ann-xs-estimation}: Hard Manning + Continuity Hybrid Versus Unconstrained Machine Learning for Reach-Scale River Cross-Section Geometry Across the Continental {United States}},
-  version   = {0.1.0},
+  version   = {1.1.0},
   year      = {2026},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.XXXXXXX},
-  url       = {https://doi.org/10.5281/zenodo.XXXXXXX},
+  doi       = {10.5281/zenodo.24022059},
+  url       = {https://doi.org/10.5281/zenodo.24022059},
   license   = {BSD-3-Clause}
 }
 ```
